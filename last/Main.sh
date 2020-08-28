@@ -14,7 +14,7 @@ function RunCommand
     if [ -n "$KRN_ACCOUNTING" ] && [ -d $KRN_ACCOUNTING ]
     then
 	KRN_FICACC=$KRN_ACCOUNTING/$(date +%Y%m%d-%Hh%Mm%Ss)-$AcctFile_Commande.log
-	echo "\n\033[33;44m Command \033[m : clussh $Commande $Parametre\n" > $KRN_FICACC
+	echo "\n\033[33;44m Command \033[m : krn $Commande $Parametre\n" > $KRN_FICACC
 	chmod a+rw $KRN_FICACC
     fi
 
