@@ -4,7 +4,7 @@
 function RunCommand
 {
     RunCommand_Name=$*
-    AcctFile_Commande=$(for Name in $*; do echo ${Name%.ksh};done)
+    AcctFile_Commande=$(for Name in $*; do echo ${Name%.sh};done)
     AcctFile_Commande=$(echo $AcctFile_Commande|sed 's/ //g')
 
     # --------------------------------
@@ -67,10 +67,10 @@ case $Commande in
 
     # Commandes pour le referentiel
     # -----------------------------
-    "list"    |"ls") RunCommand ListKernel.ksh   ;;
-    "get"     |"gk") RunCommand GetKernel.ksh    ;;
-    "install"      ) RunCommand InstallKernel.ksh;;
-    "remove"       ) RunCommand RemoveKernel.ksh ;;
+    "list"    |"ls") RunCommand ListKernel.sh   ;;
+    "get"     |"gk") RunCommand GetKernel.sh    ;;
+    "install"      ) RunCommand InstallKernel.sh;;
+    "remove"       ) RunCommand RemoveKernel.sh ;;
 
     *)
 	echo "Kernel management : Commande 'krn $1' inconnue."
