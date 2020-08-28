@@ -17,7 +17,7 @@ cd       $TempDir
 
 # Telechargement des paquets
 # --------------------------
-GetKernel.ksh $*
+GetKernel.sh $*
 echo ""
 
 NbPaquet=$(ls -1 *.deb 2>/dev/null|wc -l)
