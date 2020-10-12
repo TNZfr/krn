@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $KRN_EXE/_libkernel.sh
+
 #-------------------------------------------------------------------------------
 RemoveOneKernel ()
 {
@@ -65,7 +67,7 @@ then
     echo ""
     exit 1
 fi
-
+Debut=$(TopHorloge)
 for KernelVersion in $*
 do
     RemoveOneKernel $KernelVersion
@@ -76,7 +78,8 @@ echo "Installed kernel(s)"
 echo "-------------------"
 ls -1 /lib/modules
 echo ""
-
+echo "Duree suppresion : $(AfficheDuree $Debut $(TopHorloge))"
+echo ""
 
 exit 0
 

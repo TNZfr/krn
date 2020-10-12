@@ -1,10 +1,13 @@
 #!/bin/bash
- 
+
+. $KRN_EXE/_libkernel.sh
+
 Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/
 ListeDistante=/tmp/ListeDistante-$$.txt
  
 # Recuperation de la liste des versions
 # -------------------------------------
+Debut=$(TopHorloge)
 printf "Getting available versions ... "
 wget -q $Url -O $ListeDistante
 echo "done."
@@ -27,6 +30,8 @@ echo ""
 echo "Installed kernel(s)"
 echo "-------------------"
 ls -1 /lib/modules
+echo ""
+echo "Duree : $(AfficheDuree $Debut $(TopHorloge))"
 echo ""
 
 exit $Status

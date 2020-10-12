@@ -1,5 +1,7 @@
 #!/bin/bash
- 
+
+. $KRN_EXE/_libkernel.sh
+
 if [ $# -lt 1 ]
 then
     echo ""
@@ -11,6 +13,7 @@ then
     exit 1
 fi
 
+Debut=$(TopHorloge)
 TempDir=/tmp/krn-$$
 mkdir -p $TempDir
 cd       $TempDir
@@ -29,5 +32,9 @@ NbPaquet=$(ls -1 *.deb 2>/dev/null|wc -l)
 # Menage de fin de traitement
 # ---------------------------
 rm -rf $TempDir
- 
+
+echo ""
+echo "Duree Telechar./Installation : $(AfficheDuree $Debut $(TopHorloge))"
+echo ""
+
 exit $?

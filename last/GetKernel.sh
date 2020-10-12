@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $KRN_EXE/_libkernel.sh
+
 #-------------------------------------------------------------------------------
 GetKernelPackage ()
 {
@@ -59,6 +61,7 @@ then
     exit 1
 fi
 
+Debut=$(TopHorloge)
 Architecture=amd64
 
 for Version in $*
@@ -66,5 +69,9 @@ do
     GetKernelPackage $Version &
 done
 wait
- 
+
+echo ""
+echo "Duree de telechargement : $(AfficheDuree $Debut $(TopHorloge))"
+echo ""
+
 exit 0
