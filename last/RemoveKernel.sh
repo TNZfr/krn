@@ -10,13 +10,14 @@ RemoveOneKernel ()
     # Parsing /controle du parametre
     # ------------------------------
     ModuleDirectory=$(ls -1 /lib/modules|grep ^$Version 2>/dev/null)
+    if [ "$ModuleDirectory" = "" ]
+    then
+	echo "Version $Version not installed."
+	exit 1
+    fi
+    
     NbModule=$(echo $ModuleDirectory|tr [' '] ['\n']|wc -l)
     case $NbModule in
-	0)
-	    echo "Version $Version not installed."
-	    exit 1
-	    ;;
-
 	1)
 	    if [ $(uname -r) = $ModuleDirectory ]
 	    then
@@ -40,11 +41,22 @@ RemoveOneKernel ()
     echo "Uninstalling kernel $Version ..."
     echo ""
 
+
     # Suppression du noyau
     # --------------------
-    sudo apt-get remove --purge linux*$Version* -y
-    Status=$?
-
+    Status=0
+    PackageList=$(dpkg -l                          \
+		       "linux-headers-${Version}*" \
+		       "linux-image-*${Version}*"  \
+		       "linux-modules-${Version}*" \
+		       2>/dev/null | grep ^ii |cut -d' ' -f3)
+    
+    if [ "$PackageList" != "" ]
+    then
+	sudo apt-get remove --purge $PackageList -y
+	Status=$?
+    fi
+    
     # Nettoyage des restes de modules
     # -------------------------------
     if [ -d $ModuleDirectory ] && [ $Status -eq 0 ]
@@ -78,7 +90,7 @@ echo "Installed kernel(s)"
 echo "-------------------"
 ls -1 /lib/modules
 echo ""
-echo "Duree suppresion : $(AfficheDuree $Debut $(TopHorloge))"
+echo "Duree suppression : $(AfficheDuree $Debut $(TopHorloge))"
 echo ""
 
 exit 0

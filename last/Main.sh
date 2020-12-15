@@ -47,6 +47,8 @@ then
     echo  "Install            : Connect on the selected node (only one)"
     echo  "Remove             : Execute command on selected nodes"
     echo  ""
+    echo  "GenPackage     (GP): Compile and generate Debian packages"
+    echo  ""
     exit 0
 fi
 
@@ -67,10 +69,11 @@ case $Commande in
 
     # Commandes pour le referentiel
     # -----------------------------
-    "list"    |"ls") RunCommand ListKernel.sh   ;;
-    "get"     |"gk") RunCommand GetKernel.sh    ;;
-    "install"      ) RunCommand InstallKernel.sh;;
-    "remove"       ) RunCommand RemoveKernel.sh ;;
+    "list"      |"ls") RunCommand ListKernel.sh   ;;
+    "get"       |"gk") RunCommand GetKernel.sh    ;;
+    "install"        ) RunCommand InstallKernel.sh;;
+    "remove"         ) RunCommand RemoveKernel.sh ;;
+    "genpackage"|"gp") RunCommand GenPackage.sh   ;;
 
     *)
 	echo "Kernel management : Commande 'krn $1' inconnue."

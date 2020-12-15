@@ -18,9 +18,18 @@ AfficheDuree ()
     Debut=$1
     Fin=$2
 
-    ((DebutMilli = $(echo $Debut|cut -d. -f2|cut -c1-3) ))
-    ((FinMilli   = $(echo $Fin  |cut -d. -f2|cut -c1-3) ))
+    DebutMilli=$(echo $Debut|cut -d. -f2|cut -c1-3)
+    case $DebutMilli in
+	00*) DebutMilli=$(echo $DebutMilli|cut -c3  ) ;;
+	0*)  DebutMilli=$(echo $DebutMilli|cut -c2-3) ;;
+    esac
 
+    FinMilli=$(  echo $Fin  |cut -d. -f2|cut -c1-3)
+    case $FinMilli in
+	00*) FinMilli=$(echo $FinMilli|cut -c3  ) ;;
+	0*)  FinMilli=$(echo $FinMilli|cut -c2-3) ;;
+    esac
+    
     (( Seconde = $(echo $Fin|cut -d. -f1) - $(echo $Debut|cut -d. -f1) ))
     (( Milli   = FinMilli - DebutMilli ))
     if [ $Milli -lt 0 ]
