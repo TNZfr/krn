@@ -24,7 +24,7 @@ CheckStatus ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Compil Archive ..."
+    echo "Syntax : krn GenPackage Archive ..."
     echo ""
     echo "  Archive : Linux source archive from kernel.org"
     echo ""
