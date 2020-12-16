@@ -27,14 +27,14 @@ NbPaquet=$(ls -1 *.deb 2>/dev/null|wc -l)
 
 # Installation des paquets
 # ------------------------
-[ $NbPaquet -gt 0 ] && sudo dpkg -i *.deb
+[ $NbPaquet -gt 0 ] && sudo dpkg -i --refuse-downgrade *.deb
  
 # Menage de fin de traitement
 # ---------------------------
 rm -rf $TempDir
 
 echo ""
-echo "Duree Telechar./Installation : $(AfficheDuree $Debut $(TopHorloge))"
+echo "Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
 echo ""
 
 exit $?

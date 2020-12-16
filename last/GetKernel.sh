@@ -6,15 +6,47 @@
 GetKernelPackage ()
 {
     Version=$1
-    [ $(echo $Version|cut -c1) != "v" ] && Version=v$Version
+    [ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
 
-    Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/$Version/
+    InitVariable KRN_WORKSPACE dir "Workspace directory for package building and storage"
+    echo ""
+
+    # 1.Recherche dans le repertoire de stockage
+    NbFound=$(ls -1 $KRN_WORKSPACE/linux-*$Version*.deb 2>/dev/null|wc -l)
+    if [ $NbFound -ge 3 ]
+    then
+	echo "Version $Version : $NbFound packages available from $KRN_WORKSPACE"
+	cp $KRN_WORKSPACE/linux-*$Version*.deb $PWD
+	return 0
+    fi
+
+    # 2.Recherche sur Ubuntu/Mainline
+    GetKernelPackage_UbuntuMainline $Version
+    NbFound=$?
+    [ $NbFound -ge 4 ] && return 0
+
+    if [ $NbFound -gt 0 ]
+    then
+	echo "Not enough packages, file(s) removed."
+	rm -f linux-*$Version*.deb
+    fi
+
+    echo ""
+    echo "Linux version $Version not found."
+}
+
+#-------------------------------------------------------------------------------
+GetKernelPackage_UbuntuMainline ()
+{
+    Version=$1
+
+    Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/v$Version/
     ListeDistante=/tmp/krn-ListeDistante-${Version}-$$.txt
     ListePaquets=/tmp/krn-ListePaquets-${Version}-$$.txt
 
     # Recuperation de la liste des paquets
     # ------------------------------------
-    echo "Getting file list for $Version ... "
+    echo "Ubuntu/Mainline : Getting file list for $Version ... "
     wget -q $Url -O $ListeDistante
 
     grep linux-headers        $ListeDistante|grep all          |cut -d= -f2 |cut -d\" -f2|grep .deb|uniq >> $ListePaquets
@@ -39,12 +71,17 @@ GetKernelPackage ()
 	echo "Downloading $Paquet ... "
 	wget -q $Url/$Paquet -O $(basename $Paquet)
 	Status=$?
-	[ $Status -ne 0 ] && echo "Download error on $Paquet (status $Status)" && exit 1
+	[ $Status -ne 0 ] && \
+	    echo "Download error on $Paquet (status $Status)" && \
+	    exit 1
     done
-    echo "$(cat $ListePaquets|wc -l) Packages downloaded for $Version"
+    NbDownloaded=$(cat $ListePaquets|wc -l)
+    echo "$NbDownloaded Packages downloaded for $Version"
 
     # Cleaning
     rm -f $ListeDistante $ListePaquets
+
+    return $NbDownloaded
 }
 
 #-------------------------------------------------------------------------------
@@ -66,12 +103,11 @@ Architecture=amd64
 
 for Version in $*
 do
-    GetKernelPackage $Version &
+    GetKernelPackage $Version 
 done
-wait
 
 echo ""
-echo "Duree de telechargement : $(AfficheDuree $Debut $(TopHorloge))"
+echo "Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
 echo ""
 
 exit 0

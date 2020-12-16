@@ -24,7 +24,7 @@ CheckStatus ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn GenPackage Archive ..."
+    echo "Syntax : krn GenPackage Archive"
     echo ""
     echo "  Archive : Linux source archive from kernel.org"
     echo ""
@@ -56,7 +56,6 @@ sudo apt install -y  \
 # Creation / controle espace de compilation
 # -----------------------------------------
 Debut=$(TopHorloge)
-printh "Creating temporary workspace ..."
 TmpDir=$PWD/Compil-$$
 mkdir -p $TmpDir
 
@@ -82,11 +81,13 @@ make bindeb-pkg -j"$(nproc)" LOCALVERSION=-"$(dpkg --print-architecture)" KDEB_P
 echo ""
 printh "Finalizing ..."
 mv $TmpDir/linux-*.deb $DebDirectory 2>/dev/null
+
+printh "Cleaning ..."
 cd $DebDirectory
-rm -rf $TmpDir
+rm -rf $TmpDir $Archive
 
 echo ""
-printf "\033[44m Elapsed time \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo ""
 
 echo "Available packages in $PWD :"

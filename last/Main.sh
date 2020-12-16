@@ -40,14 +40,18 @@ then
     echo   ""
     printf "\033[37;44m Syntax \033[m : krn Command Parameters ...\n"
     echo  ""
-    printf "\033[34;47mCommon usage\033[m\n"
-    echo            "------------"
-    echo  "List           (LS): List all alias of current referential"
-    echo  "Get            (GK): Test node pattern(s) syntax on current referential"
-    echo  "Install            : Connect on the selected node (only one)"
-    echo  "Remove             : Execute command on selected nodes"
+    printf "\033[34;47m Package from Local or Ubuntu/Mainline \033[m\n"
+    echo              "---------------------------------------"
+    echo  "List           (LS): List available kernels from local and Ubuntu/Mainline"
+    echo  "Get                : Get Debian packages from local or Ubuntu/Mainline"
+    echo  "Install            : Install selected kernel from local or Ubuntu/Mainline"
+    echo  "Remove             : Remove selected installed kernel"
     echo  ""
+    printf "\033[34;47m Sources from kernel.org \033[m\n"
+    echo              "-------------------------"
+    echo  "GetSource      (GS): Get Linux sources archive from kernel.org"
     echo  "GenPackage     (GP): Compile and generate Debian packages"
+    echo  "CompilInstall (CCI): Get sources, generate Debian packages and install kernel"
     echo  ""
     exit 0
 fi
@@ -73,7 +77,10 @@ case $Commande in
     "get"       |"gk") RunCommand GetKernel.sh    ;;
     "install"        ) RunCommand InstallKernel.sh;;
     "remove"         ) RunCommand RemoveKernel.sh ;;
-    "genpackage"|"gp") RunCommand GenPackage.sh   ;;
+    
+    "getsource"    |"gs")  RunCommand GetSource.sh     ;;
+    "genpackage"   |"gp")  RunCommand GenPackage.sh    ;;
+    "compilinstall"|"cci") RunCommand CompilInstall.sh ;;
 
     *)
 	echo "Kernel management : Commande 'krn $1' inconnue."

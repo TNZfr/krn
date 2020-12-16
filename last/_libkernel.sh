@@ -49,3 +49,39 @@ AfficheDuree ()
     echo "${Seconde}s.$Milli"
 }
 
+#------------------------------------------------------------------------------------------------
+InitVariable ()
+{
+    _NomVariable=$1
+    _Type=$2
+    _Explication=$(echo $*|cut -d' ' -f3-)
+
+    # La variable existe
+    [ "$(env|grep ^${_NomVariable}=)" != "" ] && return
+
+    # Non intialisee 
+    if [ -f $HOME/.krn/bashrc ]
+    then
+	. $HOME/.krn/bashrc
+	[ "$(env|grep ^${_NomVariable}=)" != "" ] && return
+    fi
+
+    # La variable n'existe pas, saisie utilisateur
+    echo ""
+    echo $_Explication
+    read -ep "Valeur pour $_NomVariable : " _Valeur 0>&1
+    
+    mkdir -p $HOME/.krn
+    echo "export $_NomVariable=$_Valeur" >> $HOME/.krn/bashrc
+    . $HOME/.krn/bashrc
+
+    case $_Type in
+	dir)
+	    _Valeur=$(eval echo $_Valeur)
+	    if [ ! -d $_Valeur ]
+	    then
+		mkdir -p $_Valeur
+	    fi
+	    ;;
+    esac
+}
