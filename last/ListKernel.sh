@@ -20,6 +20,13 @@ printf "Kernel.org : Getting available versions ... "
 wget -q $Url -O $ListeDistante
 echo "done."
 echo "----------"
+
+if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
+then
+    mv $ListeDistante ${ListeDistante}.gz
+    gunzip ${ListeDistante}.gz
+fi
+
 if [ $# -gt 0 ]
 then
     grep tar.xz $ListeDistante | cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2 | grep -e $(echo $*|sed 's/ / -e /g') 
