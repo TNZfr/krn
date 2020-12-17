@@ -29,9 +29,9 @@ fi
 
 if [ $# -gt 0 ]
 then
-    grep tar.xz $ListeDistante | cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2 | grep -e $(echo $*|sed 's/ / -e /g') 
+    SortVersion $(grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version)
 else
-    grep tar.xz $ListeDistante | cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2
+    SortVersion $(grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2)
 fi
 
 # 2. Recherche des paquets Ubuntu/Mainline
@@ -46,9 +46,9 @@ echo "---------------"
 # Affichage de la liste
 if [ $# -gt 0 ]
 then
-    grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2- | grep -e $(echo $*|sed 's/ / -e /g')
+    SortVersion $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-|grep $Version)
 else
-    grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-
+    SortVersion $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-)
 fi
 
 # Menage de fin de traitement
@@ -61,14 +61,14 @@ echo ""
 echo "Local workspace : $KRN_WORKSPACE"
 echo "---------------"
 cd $KRN_WORKSPACE
-ls -1 linux-image*.deb|cut -d_ -f2
+SortVersion $(ls -1 linux-image*.deb|cut -d_ -f2)
 
 # 4. Liste des noyaux installes
 # -----------------------------
 echo ""
 echo "Installed kernel(s)"
 echo "-------------------"
-ls -1 /lib/modules
+SortVersion $(ls -1 /lib/modules)
 echo ""
 echo "Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
 echo ""

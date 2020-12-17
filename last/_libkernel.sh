@@ -19,16 +19,10 @@ AfficheDuree ()
     Fin=$2
 
     DebutMilli=$(echo $Debut|cut -d. -f2|cut -c1-3)
-    case $DebutMilli in
-	00*) DebutMilli=$(echo $DebutMilli|cut -c3  ) ;;
-	0*)  DebutMilli=$(echo $DebutMilli|cut -c2-3) ;;
-    esac
+    while [ ${DebutMilli:0:1} = "0" ]; do DebutMilli=${DebutMilli:1}; done
 
-    FinMilli=$(  echo $Fin  |cut -d. -f2|cut -c1-3)
-    case $FinMilli in
-	00*) FinMilli=$(echo $FinMilli|cut -c3  ) ;;
-	0*)  FinMilli=$(echo $FinMilli|cut -c2-3) ;;
-    esac
+    FinMilli=$(echo $Fin|cut -d. -f2|cut -c1-3)
+    while [ ${FinMilli:0:1} = "0" ]; do FinMilli=${FinMilli:1}; done
     
     (( Seconde = $(echo $Fin|cut -d. -f1) - $(echo $Debut|cut -d. -f1) ))
     (( Milli   = FinMilli - DebutMilli ))
@@ -84,4 +78,46 @@ InitVariable ()
 	    fi
 	    ;;
     esac
+}
+
+#------------------------------------------------------------------------------------------------
+SortVersion ()
+{
+    _NumList=""
+    for _Version in $(echo $*)
+    do
+	_Version=$(echo $_Version|sed 's/-/./g')
+	
+	_Champ1=$(echo $_Version|cut -d. -f1)
+	[ ${#_Champ1} -eq 1 ] && _Champ1="0$_Champ1"
+
+	_Champ2=$(echo $_Version|cut -d. -f2)
+	[ ${#_Champ2} -eq 1 ] && _Champ2="0$_Champ2"
+
+	_Champ3=$(echo $_Version|cut -d. -f3)
+	while [ ${#_Champ3} -lt 3 ]; do _Champ3="0$_Champ3"; done
+	[ ${_Champ3:0:1} != "r" ] && _Champ3="z$_Champ3"
+	
+	_NumList="$_NumList $_Champ1$_Champ2$_Champ3"
+    done
+    
+    for _Version in $(echo $_NumList|sed 's/ /\n/g'|sort)
+    do
+	_Champ1=$(echo $_Version|cut -c1,2)
+	[ ${_Champ1:0:1} = "0" ] && _Champ1=${_Champ1:1}
+
+	_Champ2=$(echo $_Version|cut -c3,4)
+	[ ${_Champ2:0:1} = "0" ] && _Champ2=${_Champ2:1}
+
+	_Champ3=$(echo $_Version|cut -c5-)
+	[ "$_Champ3" = "" ]       && echo $_Champ1.$_Champ2          && continue
+	[ "$_Champ3" = "z000" ]   && echo $_Champ1.$_Champ2          && continue
+	[ ${_Champ3:0:2} = "rc" ] && echo $_Champ1.$_Champ2-$_Champ3 && continue
+
+	_Champ3=${_Champ3:1}
+	[ ${_Champ3:0:1} = "0" ]  && _Champ3=${_Champ3:1}
+	[ ${_Champ3:0:1} = "0" ]  && _Champ3=${_Champ3:1}
+
+	echo $_Champ1.$_Champ2.$_Champ3
+    done
 }
