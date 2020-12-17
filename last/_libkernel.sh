@@ -115,8 +115,7 @@ SortVersion ()
 	[ ${_Champ3:0:2} = "rc" ] && echo $_Champ1.$_Champ2-$_Champ3 && continue
 
 	_Champ3=${_Champ3:1}
-	[ ${_Champ3:0:1} = "0" ]  && _Champ3=${_Champ3:1}
-	[ ${_Champ3:0:1} = "0" ]  && _Champ3=${_Champ3:1}
+	while [ ${_Champ3:0:1} = "0" ]; do _Champ3=${_Champ3:1}; done
 
 	echo $_Champ1.$_Champ2.$_Champ3
     done

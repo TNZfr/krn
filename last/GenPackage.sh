@@ -12,7 +12,7 @@ CheckStatus ()
     echo   "ERROR : Return code $Status"
     echo   "        Temporary workspace $TmpDir is left as is for analysis"
     echo   ""
-    echo   "        Availble log files :"
+    echo   "        Available log files :"
     for LogFile in $TmpDir/Make-?-*.log
     do
 	echo   "          $LogFile"
@@ -79,17 +79,21 @@ else
 fi
 
 cd $TmpDir/$Directory
-printh "Compiling $(basename $PWD)..."
+printh "Compiling $(basename $PWD) ..."
 KernelVersion=$(make kernelversion)
-make olddefconfig | tee $TmpDir/Make-1-olddefconfig.log
+
+printh "- Make olddefconfig ..."
+make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 CheckStatus
 
+printh "- Make deb-pkg ..."
 make deb-pkg    -j"$(nproc)" LOCALVERSION=-"$(dpkg --print-architecture)" KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" \
-    | tee $TmpDir/Make-2-debpkg.log
+    > $TmpDir/Make-2-debpkg.log 2>&1
 CheckStatus
 
+printh "- Make bindeb-pkg ..."
 make bindeb-pkg -j"$(nproc)" LOCALVERSION=-"$(dpkg --print-architecture)" KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" \
-    | tee $TmpDir/Make-3-bindebpkg.log
+    >$TmpDir/Make-3-bindebpkg.log 2>&1
 CheckStatus
 
 echo ""
