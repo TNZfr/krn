@@ -58,8 +58,8 @@ do
     GetKernelSource $Version 
 done
 
-echo ""
-echo "Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
-echo ""
+echo   ""
+printf "\033[44m GetSource elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+echo   ""
 
 exit 0

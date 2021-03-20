@@ -51,14 +51,10 @@ Archive=$(basename $Archive)
 
 # Installation des prerequis
 # --------------------------
+ToolsList="build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr libelf-dev flex bison libncurses-dev rsync git curl dwarves"
 printh "Verifying tools installation ..."
-sudo apt install -y  \
-     build-essential fakeroot   dpkg-dev       \
-     perl            libssl-dev bc             \
-     gnupg           dirmngr    libelf-dev     \
-     flex            bison      libncurses-dev \
-     rsync           git        curl           \
-     dwarves
+Uninstalled=$(dpkg -l $ToolsList|grep -v -e "^S" -e "^|" -e "^+++" -e "^ii")
+[ "$Uninstalled" != "" ] && sudo apt install -y $ToolsList
 
 # Creation / controle espace de compilation
 # -----------------------------------------
@@ -87,16 +83,11 @@ make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 CheckStatus
 
 printh "- Make deb-pkg ..."
-make deb-pkg    -j"$(nproc)" LOCALVERSION=-"$(dpkg --print-architecture)" KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" \
-    > $TmpDir/Make-2-debpkg.log 2>&1
+make deb-pkg -j"$(nproc)"                         \
+     LOCALVERSION=-"$(dpkg --print-architecture)" \
+     KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" > $TmpDir/Make-2-debpkg.log 2>&1
 CheckStatus
 
-printh "- Make bindeb-pkg ..."
-make bindeb-pkg -j"$(nproc)" LOCALVERSION=-"$(dpkg --print-architecture)" KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" \
-    >$TmpDir/Make-3-bindebpkg.log 2>&1
-CheckStatus
-
-echo ""
 printh "Finalizing ..."
 mv $TmpDir/linux-*.deb $DebDirectory 2>/dev/null
 
@@ -105,7 +96,7 @@ cd $DebDirectory
 rm -rf $TmpDir $Archive
 
 echo ""
-printf "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m GenPackage elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo ""
 
 echo "Available packages in $PWD :"

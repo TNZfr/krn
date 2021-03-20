@@ -52,8 +52,8 @@ do
     fi
 done
 
-echo ""
-echo "CompilInstall Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
-echo ""
+echo   ""
+printf "\033[44m CompilInstall elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+echo   ""
 
 exit $?

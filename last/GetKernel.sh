@@ -106,8 +106,8 @@ do
     GetKernelPackage $Version 
 done
 
-echo ""
-echo "Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
-echo ""
+echo   ""
+printf "\033[44m GetKernel elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+echo   ""
 
 exit 0

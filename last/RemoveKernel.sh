@@ -89,9 +89,9 @@ echo ""
 echo "Installed kernel(s)"
 echo "-------------------"
 ls -1 /lib/modules
-echo ""
-echo "Duree suppression : $(AfficheDuree $Debut $(TopHorloge))"
-echo ""
+echo   ""
+printf "\033[44m RemoveKernel elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+echo   ""
 
 exit 0
 

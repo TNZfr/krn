@@ -33,8 +33,8 @@ NbPaquet=$(ls -1 *.deb 2>/dev/null|wc -l)
 # ---------------------------
 rm -rf $TempDir
 
-echo ""
-echo "Elapsed : $(AfficheDuree $Debut $(TopHorloge))"
-echo ""
+echo   ""
+printf "\033[44m InstallKernel elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+echo   ""
 
 exit $?
