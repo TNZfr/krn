@@ -49,6 +49,7 @@ then
     echo  ""
     printf "\033[34;47m Sources from kernel.org \033[m\n"
     echo              "-------------------------"
+    echo  "ChangeLog      (CL): Get Linux changelog file from kernel.org and display selection"
     echo  "GetSource      (GS): Get Linux sources archive from kernel.org"
     echo  "GenPackage     (GP): Compile and generate Debian packages"
     echo  "CompilInstall (CCI): Get sources, generate Debian packages and install kernel"
@@ -78,6 +79,7 @@ case $Commande in
     "install"        ) RunCommand InstallKernel.sh;;
     "remove"         ) RunCommand RemoveKernel.sh ;;
     
+    "changelog"    |"cl")  RunCommand ChangeLog.sh     ;;
     "getsource"    |"gs")  RunCommand GetSource.sh     ;;
     "genpackage"   |"gp")  RunCommand GenPackage.sh    ;;
     "compilinstall"|"cci") RunCommand CompilInstall.sh ;;
