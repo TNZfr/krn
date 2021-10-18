@@ -43,37 +43,35 @@ echo   ""
 printf "*** \033[34m$NbCommit commit(s)\033[m for kernel version $Version ***\n"
 echo   ""
 
+CL_libelle=/tmp/changelog-source-$$
+curl $URL 2>/dev/null | grep -A4 ^commit  | \
+	(while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
+	grep -v "^Linux $Version" > $CL_libelle
+
 if [ "$AllPattern" != "None" ]
 then
-    export KRN_TMP=/tmp/krn-changelog-$$
-    > $KRN_TMP
-    curl $URL 2>/dev/null | \
-	grep -A4 ^commit  | \
-	(while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
-	grep -v "^Linux $Version" | sort | grep -ni $AllPattern |\
+    CL_Found=/tmp/changelog-found-$$
+    > $CL_Found
+    cat $CL_libelle | grep -ni $AllPattern | sort -n | \
 	while read Line
 	do
 	    Number=$(echo $Line|cut -d':' -f1)
 	    Label=$(echo $Line|cut -d':' -f2-)
-	    printf "\033[32mCommit %6s\033[m : $Label\n" "#$Number"|tee -a $KRN_TMP
+	    printf "\033[32mCommit %6s\033[m : %s\n" "#$Number" "$Label"|tee -a $CL_Found
 	done
     
-    NbFound=$(cat $KRN_TMP|wc -l)
-    rm -f $KRN_TMP
+    NbFound=$(cat $CL_Found|wc -l)
+    rm -f $CL_Found
 
     Pourcent=$(echo "scale=3; $NbFound * 100 / $NbCommit"|bc)
     [ "${Pourcent:0:1}" = "." ] && Pourcent="0$Pourcent"
 
     echo ""
     echo " $NbFound commit(s) found ($Pourcent %)"
-    echo ""
 else
-    curl $URL 2>/dev/null | \
-	grep -A4 ^commit  | \
-	(while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
-	grep -v "^Linux $Version" | sort
+    sort $CL_libelle
 fi
-rm -f $ChangeLog
+rm -f $ChangeLog $CL_libelle
 
 echo   ""
 printf "\033[44m ChangeLog elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
