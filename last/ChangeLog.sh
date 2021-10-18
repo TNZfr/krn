@@ -39,22 +39,39 @@ wget -q $URL -O $ChangeLog 2>/dev/null
 NbCommit=$(grep ^commit $ChangeLog|wc -l)
 ((NbCommit -= 1))
 
-echo ""
-echo "--- $NbCommit commit(s) for kernel version $Version ---"
-echo ""
+echo   ""
+printf "*** \033[34m$NbCommit commit(s)\033[m for kernel version $Version ***\n"
+echo   ""
 
 if [ "$AllPattern" != "None" ]
 then
+    export KRN_TMP=/tmp/krn-changelog-$$
+    > $KRN_TMP
     curl $URL 2>/dev/null | \
 	grep -A4 ^commit  | \
-	while read Line; do	[ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done | \
-	sort | \
-	grep $AllPattern
+	(while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
+	grep -v "^Linux $Version" | sort | grep -ni $AllPattern |\
+	while read Line
+	do
+	    Number=$(echo $Line|cut -d':' -f1)
+	    Label=$(echo $Line|cut -d':' -f2-)
+	    printf "\033[32mCommit %6s\033[m : $Label\n" "#$Number"|tee -a $KRN_TMP
+	done
+    
+    NbFound=$(cat $KRN_TMP|wc -l)
+    rm -f $KRN_TMP
+
+    Pourcent=$(echo "scale=3; $NbFound * 100 / $NbCommit"|bc)
+    [ "${Pourcent:0:1}" = "." ] && Pourcent="0$Pourcent"
+
+    echo ""
+    echo " $NbFound commit(s) found ($Pourcent %)"
+    echo ""
 else
     curl $URL 2>/dev/null | \
 	grep -A4 ^commit  | \
-	while read Line; do	[ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done | \
-	sort
+	(while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
+	grep -v "^Linux $Version" | sort
 fi
 rm -f $ChangeLog
 
