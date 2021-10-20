@@ -54,7 +54,9 @@ Archive=$(basename $Archive)
 ToolsList="build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr libelf-dev flex bison libncurses-dev rsync git curl dwarves"
 printh "Verifying tools installation ..."
 Uninstalled=$(dpkg -l $ToolsList|grep -v -e "^S" -e "^|" -e "^+++" -e "^ii")
-[ "$Uninstalled" != "" ] && sudo apt install -y $ToolsList
+
+[ $LOGNAME = root ] && KRN_sudo="" || KRN_sudo="sudo"
+[ "$Uninstalled" != "" ] && $KRN_sudo apt install -y $ToolsList
 
 # Creation / controle espace de compilation
 # -----------------------------------------

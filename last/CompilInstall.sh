@@ -15,6 +15,7 @@ fi
 
 # Initialisation des variables
 InitVariable KRN_WORKSPACE dir "Workspace directory for package building and storage"
+[ $LOGNAME = root ] && KRN_sudo="" || KRN_sudo="sudo"
 
 Debut=$(TopHorloge)
 
@@ -26,7 +27,7 @@ do
     if [ $NbPaquet -ge 3 ]
     then
 	echo "Package already built and available in workspace directory ..."
-	sudo dpkg -i --refuse-downgrade $KRN_WORKSPACE/linux-*${Version}*.deb
+	$KRN_sudo dpkg -i --refuse-downgrade $KRN_WORKSPACE/linux-*${Version}*.deb
 	continue
     fi
     
@@ -44,7 +45,7 @@ do
     NbPaquet=$(ls -1 $KRN_WORKSPACE/linux-*${Version}*.deb 2>/dev/null|wc -l)
     if [ $NbPaquet -ge 3 ]
     then
-	sudo dpkg -i --refuse-downgrade $KRN_WORKSPACE/linux-*${Version}*.deb
+	$KRN_sudo dpkg -i --refuse-downgrade $KRN_WORKSPACE/linux-*${Version}*.deb
     else
 	echo "Not enough packages for $Version :"
 	ls -1 $KRN_WORKSPACE/linux-*${Version}*.deb

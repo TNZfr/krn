@@ -27,7 +27,8 @@ NbPaquet=$(ls -1 *.deb 2>/dev/null|wc -l)
 
 # Installation des paquets
 # ------------------------
-[ $NbPaquet -gt 0 ] && sudo dpkg -i --refuse-downgrade *.deb
+[ $LOGNAME = root ] && KRN_sudo="" || KRN_sudo="sudo"
+[ $NbPaquet -gt 0 ] && $KRN_sudo dpkg -i --refuse-downgrade *.deb
  
 # Menage de fin de traitement
 # ---------------------------

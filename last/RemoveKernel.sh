@@ -51,9 +51,10 @@ RemoveOneKernel ()
 		       "linux-modules-${Version}*" \
 		       2>/dev/null | grep ^ii |cut -d' ' -f3)
     
+    [ $LOGNAME = root ] && KRN_sudo="" || KRN_sudo="sudo"
     if [ "$PackageList" != "" ]
     then
-	sudo apt-get remove --purge $PackageList -y
+	$KRN_sudo apt-get remove --purge $PackageList -y
 	Status=$?
     fi
     
@@ -62,7 +63,7 @@ RemoveOneKernel ()
     if [ -d $ModuleDirectory ] && [ $Status -eq 0 ]
     then
 	printf "Removing $ModuleDirectory ... "
-	sudo rm -rf $ModuleDirectory
+	$KRN_SUDO rm -rf $ModuleDirectory
 	echo "done."
     fi
 }

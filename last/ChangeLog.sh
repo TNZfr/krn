@@ -44,9 +44,9 @@ printf "*** \033[34m$NbCommit commit(s)\033[m for kernel version $Version ***\n"
 echo   ""
 
 CL_libelle=/tmp/changelog-source-$$
-curl $URL 2>/dev/null | grep -A4 ^commit  | \
-	(while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
-	grep -v "^Linux $Version" > $CL_libelle
+grep -A4 ^commit $ChangeLog | \
+    (while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
+    grep -v "^Linux $Version" > $CL_libelle
 
 if [ "$AllPattern" != "None" ]
 then
