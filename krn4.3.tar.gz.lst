@@ -1,0 +1,12 @@
+lrwxrwxrwx tnizet/tnizet     0 2021-10-20 14:41 bin/krn -> krn4.3/Main.sh
+drwxrwxr-x tnizet/tnizet     0 2021-10-20 15:13 bin/krn4.3/
+-rwxrwxr-x tnizet/tnizet  3345 2021-10-20 14:40 bin/krn4.3/GetKernel.sh
+-rwxrwxr-x tnizet/tnizet  2244 2021-10-20 15:07 bin/krn4.3/RemoveKernel.sh
+-rwxrwxr-x tnizet/tnizet  1962 2021-10-20 15:12 bin/krn4.3/ChangeLog.sh
+-rwxrwxr-x tnizet/tnizet  2681 2021-10-20 15:09 bin/krn4.3/GenPackage.sh
+-rwxrwxr-x tnizet/tnizet  1567 2021-10-20 14:40 bin/krn4.3/GetSource.sh
+-rwxrwxr-x tnizet/tnizet  3264 2021-10-20 14:40 bin/krn4.3/_libkernel.sh
+-rwxrwxr-x tnizet/tnizet  3104 2021-10-20 14:40 bin/krn4.3/Main.sh
+-rwxrwxr-x tnizet/tnizet  1591 2021-10-20 15:10 bin/krn4.3/CompilInstall.sh
+-rwxrwxr-x tnizet/tnizet   842 2021-10-20 15:06 bin/krn4.3/InstallKernel.sh
+-rwxrwxr-x tnizet/tnizet  2236 2021-10-20 14:40 bin/krn4.3/ListKernel.sh
