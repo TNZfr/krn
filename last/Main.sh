@@ -57,11 +57,15 @@ then
     exit 0
 fi
 
-# -------------------------------------
 # Definition du repertoire des binaires
 # -------------------------------------
 export KRN_EXE=$(dirname $(readlink -f $0))
 export PATH=$KRN_EXE:$PATH
+
+# Chargement des variables
+# ------------------------
+. $KRN_EXE/_libkernel.sh
+InitVariable WORKSPACE dir "Workspace directory for package building and storage"
 
 # ---------------------
 # Parsing des commandes

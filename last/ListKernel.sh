@@ -3,7 +3,6 @@
 . $KRN_EXE/_libkernel.sh
 
 ListeDistante=/tmp/ListeDistante-$$.txt
-InitVariable KRN_WORKSPACE dir "Workspace directory for package building and storage"
 
 Debut=$(TopHorloge)
 

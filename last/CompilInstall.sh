@@ -14,7 +14,6 @@ then
 fi
 
 # Initialisation des variables
-InitVariable KRN_WORKSPACE dir "Workspace directory for package building and storage"
 [ $LOGNAME = root ] && KRN_sudo="" || KRN_sudo="sudo"
 
 Debut=$(TopHorloge)

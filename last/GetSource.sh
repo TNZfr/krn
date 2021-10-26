@@ -8,8 +8,6 @@ GetKernelSource ()
     Version=$1
     [ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
     Branch="v$(echo $Version|cut -c1).x"
-
-    InitVariable KRN_WORKSPACE dir "Workspace directory for package building and storage"
     echo ""
 
     # 1.Recherche dans le repertoire de stockage

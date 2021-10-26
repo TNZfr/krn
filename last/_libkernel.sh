@@ -38,38 +38,60 @@ AfficheDuree ()
 #------------------------------------------------------------------------------------------------
 InitVariable ()
 {
+
     _NomVariable=$1
     _Type=$2
     _Explication=$(echo $*|cut -d' ' -f3-)
 
     # La variable existe
-    [ "$(env|grep ^${_NomVariable}=)" != "" ] && return
+    if [ "$(env|grep ^KRN_${_NomVariable}=)" != "" ]
+    then
+	if [ $_Type = dir ]
+	then
+	    _Repertoire=$(env|grep ^KRN_${_NomVariable}=|cut -d= -f2)
+	    [ ! -d $_Repertoire ] && mkdir -p $_Repertoire && echo "$_Repertoire (re)created."
+	fi
+	return
+    fi
 
     # Non intialisee 
     if [ -f $HOME/.krn/bashrc ]
     then
 	. $HOME/.krn/bashrc
-	[ "$(env|grep ^${_NomVariable}=)" != "" ] && return
+	if [ "$(env|grep ^KRN_${_NomVariable}=)" != "" ]
+	then
+	    if [ $_Type = dir ]
+	    then
+		_Repertoire=$(env|grep ^KRN_${_NomVariable}=|cut -d= -f2)
+		[ ! -d $_Repertoire ] && mkdir -p $_Repertoire && echo "$_Repertoire (re)created."
+	    fi
+	    return
+	fi
     fi
 
     # La variable n'existe pas, saisie utilisateur
     echo ""
     echo $_Explication
-    read -ep "Valeur pour $_NomVariable : " _Valeur 0>&1
+    read -ep "Value for KRN_$_NomVariable : " _Valeur 0>&1
     
-    mkdir -p $HOME/.krn
-    echo "export $_NomVariable=$_Valeur" >> $HOME/.krn/bashrc
-    . $HOME/.krn/bashrc
-
     case $_Type in
 	dir)
 	    _Valeur=$(eval echo $_Valeur)
+	    [ ${_Valeur:0:1} != "/" ] && _Valeur=$PWD/$_Valeur
+	    
 	    if [ ! -d $_Valeur ]
 	    then
 		mkdir -p $_Valeur
+		echo "$_Valeur created."
 	    fi
 	    ;;
     esac
+
+    mkdir -p $HOME/.krn
+    export KRN_$_NomVariable=$_Valeur
+    env | grep ^KRN_ | while read Line; do echo export $Line;done > $HOME/.krn/bashrc
+    
+    . $HOME/.krn/bashrc
 }
 
 #------------------------------------------------------------------------------------------------
