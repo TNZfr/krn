@@ -105,14 +105,14 @@ do
 	ARCH)
 	    if [ -L $Version ]
 	    then
-		echo "* link already exists for ${KRN_MODE}-linux-$Version"
+		echo "* link already exists for ARCH-linux-$Version"
 		continue
 	    fi
 	    
-	    if [ -d $KRN_WORKSPACE/${KRN_MODE}-linux-$Version ]
+	    if [ -d $KRN_WORKSPACE/ARCH-linux-$Version ]
 	    then
-		echo "* ${KRN_MODE}-linux-$Version found in workspace, link $Version created"
-		ln -s $KRN_WORKSPACE/${KRN_MODE}-linux-${Version} $Version
+		echo "* ARCH-linux-$Version found in workspace, link $Version created"
+		ln -s $KRN_WORKSPACE/ARCH-linux-${Version} $Version
 	    fi
 	    ;;
 

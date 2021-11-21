@@ -58,11 +58,12 @@ do
     $KRN_sudo cp $(find arch -name bzImage -type f) /boot/vmlinuz-linux-custom
     CheckStatus
     
-    printh "DKMS modules build for $KernelVersion ..."
-    $KRN_sudo dkms autoinstall -k $KernelVersion
-
     printh "Build initrd.img-$KernelVersion ..."
     $KRN_sudo mkinitcpio -k $KernelVersion -g       /boot/initramfs-linux-custom.img
+    CheckStatus   
+
+    printh "DKMS modules build for $KernelVersion ..."
+    $KRN_sudo dkms autoinstall -k $KernelVersion
     CheckStatus   
 
     echo ""

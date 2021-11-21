@@ -128,7 +128,7 @@ PurgeWorkspace ()
 	if [ $NbInstalled -eq 0 ]
 	then
 	    FreeDisk=$(du -hs ARCH-linux-$MakeChoice_return|tr ['\t'] [' ']|cut -d' ' -f1)
-	    printf "Version %-10s : \033[36mDirectory ARCH-linux-$SubVersion\033[m purged ($FreeDisk freed).\n" $MakeChoice_return
+	    printf "Version %-10s : \033[36mDirectory ARCH-linux-$Version\033[m purged ($FreeDisk freed).\n" $MakeChoice_return
 	    rm -rf ARCH-linux-$MakeChoice_return
 	    [ -L $MakeChoice_return ] && rm -f $MakeChoice_return
 	fi
