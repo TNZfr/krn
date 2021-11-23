@@ -91,7 +91,18 @@ fi
 
 # Appel en mode source
 # --------------------
-[ "$1" = "LOAD" ] && . $KRN_RC && return
+if [ "$1" = "LOAD" ]
+then
+    . $KRN_RC
+    
+    NbVariable=$(env|grep ^KRN_|wc -l)
+    if [ $NbVariable -lt 5 ]
+    then
+	Configure.sh RESET
+	. $KRN_RC
+    fi
+    return
+fi
 
 # Pas de parametres, affichage de la config
 # -----------------------------------------
