@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v5.3 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v5.4 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -51,9 +51,10 @@ then
     echo  ""
     printf "\033[34m Kernel from Local or Ubuntu/Mainline \033[m\n"
     printf "\033[34m--------------------------------------\033[m\n"
-    echo  "List           (LS): List available kernels from local and Ubuntu/Mainline"
-    echo  "Get                : Get Debian packages from local or Ubuntu/Mainline"
-    echo  "Install            : Install selected kernel from local or Ubuntu/Mainline"
+    echo  "List           (LS): List current kernel, installed kernel and available kernels from local"
+    echo  "Search         (SE): Search available kernels from Kernel.org and Ubuntu/Mainline (DEBIAN mode)"
+    echo  "Get                : Get Debian packages from local or Ubuntu/Mainline (DEBIAN mode)"
+    echo  "Install            : Install selected kernel from local or Ubuntu/Mainline (DEBIAN mode)"
     echo  "Remove             : Remove selected installed kernel"
     echo  ""
     printf "\033[34m Sources from kernel.org \033[m\n"
@@ -94,6 +95,7 @@ case $Commande in
     "configure"|"cf" ) RunCommand Configure.sh                ;;
     "purge"          ) RunCommand Purge.sh                    ;;
     "list"      |"ls") RunCommand ListKernel.sh               ;;
+    "search"    |"se") RunCommand SearchKernel.sh             ;;
     "get"       |"gk") RunCommand GetKernel.sh                ;;
     "install"        ) RunCommand InstallKernel_${KRN_MODE}.sh;;
     "remove"         ) RunCommand RemoveKernel_${KRN_MODE}.sh ;;

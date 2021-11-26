@@ -4,8 +4,6 @@
 
 ListeDistante=/tmp/ListeDistante-$$.txt
 
-Debut=$(TopHorloge)
-
 echo   ""
 printf "Current kernel : \033[34m$(uname -r)\033[m\n"
 
@@ -23,6 +21,7 @@ then
 else
     echo "Kernel modules directory not found."
 fi
+
 # 2. Liste des paquets compiles en local
 # --------------------------------------
 echo ""
@@ -78,56 +77,7 @@ SortFile $ListeDistante
 rm -f    $ListeDistante
 echo ""
 
-# Si pas de critere de recherche, on sort
-# ---------------------------------------
-[ $# -eq 0 ] && exit 0
-
-Version=$1
-[ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
-
-# 3. Recherche des source kernel.org
-# ----------------------------------
-Branch="v$(echo $Version|cut -c1).x"
-Url=https://cdn.kernel.org/pub/linux/kernel/$Branch/
-printf "Kernel.org : Getting available versions ... "
-wget -q $Url -O $ListeDistante
-echo "done."
-echo "----------"
-
-if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
+if [ $# -ne 0 ]
 then
-    mv $ListeDistante ${ListeDistante}.gz
-    gunzip ${ListeDistante}.gz
+    SearchKernel.sh $1
 fi
-ArchiveVersion=/tmp/ArchiveVersion-$$
-> $ArchiveVersion
-for VersionFound in $(grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version)
-do printf "$VersionFound \033[mKernel source archive (xz)\033[m\n" >> $ArchiveVersion; done
-SortFile $ArchiveVersion
-rm -f    $ArchiveVersion
-
-# 4. Recherche des paquets Ubuntu/Mainline
-# ----------------------------------------
-Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/
-echo ""
-printf "Ubuntu/Mainline : Getting available versions ... "
-wget -q --no-check-certificate $Url -O $ListeDistante
-echo "done."
-echo "---------------"
-
-# Affichage de la liste
-> $ArchiveVersion
-for VersionFound in $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-|grep $Version)
-do printf "$VersionFound \033[32mUbuntu package (deb)\033[m\n" >> $ArchiveVersion; done
-SortFile $ArchiveVersion
-rm -f    $ArchiveVersion
-
-echo   ""
-printf "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
-echo   ""
-
-# Menage de fin de traitement
-rm -f $ListeDistante
-Status=$?
-
-exit $Status
