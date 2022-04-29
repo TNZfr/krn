@@ -152,3 +152,40 @@ CreateGrubenv ()
 
     
 }
+
+#------------------------------------------------------------------------------------------------
+VerifySigningConditions ()
+{
+    # tester le repertoire du certificat
+    NbVar=$(env|grep ^KRNSB_|wc -l)
+    if [ $NbVar -lt 4 ]
+    then
+	echo ""
+	echo "Missing signing parameters (Cf krn Configure)" 
+	echo ""
+	exit 1
+    fi
+
+    if [ -z "$KRNSB_PRIV" ] || [ -z "$KRNSB_DER" ] || [ -z "$KRNSB_PEM" ]
+    then
+	echo ""
+	echo "Signing parameter(s) not defined" 
+	echo ""
+	printf " - \033[34mPrivate Key\033[m : %s\n" $(env|grep ^KRNSB_PRIV)
+	printf " - \033[34mPulbic Key\033[m  : %s\n" $(env|grep ^KRNSB_DER)
+	printf " - \033[34mCertificat\033[m  : %s\n" $(env|grep ^KRNSB_PEM)
+	echo ""
+	exit 1
+    fi
+
+    if [ ! -f $KRNSB_PRIV ] || [ ! -f $KRNSB_DER ] || [ ! -f $KRNSB_PEM ]
+    then
+	echo ""
+	echo "Missing signing file(s)" 
+	printf " - $KRNSB_PRIV : %s\n" "$([ -f $KRNSB_PRIV ] && printf "\033[32mFound.\033[m" || printf "\033[31mNOT FOUND.\033[m")"
+	printf " - $KRNSB_DER  : %s\n" "$([ -f $KRNSB_DER ]  && printf "\033[32mFound.\033[m" || printf "\033[31mNOT FOUND.\033[m")"
+	printf " - $KRNSB_PEM  : %s\n" "$([ -f $KRNSB_PEM ]  && printf "\033[32mFound.\033[m" || printf "\033[31mNOT FOUND.\033[m")"
+	echo ""
+	exit 1
+    fi
+}

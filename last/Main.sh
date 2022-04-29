@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v5.4 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v5.5 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -52,17 +52,21 @@ then
     printf "\033[34m Kernel from Local or Ubuntu/Mainline \033[m\n"
     printf "\033[34m--------------------------------------\033[m\n"
     echo  "List           (LS): List current kernel, installed kernel and available kernels from local"
-    echo  "Search         (SE): Search available kernels from Kernel.org and Ubuntu/Mainline (DEBIAN mode)"
-    echo  "Get                : Get Debian packages from local or Ubuntu/Mainline (DEBIAN mode)"
-    echo  "Install            : Install selected kernel from local or Ubuntu/Mainline (DEBIAN mode)"
+    echo  "Search         (SE): Search available kernels from Kernel.org (and Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Get                : Get Debian packages from local (and Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Install            : Install selected kernel from local (and Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Sign           (SK): Sign installed kernel (DEBIAN only)"
+    echo  "InstallSign    (IS): Install and sign selected kernel (DEBIAN only)"
     echo  "Remove             : Remove selected installed kernel"
     echo  ""
     printf "\033[34m Sources from kernel.org \033[m\n"
     printf "\033[34m-------------------------\033[m\n"
-    echo  "ChangeLog      (CL): Get Linux changelog file from kernel.org and display selection"
-    echo  "GetSource      (GS): Get Linux sources archive from kernel.org"
-    echo  "Compile        (CC): Compile kernel"
-    echo  "CompilInstall (CCI): Get sources, compile and install kernel"
+    echo  "ChangeLog           (CL): Get Linux changelog file from kernel.org and display selection"
+    echo  "GetSource           (GS): Get Linux sources archive from kernel.org"
+    echo  "Compile             (CC): Compile kernel"
+    echo  "CompileSign        (CCS): Compile and sign kernel (DEBIAN only)"
+    echo  "CompilInstall      (CCI): Get sources, compile and install kernel"
+    echo  "CompilSignInstall (CCSI): Get sources, compile, sign and install kernel (DEBIAN only)"
     echo  ""
     printf "\033[34m Log management \033[m\n"
     printf "\033[34m----------------\033[m\n"
@@ -92,18 +96,22 @@ Commande=$(echo $1|tr [:upper:] [:lower:])
 
 case $Commande in
 
-    "configure"|"cf" ) RunCommand Configure.sh                ;;
-    "purge"          ) RunCommand Purge.sh                    ;;
-    "list"      |"ls") RunCommand ListKernel.sh               ;;
-    "search"    |"se") RunCommand SearchKernel.sh             ;;
-    "get"       |"gk") RunCommand GetKernel.sh                ;;
-    "install"        ) RunCommand InstallKernel_${KRN_MODE}.sh;;
-    "remove"         ) RunCommand RemoveKernel_${KRN_MODE}.sh ;;
+    "configure" |"cf" ) RunCommand Configure.sh                     ;;
+    "purge"           ) RunCommand Purge.sh                         ;;
+    "list"       |"ls") RunCommand ListKernel.sh                    ;;
+    "search"     |"se") RunCommand SearchKernel.sh                  ;;
+    "get"        |"gk") RunCommand GetKernel.sh                     ;;
+    "install"         ) RunCommand InstallKernel_${KRN_MODE}.sh     ;;
+    "sign"       |"sk") RunCommand SignKernel_${KRN_MODE}.sh        ;;
+    "installsign"|"is") RunCommand InstallSignKernel_${KRN_MODE}.sh ;;
+    "remove"          ) RunCommand RemoveKernel_${KRN_MODE}.sh      ;;
     
-    "changelog"    |"cl")  RunCommand ChangeLog.sh                 ;;
-    "getsource"    |"gs")  RunCommand GetSource.sh                 ;;
-    "compile"      |"cc")  RunCommand Compile_${KRN_MODE}.sh       ;;
-    "compilinstall"|"cci") RunCommand CompilInstall_${KRN_MODE}.sh ;;
+    "changelog"        |"cl")   RunCommand ChangeLog.sh                     ;;
+    "getsource"        |"gs")   RunCommand GetSource.sh                     ;;
+    "compile"          |"cc")   RunCommand Compile_${KRN_MODE}.sh           ;;
+    "compilinstall"    |"cci")  RunCommand CompilInstall_${KRN_MODE}.sh     ;;
+    "compilesign"      |"ccs")  RunCommand CompileSign_${KRN_MODE}.sh       ;;
+    "compilsigninstall"|"ccsi") RunCommand CompilSignInstall_${KRN_MODE}.sh ;;
 
     "savelog"      |"sl") SaveLog.sh ;;
 

@@ -9,6 +9,9 @@ NomVariable=$1
 Defaut=$2
 Commentaire=$3
 
+    Valeur=$(eval echo \$$NomVariable)
+    [ "$Valeur" != "" ] && Defaut="$Valeur"
+
     printf "\033[34mIndication ............... :\033[m $Commentaire\n"
     printf "\033[34mDefault value ............ :\033[m $Defaut\n"
     printf "\033[34mValue for %-16s :\033[m " $NomVariable; read Valeur
@@ -50,6 +53,10 @@ CreateConfiguration ()
     Saisie KRN_MODE           DEBIAN     "Default compilation mode (DEBIAN, REDHAT, ARCH or ARCH-CUSTOM)"
     Saisie KRN_ARCHITECTURE   amd64      "Processor Arhitecture used (amd64, arm64, armhf, ppc64el or s390x)"
     Saisie KRN_ACCOUNTING     ""         "Accounting directory"
+    Saisie KRNSB_PRIV         ""         "Signing kernel : private key file full path (.priv)"
+    Saisie KRNSB_PASS         ""         "Signing kernel : private key password"
+    Saisie KRNSB_PEM          ""         "Signing kernel : cert file full path (.pem)"
+    Saisie KRNSB_DER          ""         "Signing kernel : cert file full path (.der)"
 
     printh "$KRN_RC created."
 
@@ -95,8 +102,8 @@ if [ "$1" = "LOAD" ]
 then
     . $KRN_RC
     
-    NbVariable=$(env|grep ^KRN_|wc -l)
-    if [ $NbVariable -lt 5 ]
+    NbVariable=$(env|grep -e ^KRN_ -e ^KRNSB_|wc -l)
+    if [ $NbVariable -lt 9 ]
     then
 	Configure.sh RESET
 	. $KRN_RC

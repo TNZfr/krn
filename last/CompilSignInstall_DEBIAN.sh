@@ -5,13 +5,17 @@
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn CompilInstall Version ..."
+    echo "Syntax : krn CompilSignInstall Version ..."
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"
     echo ""
     exit 1
 fi
+
+# Controle des elements de signature
+# ----------------------------------
+VerifySigningConditions
 
 Debut=$(TopHorloge)
 
@@ -42,7 +46,7 @@ do
     Digit3=$(echo $PackageVersion|cut -d. -f3)
     [ $Digit3 = tar ] && PackageVersion=$(echo $PackageVersion|cut -d. -f1,2).0
 
-    Compile_${KRN_MODE}.sh $KRN_WORKSPACE/linux-${Version}.tar.xz
+    CompileSign_${KRN_MODE}.sh $KRN_WORKSPACE/linux-${Version}.tar.xz
     [ $? -ne 0 ] && exit 1
     
     # Installation des paquets
@@ -59,7 +63,7 @@ do
 done
 
 echo   ""
-printf "\033[44m CompilInstall $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m CompilSignInstall $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 
 exit $?
