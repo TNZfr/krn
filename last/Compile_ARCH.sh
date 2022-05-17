@@ -68,6 +68,7 @@ CheckTool make
 CheckTool gcc
 CheckTool flex
 CheckTool bison
+CheckTool zstd
 echo ""
 
 # Creation / controle espace de compilation

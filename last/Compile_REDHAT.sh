@@ -54,7 +54,7 @@ Archive=$(basename $Archive)
 InstalledPackage=/tmp/InstalledPackage-$$
 printh "Verifying tools installation ..."
 rpm -qa > $InstalledPackage
-ToolsList="gcc flex bison elfutils-libelf-devel openssl-devel rpm-build"
+ToolsList="gcc flex bison elfutils-libelf-devel openssl-devel rpm-build zstd"
 for Tool in $ToolsList
 do
     grep -q ^$Tool $InstalledPackage
