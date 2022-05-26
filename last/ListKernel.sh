@@ -14,10 +14,10 @@ echo "Installed kernel(s)"
 echo "-------------------"
 if [ -d /lib/modules ]
 then
-    ls -1tr /lib/modules
+    linux-version sort $(ls -1 /lib/modules)
 elif [ -d /usr/lib/modules ]
 then
-    ls -1tr /usr/lib/modules
+    linux-version sort $(ls -1 /usr/lib/modules)
 else
     echo "Kernel modules directory not found."
 fi
@@ -59,21 +59,23 @@ done
 
 # Paquets DEBIAN (deb)
 for Version in $(ls -1  linux-image*.deb 2>/dev/null|cut -d_ -f2|cut -d- -f1)
-do printf "$Version \033[32mDebian package (deb)\033[m\n"        >> $ListeDistante; done
+do printf "%-10s \033[32mDebian package (deb)\033[m\n" $Version        >> $ListeDistante; done
 
 # Paquets REDHAT (rpm)
 for Version in $(ls -1  kernel-headers-*.rpm 2>/dev/null|cut -d- -f3|cut -d_ -f1)
-do printf "$Version \033[32mRedhat package (rpm)\033[m\n"        >> $ListeDistante; done
+do printf "%-10s \033[32mRedhat package (rpm)\033[m\n" $Version        >> $ListeDistante; done
 
 # Repertoire pour installation
 for Version in $(ls -1d *-linux-*/       2>/dev/null|cut -d- -f3|cut -d/ -f1)
-do printf "$Version \033[36mCompiled kernel directory\033[m\n"   >> $ListeDistante; done
+do printf "%-10s \033[36mCompiled kernel directory\033[m\n" $Version   >> $ListeDistante; done
 
 # Archives de source noyau
 for Version in $(ls -1d linux-*.tar.??   2>/dev/null|cut -d- -f2|cut -d. -f1-3)
-do printf "$Version \033[mKernel source archive (gz/xz)\033[m\n" >> $ListeDistante; done
+do printf "%-10s \033[mKernel source archive (gz/xz)\033[m\n" $Version >> $ListeDistante; done
 
-SortFile $ListeDistante
+linux-version sort <<EOF
+$(cat $ListeDistante)
+EOF
 rm -f    $ListeDistante
 echo ""
 

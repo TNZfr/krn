@@ -95,57 +95,6 @@ InitVariable ()
 }
 
 #------------------------------------------------------------------------------------------------
-SortFile ()
-{
-    _Fichier=$1
-
-    [ ! -f $_Fichier ] && return
-    cat $_Fichier|while read _Enreg
-    do
-	_Version=$(echo $_Enreg|cut -d' ' -f1)
-	_Type=$(   echo $_Enreg|cut -d' ' -f2-)
-
-	_Version=$(echo $_Version|sed 's/-/./g')
-	
-	_Champ1=$(echo $_Version|cut -d. -f1)
-	[ ${#_Champ1} -eq 1 ] && _Champ1="0$_Champ1"
-
-	_Champ2=$(echo $_Version|cut -d. -f2)
-	[ ${#_Champ2} -eq 1 ] && _Champ2="0$_Champ2"
-
-	_Champ3=$(echo $_Version|cut -d. -f3)
-	while [ ${#_Champ3} -lt 3 ]; do _Champ3="0$_Champ3"; done
-	[ $_Champ3 = "tar" ]      && _Champ3="000"
-	[ ${_Champ3:0:1} != "r" ] && _Champ3="z$_Champ3"
-	
-	echo $_Champ1$_Champ2$_Champ3 $_Type >> ${_Fichier}.tmp
-    done
-    mv -f ${_Fichier}.tmp $_Fichier
-
-    sort $_Fichier|while read _Enreg
-    do
-	_Version=$(echo $_Enreg|cut -d' ' -f1)
-	_Type=$(   echo $_Enreg|cut -d' ' -f2-)
-	
-	_Champ1=$(echo $_Version|cut -c1,2)
-	[ ${_Champ1:0:1} = "0" ] && _Champ1=${_Champ1:1}
-
-	_Champ2=$(echo $_Version|cut -c3,4)
-	[ ${_Champ2:0:1} = "0" ] && _Champ2=${_Champ2:1}
-
-	_Champ3=$(echo $_Version|cut -c5-)
-	[ "$_Champ3" = "" ]       && printf "%-10s $_Type\n" "$_Champ1.$_Champ2"          && continue
-	[ "$_Champ3" = "z000" ]   && printf "%-10s $_Type\n" "$_Champ1.$_Champ2"          && continue
-	[ ${_Champ3:0:2} = "rc" ] && printf "%-10s $_Type\n" "$_Champ1.$_Champ2-$_Champ3" && continue
-
-	_Champ3=${_Champ3:1}
-	while [ ${_Champ3:0:1} = "0" ]; do _Champ3=${_Champ3:1}; done
-
-	printf "%-10s $_Type\n" "$_Champ1.$_Champ2.$_Champ3"
-    done
-}
-
-#------------------------------------------------------------------------------------------------
 CreateGrubenv ()
 {
     Version=$1

@@ -40,16 +40,14 @@ then
     mv $ListeDistante ${ListeDistante}.gz
     gunzip ${ListeDistante}.gz
 fi
-ArchiveVersion=/tmp/ArchiveVersion-$$
-> $ArchiveVersion
-for VersionFound in $(grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version)
+
+for VersionFound in $(linux-version sort $(grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version))
 do
-    printf "$VersionFound \033[mKernel source archive (xz)\033[m\n" >> $ArchiveVersion
+    printf "%-10s \033[mKernel source archive (xz)\033[m\n" $VersionFound
 done
-SortFile $ArchiveVersion
 
 # Menage de fin de traitement
-rm -f $ListeDistante $ArchiveVersion
+rm -f $ListeDistante 
 
 #-------------------------------------------------------------------------------
 # La suite ne concerne que les distribs DEBIAN
@@ -66,13 +64,10 @@ then
     echo "---------------"
 
     # Affichage de la liste
-    > $ArchiveVersion
-    for VersionFound in $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-|grep $Version)
+    for VersionFound in $(linux-version sort $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-|grep $Version))
     do
-	printf "$VersionFound \033[32mUbuntu package (deb)\033[m\n" >> $ArchiveVersion
+	printf "%-10s \033[32mUbuntu package (deb)\033[m\n" $VersionFound
     done
-    SortFile $ArchiveVersion
-    rm -f    $ArchiveVersion $ListeDistante
 fi
 
 echo   ""
