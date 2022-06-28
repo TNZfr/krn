@@ -95,9 +95,15 @@ cd $TmpDir/$Directory
 printh "Compiling $(basename $PWD) ..."
 KernelVersion=$(make kernelversion)
 
-printh "- Current config copy ..."
-zcat /proc/config.gz > .config
-CheckStatus
+if [ -L $HOME/.krn/CompilConfig ]
+then
+    printh "- Set owner config ($(basename $(readlink -f $HOME/.krn/CompilConfig))) ..."
+    cp $HOME/.krn/CompilConfig .config
+else
+    printh "- Current config copy ..."
+    zcat /proc/config.gz > .config
+    CheckStatus
+fi 
 
 printh "- Make olddefconfig ..."
 make olddefconfig         > $TmpDir/Make-1-olddefconfig.log 2>&1

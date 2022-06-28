@@ -90,6 +90,12 @@ cd $TmpDir/$Directory
 printh "Compiling $(basename $PWD) ..."
 KernelVersion=$(make kernelversion)
 
+if [ -L $HOME/.krn/CompilConfig ]
+then
+    printh "- Set owner config ($(basename $(readlink -f $HOME/.krn/CompilConfig))) ..."
+    cp $HOME/.krn/CompilConfig .config
+fi
+
 printh "- Make olddefconfig ..."
 make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 CheckStatus

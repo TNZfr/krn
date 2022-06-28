@@ -12,18 +12,34 @@ printf "Current kernel : \033[34m$(uname -r)\033[m\n"
 echo ""
 echo "Installed kernel(s)"
 echo "-------------------"
+ModuleDirectory=""
 if [ -d /lib/modules ]
 then
-    linux-version sort $(ls -1 /lib/modules)
+    ModuleDirectory=/lib/modules
 elif [ -d /usr/lib/modules ]
 then
-    linux-version sort $(ls -1 /usr/lib/modules)
+    ModuleDirectory=/usr/lib/modules
 else
     echo "Kernel modules directory not found."
 fi
 
+if [ "$ModuleDirectory" != "" ]
+then    
+    linux-version sort <<EOF
+$(cd $ModuleDirectory; du -hs *|while read line; do printf "%-20s \033[36mModule directory size\033[m %s\n" $(echo $line|cut -d' ' -f2) $(echo $line|cut -d' ' -f1);done)
+EOF
+fi
+
 # 2. Liste des paquets compiles en local
 # --------------------------------------
+if [ ! -d $KRN_WORKSPACE ]
+then
+    echo ""
+    echo "Local workspace $KRN_WORKSPACE not found."
+    echo ""
+    exit 0
+fi
+
 echo ""
 echo "Local workspace : $KRN_WORKSPACE"
 echo "---------------"
@@ -58,6 +74,7 @@ do
 done
 
 # Paquets DEBIAN (deb)
+> $ListeDistante
 for Version in $(ls -1  linux-image*.deb 2>/dev/null|cut -d_ -f2|cut -d- -f1)
 do printf "%-10s \033[32mDebian package (deb)\033[m\n" $Version        >> $ListeDistante; done
 

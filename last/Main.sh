@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v5.7 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v5.8 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -63,6 +63,7 @@ then
     printf "\033[34m-------------------------\033[m\n"
     echo  "ChangeLog           (CL): Get Linux changelog file from kernel.org and display selection"
     echo  "GetSource           (GS): Get Linux sources archive from kernel.org"
+    echo  "SetConfig           (SC): Display and set default config file for kernel compilation"
     echo  "Compile             (CC): Compile kernel"
     echo  "CompileSign        (CCS): Compile and sign kernel (DEBIAN only)"
     echo  "CompilInstall      (CCI): Get sources, compile and install kernel"
@@ -108,6 +109,7 @@ case $Commande in
     
     "changelog"        |"cl")   RunCommand ChangeLog.sh                     ;;
     "getsource"        |"gs")   RunCommand GetSource.sh                     ;;
+    "setconfig"        |"sc")   RunCommand SetConfig.sh                     ;;
     "compile"          |"cc")   RunCommand Compile_${KRN_MODE}.sh           ;;
     "compilinstall"    |"cci")  RunCommand CompilInstall_${KRN_MODE}.sh     ;;
     "compilesign"      |"ccs")  RunCommand CompileSign_${KRN_MODE}.sh       ;;
