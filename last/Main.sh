@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v5.8 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v5.9 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""

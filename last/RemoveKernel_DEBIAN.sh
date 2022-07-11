@@ -89,7 +89,7 @@ done
 echo ""
 echo "Installed kernel(s)"
 echo "-------------------"
-ls -1 /lib/modules
+linux-version sort $(ls -1 /lib/modules)
 echo   ""
 printf "\033[44m RemoveKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
