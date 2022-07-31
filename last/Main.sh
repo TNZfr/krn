@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v5.9 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v5.10 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -53,20 +53,25 @@ then
     printf "\033[34m--------------------------------------\033[m\n"
     echo  "List           (LS): List current kernel, installed kernel and available kernels from local"
     echo  "Search         (SE): Search available kernels from Kernel.org (and Ubuntu/Mainline in DEBIAN mode)"
+    echo  ""
     echo  "Get                : Get Debian packages from local (and Ubuntu/Mainline in DEBIAN mode)"
     echo  "Install            : Install selected kernel from local (and Ubuntu/Mainline in DEBIAN mode)"
-    echo  "Sign           (SK): Sign installed kernel (DEBIAN only)"
-    echo  "InstallSign    (IS): Install and sign selected kernel (DEBIAN only)"
     echo  "Remove             : Remove selected installed kernel"
+    echo  ""
+    echo  "Sign           (SK): Sign installed kernel (DEBIAN only)"
+    echo  "VerifyKernel   (VK): Verify installed kernel and module signatures"
+    echo  "InstallSign    (IS): Install and sign selected kernel (DEBIAN only)"
     echo  ""
     printf "\033[34m Sources from kernel.org \033[m\n"
     printf "\033[34m-------------------------\033[m\n"
     echo  "ChangeLog           (CL): Get Linux changelog file from kernel.org and display selection"
     echo  "GetSource           (GS): Get Linux sources archive from kernel.org"
     echo  "SetConfig           (SC): Display and set default config file for kernel compilation"
+    echo  ""
     echo  "Compile             (CC): Compile kernel"
-    echo  "CompileSign        (CCS): Compile and sign kernel (DEBIAN only)"
     echo  "CompilInstall      (CCI): Get sources, compile and install kernel"
+    echo  ""
+    echo  "CompileSign        (CCS): Compile and sign kernel (DEBIAN only)"
     echo  "CompilSignInstall (CCSI): Get sources, compile, sign and install kernel (DEBIAN only)"
     echo  ""
     printf "\033[34m Log management \033[m\n"
@@ -110,6 +115,7 @@ case $Commande in
     "changelog"        |"cl")   RunCommand ChangeLog.sh                     ;;
     "getsource"        |"gs")   RunCommand GetSource.sh                     ;;
     "setconfig"        |"sc")   RunCommand SetConfig.sh                     ;;
+    "verifykernel"     |"vk")   RunCommand VerifyKernel.sh                  ;;
     "compile"          |"cc")   RunCommand Compile_${KRN_MODE}.sh           ;;
     "compilinstall"    |"cci")  RunCommand CompilInstall_${KRN_MODE}.sh     ;;
     "compilesign"      |"ccs")  RunCommand CompileSign_${KRN_MODE}.sh       ;;
