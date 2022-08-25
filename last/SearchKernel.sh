@@ -18,6 +18,7 @@ then
 fi
 
 ListeDistante=/tmp/ListeDistante-$$.txt
+ListeVersion=/tmp/ListeVersion-$$.txt
 
 Debut=$(TopHorloge)
 
@@ -41,13 +42,21 @@ then
     gunzip ${ListeDistante}.gz
 fi
 
-for VersionFound in $(linux-version sort $(grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version))
-do
-    printf "%-10s \033[mKernel source archive (xz)\033[m\n" $VersionFound
-done
+# Récupération de la liste des versions présentes
+grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version > $ListeVersion
+
+if [ $(cat $ListeVersion|wc -l) -gt 0 ]
+then
+    for VersionFound in $(linux-version sort $(cat $ListeVersion))
+    do
+	printf "%-10s \033[mKernel source archive (xz)\033[m\n" $VersionFound
+    done
+else
+    echo "No kernel sources available."
+fi
 
 # Menage de fin de traitement
-rm -f $ListeDistante 
+rm -f $ListeDistante $ListeVersion
 
 #-------------------------------------------------------------------------------
 # La suite ne concerne que les distribs DEBIAN

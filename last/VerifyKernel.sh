@@ -35,7 +35,12 @@ VerifyOneKernel ()
     # ---------------------
     echo ""
     printf "\033[44m Kernel signature for $Version \033[m\n"
-    sbverify -l /boot/vmlinuz-$(basename $ModuleDirectory)
+    if [ $KRN_MODE = ARCH-CUSTOM ]
+    then
+	sbverify -l /boot/vmlinuz-linux-custom
+    else
+	sbverify -l /boot/vmlinuz-$(basename $ModuleDirectory)
+    fi
     echo ""
     printf "\033[44m Module signature for $Version \033[m\n"
     modinfo $ModuleDirectory/kernel/sound/soundcore.ko

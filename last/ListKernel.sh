@@ -75,7 +75,9 @@ done
 
 # Paquets DEBIAN (deb)
 > $ListeDistante
-for Version in $(ls -1  linux-image*.deb 2>/dev/null|cut -d_ -f2|cut -d- -f1)
+ListeVersion="$(ls -1 linux-image*.deb    2>/dev/null|grep -v rc|cut -d_ -f2|cut -d- -f1)"
+ListeVersion="$(ls -1 linux-image*rc*.deb 2>/dev/null           |cut -d_ -f2|cut -d- -f1,2) $ListeVersion"
+for Version in $ListeVersion
 do printf "%-10s \033[32mDebian package (deb)\033[m\n" $Version        >> $ListeDistante; done
 
 # Paquets REDHAT (rpm)
@@ -87,7 +89,9 @@ for Version in $(ls -1d *-linux-*/       2>/dev/null|cut -d- -f3|cut -d/ -f1)
 do printf "%-10s \033[36mCompiled kernel directory\033[m\n" $Version   >> $ListeDistante; done
 
 # Archives de source noyau
-for Version in $(ls -1d linux-*.tar.??   2>/dev/null|cut -d- -f2|cut -d. -f1-3)
+ListeVersion="$(ls -1d linux-*.tar.??    2>/dev/null|grep -v rc|cut -d- -f2  |cut -d. -f1-3)"
+ListeVersion="$(ls -1d linux-*rc*.tar.?? 2>/dev/null           |cut -d- -f2,3|cut -d. -f1,2) $ListeVersion"
+for Version in $ListeVersion
 do printf "%-10s \033[mKernel source archive (gz/xz)\033[m\n" $Version >> $ListeDistante; done
 
 linux-version sort <<EOF

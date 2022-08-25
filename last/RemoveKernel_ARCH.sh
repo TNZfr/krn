@@ -46,7 +46,7 @@ RemoveOneKernel ()
     # --------------------
     Status=0
     printh "Removing /boot files ..."
-    rm -f                       \
+    rm -f                        \
 	/boot/vmlinuz-$Version   \
 	/boot/config-$Version    \
 	/boot/initrd.img-$Version
