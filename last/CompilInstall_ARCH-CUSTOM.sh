@@ -35,7 +35,7 @@ do
     
     # Compilation du noyau
     # --------------------
-    Compile_${KRN_MODE}.sh $KRN_WORKSPACE/linux-${Version}.tar.xz
+    Compile_${KRN_MODE}.sh $KRN_WORKSPACE/linux-${Version}.tar.??
     [ $? -ne 0 ] && exit 1
     
     # Installation du noyau

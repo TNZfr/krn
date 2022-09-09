@@ -86,11 +86,8 @@ do
     RemoveOneKernel $KernelVersion
 done
 
-echo ""
-echo "Installed kernel(s)"
-echo "-------------------"
-linux-version sort $(ls -1 /lib/modules)
-echo   ""
+ListInstalledKernel
+
 printf "\033[44m RemoveKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 

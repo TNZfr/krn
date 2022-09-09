@@ -11,17 +11,28 @@ GetKernelSource ()
     echo ""
 
     # 1.Recherche dans le repertoire de stockage
-    if [ -f $KRN_WORKSPACE/linux-$Version.tar.xz ]
+    if [ -f $KRN_WORKSPACE/linux-$Version.tar.?? ]
     then
-	echo "Archive found in workspace directory : $KRN_WORKSPACE/linux-$Version.tar.xz"
+	echo "Archive found in workspace directory : $(ls -1 $KRN_WORKSPACE/linux-$Version.tar.??)"
 	return 0
     fi
 
-    # 2.Recherche dur kernel.org
-    Url=https://cdn.kernel.org/pub/linux/kernel/$Branch
-    Archive=linux-$Version.tar.xz
+    # 2. Selection de la source
+    if [ "$(echo $Version|grep rc)" = "" ]
+    then
+	# Version stable 
+	Url=https://cdn.kernel.org/pub/linux/kernel/$Branch
+	Archive=linux-$Version.tar.xz
 
-    echo "kernel.org : Searching $Archive ..."
+	echo "cdn.kernel.org : Searching $Archive ..."
+    else
+	# Version RC
+	Url=https://git.kernel.org/torvalds/t
+	Archive=linux-$Version.tar.gz
+
+	echo "git.kernel.org : Searching $Archive ..."
+    fi
+    
     wget -q $Url/$Archive -O $KRN_WORKSPACE/$Archive
     Status=$?
     if [ $Status -ne 0 ]
@@ -30,7 +41,7 @@ GetKernelSource ()
 	rm -f $KRN_WORKSPACE/$Archive
 	return 0
     fi
-    echo "Archive downloaded from kernel.org"
+    echo "Archive downloaded from (git/cdn).kernel.org"
     echo "Archive available : $KRN_WORKSPACE/$Archive"
 }
 

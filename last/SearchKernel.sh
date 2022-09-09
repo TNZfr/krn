@@ -27,14 +27,42 @@ echo   ""
 Version=$1
 [ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
 
-# 1. Recherche des source kernel.org
-# ----------------------------------
-Branch="v$(echo $Version|cut -c1).x"
-Url=https://cdn.kernel.org/pub/linux/kernel/$Branch/
-printf "Kernel.org : Getting available versions ... "
+# 1. Recherche des sources git.kernel.org
+# ---------------------------------------
+Url=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+printf "\033[34mgit.kernel.org\033[m : Getting available versions ... "
 wget -q $Url -O $ListeDistante
 echo "done."
-echo "----------"
+printf "\033[34m--------------\033[m\n"
+
+if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
+then
+    mv $ListeDistante ${ListeDistante}.gz
+    gunzip ${ListeDistante}.gz
+fi
+
+# Récupération de la liste des versions présentes
+grep tar.gz $ListeDistante|tr ['<>'] ['\n\n']|grep ^linux|grep rc|cut -d'-' -f2,3|cut -d. -f1,2|grep $Version > $ListeVersion
+
+if [ $(cat $ListeVersion|wc -l) -gt 0 ]
+then
+    for VersionFound in $(linux-version sort $(cat $ListeVersion))
+    do
+	printf "%-10s \033[mKernel source archive (gz)\033[m\n" $VersionFound
+    done
+else
+    echo "No kernel sources available."
+fi
+echo ""
+
+# 2. Recherche des sources cdn.kernel.org
+# ---------------------------------------
+Branch="v$(echo $Version|cut -c1).x"
+Url=https://cdn.kernel.org/pub/linux/kernel/$Branch/
+printf "\033[34mcdn.kernel.org\033[m : Getting available versions ... "
+wget -q $Url -O $ListeDistante
+echo "done."
+printf "\033[34m--------------\033[m\n"
 
 if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
 then
@@ -63,14 +91,14 @@ rm -f $ListeDistante $ListeVersion
 # --------------------------------------------
 if [ $KRN_MODE = DEBIAN ]
 then
-    # 2. Recherche des paquets Ubuntu/Mainline
+    # 3. Recherche des paquets Ubuntu/Mainline
     # ----------------------------------------
     Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/
     echo ""
-    printf "Ubuntu/Mainline : Getting available versions ... "
+    printf "\033[34mUbuntu/Mainline\033[m : Getting available versions ... "
     wget -q --no-check-certificate $Url -O $ListeDistante
     echo "done."
-    echo "---------------"
+    printf "\033[34m---------------\033[m\n"
 
     # Affichage de la liste
     for VersionFound in $(linux-version sort $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-|grep $Version))

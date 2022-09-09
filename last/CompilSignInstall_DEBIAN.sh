@@ -25,6 +25,7 @@ do
     # ------------------------------
     PackageVersion=$Version
     [ "$(echo $PackageVersion|cut -d. -f3)" = "" ] && PackageVersion=${PackageVersion}.0
+    [ "$(echo $Version|grep rc)" != "" ] && PackageVersion=${PackageVersion}-$(echo $Version|cut -d'-' -f2)
     NbPaquet=$(ls -1 $KRN_WORKSPACE/linux-*${PackageVersion}*.deb 2>/dev/null|wc -l)
     if [ $NbPaquet -ge 3 ]
     then
@@ -42,11 +43,17 @@ do
     
     # Generation des paquets Debian
     # -----------------------------
-    PackageVersion=$(basename $KRN_WORKSPACE/linux-${Version}.tar.xz|cut -d- -f2|cut -d. -f1-3)
-    Digit3=$(echo $PackageVersion|cut -d. -f3)
-    [ $Digit3 = tar ] && PackageVersion=$(echo $PackageVersion|cut -d. -f1,2).0
+    ArchiveName=$(basename $KRN_WORKSPACE/linux-${Version}.tar.??)
+    ArchiveName=${ArchiveName%.tar.??}
+    if [ "$(echo $ArchiveName|grep rc)" != "" ]
+    then
+	PackageVersion=$(echo $ArchiveName|cut -d- -f2|cut -d. -f1,2).0-$(echo $ArchiveName|cut -d- -f3)
+    else
+	PackageVersion=$(echo $ArchiveName|cut -d- -f2|cut -d. -f1-3)
+	[ "$(echo $PackageVersion|cut -d. -f3)" = "" ] && PackageVersion=$(echo $PackageVersion|cut -d. -f1,2).0
+    fi
 
-    CompileSign_${KRN_MODE}.sh $KRN_WORKSPACE/linux-${Version}.tar.xz
+    CompileSign_${KRN_MODE}.sh $KRN_WORKSPACE/linux-${Version}.tar.??
     [ $? -ne 0 ] && exit 1
     
     # Installation des paquets

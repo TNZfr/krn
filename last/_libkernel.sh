@@ -138,3 +138,124 @@ VerifySigningConditions ()
 	exit 1
     fi
 }
+
+#-------------------------------------------------------------------------------
+GetInstalledKernel ()
+{
+    _ModulesDir=""
+    [ -d /usr/lib/modules ] && _ModulesDir=/usr/lib/modules
+    [ -d /lib/modules ]     && _ModulesDir=/lib/modules
+    [ "$_ModulesDir" = "" ] && return
+
+    for _ModulesVersion in $(ls -1 $_ModulesDir)
+    do
+	if [ "$(echo $_ModulesVersion|grep rc)" = "" ]
+	then
+	    _Version=$(echo $_ModulesVersion|cut -d- -f1)
+	else
+	    _Version=$(echo $_ModulesVersion|cut -d- -f1,2)
+	fi
+	
+	# Format : Version;NomModule;FullPath
+	echo "$_Version,$_ModulesVersion,$_ModulesDir/$_ModulesVersion"
+    done
+}
+
+#-------------------------------------------------------------------------------
+ListInstalledKernel ()
+{
+    
+    echo ""
+    echo "Installed kernel(s)"
+    echo "-------------------"
+    for _Enreg in $(linux-version sort $(GetInstalledKernel))
+    do
+	_ModuleDir=$(echo $_Enreg|cut -d',' -f3)
+	printf "%-20s \033[36mModule directory size\033[m %s\n"    \
+	       $(basename $_ModuleDir)                              \
+	       $(du -hs   $_ModuleDir|tr ['\t'] [' ']|cut -d' ' -f1)
+    done
+    echo ""
+}
+
+#-------------------------------------------------------------------------------
+GetWorkspaceList()
+{
+    CurrentDir=$PWD
+    cd $KRN_WORKSPACE
+    
+    _ListeFichier=$(ls -1)
+    [ "$_ListeFichier" != "" ] && for _Fichier in $_ListeFichier
+    do
+	_TypeObjet=""
+	[ $_Fichier != ${_Fichier%.deb} ]    && _TypeObjet="deb,\033[32mDebian package (deb)\033[m"
+	[ $_Fichier != ${_Fichier%.rpm} ]    && _TypeObjet="rpm,\033[32mRedhat package (rpm)\033[m"
+	[ $_Fichier != ${_Fichier%.tar.??} ] && _TypeObjet="tar,Kernel source archive ($(echo $_Fichier|rev|cut -c1,2|rev))"
+
+	_Version=""
+	case $_Fichier in
+	    
+	    # Package Redhat (rpm)
+	    # --------------------
+	    kernel-headers-*.rpm)	     _Version=$(echo $_Fichier|cut -d- -f3|cut -d_ -f1) ;;
+	    kernel-*.rpm)		     _Version=$(echo $_Fichier|cut -d- -f2|cut -d_ -f1) ;;
+    
+	    # Package Debian (deb)
+	    # --------------------
+	    linux-libc-dev_*-rc*-krn-*.deb)  _Version=$(echo $_Fichier|cut -d_ -f2|cut -d- -f1,2) ;;
+	    linux-*-rc*-krn-*.deb) 	     _Version=$(echo $_Fichier|cut -d- -f3,4)             ;;
+	    
+	    linux-libc-dev_*-krn-*.deb)      _Version=$(echo $_Fichier|cut -d_ -f2|cut -d- -f1)   ;;
+	    linux-*-krn-*.deb)               _Version=$(echo $_Fichier|cut -d- -f3)               ;;
+
+	    linux-image-unsigned-*-*rc*.deb) _Version=$(echo $_Fichier|cut -d- -f4)-$(echo $_Fichier|cut -d- -f5|cut -c7-) ;;
+	    linux-headers-*-*rc*_all.deb)    _Version=$(echo $_Fichier|cut -d- -f3)-$(echo $_Fichier|cut -d- -f4|cut -c7-|cut -d_ -f1) ;;
+	    linux-*-*-*rc*.deb)		     _Version=$(echo $_Fichier|cut -d- -f3)-$(echo $_Fichier|cut -d- -f4|cut -c7-) ;;
+
+	    linux-image-unsigned-*-*.deb)    _Version=$(echo $_Fichier|cut -d- -f4) ;;
+	    linux-*-*-*.deb)                 _Version=$(echo $_Fichier|cut -d- -f3) ;;
+
+	    # Sources kernel
+	    # --------------
+	    linux-*.tar.??)	             _Version=$(echo $_Fichier|cut -d- -f2-); _Version=${_Version%.tar.??}	;;
+	    
+	    # Repertoire install ARCH Linux
+	    # -----------------------------
+	    ARCH-linux-*)
+		[ ! -d $_Fichier ] && continue
+		
+		_TypeObjet="arc,\033[36mDirectory $_Fichier\033[m"
+		_Version=$(echo $_Fichier|cut -d- -f3-)
+		;;
+	    
+	    # Repertoire de build
+	    # -------------------
+	    Compil-*)
+		[ ! -d $_Fichier ] && continue
+		
+		_TypeObjet="dir,\033[33mCompilation directory ${_Fichier%/}\033[m"
+		cd $_Fichier
+		
+		_SourceDir=$(ls -1d linux-*/ 2>/dev/null)
+		if [ "$_SourceDir" = "" ]
+		then
+		    cd ..
+		    _Version=Unknown
+		    continue
+		fi
+		cd $_SourceDir
+		_Version=$(make kernelversion 2>/dev/null)
+		cd $KRN_WORKSPACE
+		;;
+
+	    # Fichiers inconnus
+	    # -----------------
+	    *) continue ;;
+	esac
+
+	# Enregistrement : Version,Type,LibelleType,NomObjet
+	printf "$_Version,$_TypeObjet,$_Fichier\n"
+    done
+    cd $CurrentDir
+}
+

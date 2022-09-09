@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v5.11 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v6.0 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -102,15 +102,15 @@ Commande=$(echo $1|tr [:upper:] [:lower:])
 
 case $Commande in
 
-    "configure" |"cf" ) RunCommand Configure.sh                     ;;
-    "purge"           ) RunCommand Purge.sh                         ;;
-    "list"       |"ls") RunCommand ListKernel.sh                    ;;
-    "search"     |"se") RunCommand SearchKernel.sh                  ;;
-    "get"        |"gk") RunCommand GetKernel.sh                     ;;
-    "install"         ) RunCommand InstallKernel_${KRN_MODE}.sh     ;;
-    "sign"       |"sk") RunCommand SignKernel_${KRN_MODE}.sh        ;;
-    "installsign"|"is") RunCommand InstallSignKernel_${KRN_MODE}.sh ;;
-    "remove"          ) RunCommand RemoveKernel_${KRN_MODE}.sh      ;;
+    "configure"        |"cf")   RunCommand Configure.sh                     ;;
+    "purge"                 )   RunCommand Purge.sh                         ;;
+    "list"             |"ls")   RunCommand ListKernel.sh                    ;;
+    "search"           |"se")   RunCommand SearchKernel.sh                  ;;
+    "get"              |"gk")   RunCommand GetKernel.sh                     ;;
+    "install"               )   RunCommand InstallKernel_${KRN_MODE}.sh     ;;
+    "sign"             |"sk")   RunCommand SignKernel_${KRN_MODE}.sh        ;;
+    "installsign"      |"is")   RunCommand InstallSignKernel_${KRN_MODE}.sh ;;
+    "remove"                )   RunCommand RemoveKernel_${KRN_MODE}.sh      ;;
     
     "changelog"        |"cl")   RunCommand ChangeLog.sh                     ;;
     "getsource"        |"gs")   RunCommand GetSource.sh                     ;;
@@ -121,10 +121,10 @@ case $Commande in
     "compilesign"      |"ccs")  RunCommand CompileSign_${KRN_MODE}.sh       ;;
     "compilsigninstall"|"ccsi") RunCommand CompilSignInstall_${KRN_MODE}.sh ;;
 
-    "savelog"      |"sl") SaveLog.sh ;;
+    "savelog"          |"sl")   SaveLog.sh ;;
 
     *)
-	echo "Kernel management : Commande 'krn $1' inconnue."
+	echo "Kernel management : 'krn $1' unknown command."
 	Status=1
 esac
 

@@ -2,105 +2,80 @@
 
 . $KRN_EXE/_libkernel.sh
 
-ListeDistante=/tmp/ListeDistante-$$.txt
+#-------------------------------------------------------------------------------
+# Main
+
+TmpDir=/tmp/krn-puge-$$
+mkdir $TmpDir
+InstalledKernel=$TmpDir/InstalledKernel
+WorkspaceList=$TmpDir/WorkspaceList
+
+GetInstalledKernel > $InstalledKernel
+NbObjet=$(cat $InstalledKernel|wc -l)
+if [ $NbObjet -eq 0 ]
+then
+    echo ""
+    echo " *** Modules directories not found."
+    echo ""
+    rm -rf $TmpDir
+    exit 0
+fi
 
 echo   ""
 printf "Current kernel : \033[34m$(uname -r)\033[m\n"
 
 # 1. Liste des noyaux installes
 # -----------------------------
-echo ""
-echo "Installed kernel(s)"
-echo "-------------------"
-ModuleDirectory=""
-if [ -d /lib/modules ]
-then
-    ModuleDirectory=/lib/modules
-elif [ -d /usr/lib/modules ]
-then
-    ModuleDirectory=/usr/lib/modules
-else
-    echo "Kernel modules directory not found."
-fi
-
-if [ "$ModuleDirectory" != "" ]
-then    
-    linux-version sort <<EOF
-$(cd $ModuleDirectory; du -hs *|while read line; do printf "%-20s \033[36mModule directory size\033[m %s\n" $(echo $line|cut -d' ' -f2) $(echo $line|cut -d' ' -f1);done)
-EOF
-fi
+ListInstalledKernel
 
 # 2. Liste des paquets compiles en local
 # --------------------------------------
 if [ ! -d $KRN_WORKSPACE ]
 then
-    echo ""
     echo "Local workspace $KRN_WORKSPACE not found."
     echo ""
+    rm -rf $TmpDir
     exit 0
 fi
 
-echo ""
+GetWorkspaceList   > $WorkspaceList
+NbObjet=$(cat $WorkspaceList|wc -l)
+if [ $NbObjet -eq 0 ]
+then
+    echo " *** Empty workspace ***"
+    echo ""
+    rm -rf $TmpDir
+    exit 0
+fi
+
 echo "Local workspace : $KRN_WORKSPACE"
 echo "---------------"
-cd $KRN_WORKSPACE
-CompilDirList=$(ls -1d Compil*/ 2>/dev/null)
-[ "$CompilDirList" != "" ] && for CompilDir in $CompilDirList
+linux-version sort <<EOF > ${WorkspaceList}.sort
+$(cat $WorkspaceList) 
+EOF
+cat ${WorkspaceList}.sort|cut -d',' -f1,2,3|uniq| while read Enreg 
 do
-    cd $CompilDir
+    _Version="$(echo $Enreg|cut -d',' -f1)"
+    _Type="$(   echo $Enreg|cut -d',' -f2)"
+    _Libelle="$(echo $Enreg|cut -d',' -f3)"
 
-    SourceDir=$(ls -1d linux-*/ 2>/dev/null)
-    if [ "$SourceDir" = "" ]
-    then
-	cd ..
-	printf "%-10s \033[33mCompilation directory ${CompilDir%/}\033[m\n" Unknown
-	continue
-    fi
-    
-    cd $SourceDir
-    Version=$(make kernelversion 2>/dev/null)
-    [ "$Version" = "" ] && Version=Unknown
-    cd ../..
-    ProcessID=$(echo $CompilDir|cut -d- -f2)
-
-    if [ -d /proc/$ProcessID ]
-    then
-	# Compilation en cours
-	printf "%-10s \033[33mCompilation directory %-13s : \033[32;5mRunning\033[m\n" $Version ${CompilDir%/}
-    else
-	# Compilation terminée (normalement en erreur)
-	printf "%-10s \033[33mCompilation directory %-13s : \033[30;41mFAILED\033[m\n" $Version ${CompilDir%/}
-    fi
+    case $_Type in
+	dir)
+	    _ProcessID=$(echo $_Libelle|tr ['\033'] [' ']|cut -d' ' -f4|cut -d- -f2)
+	    if [ -d /proc/$_ProcessID ]
+	    then
+		# Compilation en cours
+		printf "%-10s $_Libelle : \033[32;5mRunning\033[m\n" $_Version
+	    else
+		# Compilation terminée (normalement en erreur)
+		printf "%-10s $_Libelle : \033[30;41mFAILED\033[m\n" $_Version
+	    fi
+	    ;;
+	*)
+	    printf "%-10s $_Libelle\n" $_Version
+    esac
 done
 
-# Paquets DEBIAN (deb)
-> $ListeDistante
-ListeVersion="$(ls -1 linux-image*.deb    2>/dev/null|grep -v rc|cut -d_ -f2|cut -d- -f1)"
-ListeVersion="$(ls -1 linux-image*rc*.deb 2>/dev/null           |cut -d_ -f2|cut -d- -f1,2) $ListeVersion"
-for Version in $ListeVersion
-do printf "%-10s \033[32mDebian package (deb)\033[m\n" $Version        >> $ListeDistante; done
-
-# Paquets REDHAT (rpm)
-for Version in $(ls -1  kernel-headers-*.rpm 2>/dev/null|cut -d- -f3|cut -d_ -f1)
-do printf "%-10s \033[32mRedhat package (rpm)\033[m\n" $Version        >> $ListeDistante; done
-
-# Repertoire pour installation
-for Version in $(ls -1d *-linux-*/       2>/dev/null|cut -d- -f3|cut -d/ -f1)
-do printf "%-10s \033[36mCompiled kernel directory\033[m\n" $Version   >> $ListeDistante; done
-
-# Archives de source noyau
-ListeVersion="$(ls -1d linux-*.tar.??    2>/dev/null|grep -v rc|cut -d- -f2  |cut -d. -f1-3)"
-ListeVersion="$(ls -1d linux-*rc*.tar.?? 2>/dev/null           |cut -d- -f2,3|cut -d. -f1,2) $ListeVersion"
-for Version in $ListeVersion
-do printf "%-10s \033[mKernel source archive (gz/xz)\033[m\n" $Version >> $ListeDistante; done
-
-linux-version sort <<EOF
-$(cat $ListeDistante)
-EOF
-rm -f    $ListeDistante
+rm -rf $TmpDir
 echo ""
-
-if [ $# -ne 0 ]
-then
-    SearchKernel.sh $1
-fi
+[ $# -ne 0 ] && SearchKernel.sh $1
