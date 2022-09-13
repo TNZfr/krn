@@ -51,7 +51,7 @@ Archive=$(basename $Archive)
 
 # Installation des prerequis
 # --------------------------
-InstalledPackage=/tmp/InstalledPackage-$$
+InstalledPackage=$KRN_TMP/InstalledPackage-$$
 printh "Verifying tools installation ..."
 rpm -qa > $InstalledPackage
 ToolsList="gcc flex bison elfutils-libelf-devel openssl-devel rpm-build zstd"
@@ -71,7 +71,16 @@ rm -f $InstalledPackage
 # -----------------------------------------
 Debut=$(TopHorloge)
 TmpDir=$PWD/Compil-$$
-mkdir -p $TmpDir
+KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4); [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
+if [ "$KRN_DEVSHM" -gt 5120 ]
+then
+    printh "Build temporary workspace on /dev/shm/Compil-$$ (tmpfs)"
+    mkdir /dev/shm/Compil-$$
+    ln -s /dev/shm/Compil-$$ $TmpDir
+else
+    printh "Build temporary workspace : $TmpDir"
+    mkdir -p $TmpDir
+fi
 
 # Restauration archive
 # --------------------
@@ -109,7 +118,7 @@ mv -f $(find $HOME/rpmbuild/RPMS -name "kernel*-${KernelVersion}_*.rpm") $RpmDir
 
 printh "Cleaning ..."
 cd $RpmDirectory
-rm -rf $TmpDir $Archive
+rm -rf $TmpDir /dev/shm/Compil-$$ $Archive
 
 echo ""
 printf "\033[44m Compile $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

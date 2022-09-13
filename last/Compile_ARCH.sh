@@ -76,7 +76,16 @@ echo ""
 # -----------------------------------------
 Debut=$(TopHorloge)
 TmpDir=$PWD/Compil-$$
-mkdir -p $TmpDir
+KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4); [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
+if [ "$KRN_DEVSHM" -gt 5120 ]
+then
+    printh "Build temporary workspace on /dev/shm/Compil-$$ (tmpfs)"
+    mkdir /dev/shm/Compil-$$
+    ln -s /dev/shm/Compil-$$ $TmpDir
+else
+    printh "Build temporary workspace : $TmpDir"
+    mkdir -p $TmpDir
+fi
 
 # Restauration archive
 # --------------------
@@ -123,7 +132,7 @@ mv $Directory $MainDirectory/ARCH-$Directory 2>/dev/null
 
 printh "Cleaning ..."
 cd $MainDirectory
-rm -rf $TmpDir $Archive
+rm -rf $TmpDir $Archive /dev/shm/Compil-$$
 
 echo ""
 printf "\033[44m Compile $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

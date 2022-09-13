@@ -30,7 +30,7 @@ then
 fi
 
 Debut=$(TopHorloge)
-TempDir=/tmp/krn-$$
+TempDir=$KRN_TMP/krn-$$
 mkdir -p $TempDir
 cd       $TempDir
 

@@ -77,7 +77,7 @@ then
     exit 1
 fi
 
-TmpDir=/tmp/krn-puge-$$
+TmpDir=$KRN_TMP/krn-purge-$$
 mkdir $TmpDir
 InstalledKernel=$TmpDir/InstalledKernel
 WorkspaceList=$TmpDir/WorkspaceList

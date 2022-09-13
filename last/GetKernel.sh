@@ -39,8 +39,8 @@ GetKernelPackage_UbuntuMainline ()
     Version=$1
 
     Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/v$Version/
-    ListeDistante=/tmp/krn-ListeDistante-${Version}-$$.txt
-    ListePaquets=/tmp/krn-ListePaquets-${Version}-$$.txt
+    ListeDistante=$KRN_TMP/krn-ListeDistante-${Version}-$$.txt
+    ListePaquets=$KRN_TMP/krn-ListePaquets-${Version}-$$.txt
 
     # Recuperation de la liste des paquets
     # ------------------------------------

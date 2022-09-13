@@ -23,7 +23,7 @@ function RunCommand
 	${RunCommand_Name} $Parametre
 	Status=$?
     else
-	StatusFile=/tmp/status-$$
+	StatusFile=$KRN_TMP/status-$$
 	(${RunCommand_Name} $Parametre;echo $? > $StatusFile) | tee -a $KRN_FICACC
 	Status=$(cat $StatusFile; rm -f $StatusFile)
     fi
@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v6.0 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v6.1 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -91,7 +91,13 @@ export PATH=$KRN_EXE:$PATH
 . $KRN_EXE/Configure.sh LOAD
 export KRN_MODE=$(        echo $KRN_MODE        |tr [:lower:] [:upper:])
 export KRN_ARCHITECTURE=$(echo $KRN_ARCHITECTURE|tr [:upper:] [:lower:])
+
 [ $LOGNAME = root ] && export KRN_sudo="" || export KRN_sudo="sudo"
+
+export KRN_TMP=/tmp
+KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4);
+[ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
+[ $KRN_DEVSHM -gt 2048 ] && export KRN_TMP=/dev/shm 
 
 # ---------------------
 # Parsing des commandes

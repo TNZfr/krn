@@ -29,7 +29,7 @@ fi
 
 Directory=v$(echo $Version|cut -d. -f1).x
 URL=https://cdn.kernel.org/pub/linux/kernel/$Directory/ChangeLog-$Version
-ChangeLog=/tmp/changelog-$$
+ChangeLog=$KRN_TMP/changelog-$$
 wget -q $URL -O $ChangeLog 2>/dev/null
 
 # Comptage des commits
@@ -40,14 +40,14 @@ echo   ""
 printf "*** \033[34m$NbCommit commit(s)\033[m for kernel version $Version ***\n"
 echo   ""
 
-CL_libelle=/tmp/changelog-source-$$
+CL_libelle=$KRN_TMP/changelog-source-$$
 grep -A4 ^commit $ChangeLog | \
     (while read Line; do [ "$Line" = "--" ] && echo $PrevLine; PrevLine=$Line; done; echo $PrevLine)| \
     grep -v "^Linux $Version" > $CL_libelle
 
 if [ "$AllPattern" != "None" ]
 then
-    CL_Found=/tmp/changelog-found-$$
+    CL_Found=$KRN_TMP/changelog-found-$$
     > $CL_Found
     cat $CL_libelle | grep -ni $AllPattern | sort -n | \
 	while read Line

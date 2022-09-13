@@ -15,7 +15,7 @@ fi
 
 Debut=$(TopHorloge)
 VersionList=$*
-TempDir=/tmp/krn-$$
+TempDir=$KRN_TMP/krn-$$
 mkdir -p $TempDir
 cd       $TempDir
 

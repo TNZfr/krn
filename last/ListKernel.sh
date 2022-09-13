@@ -5,7 +5,7 @@
 #-------------------------------------------------------------------------------
 # Main
 
-TmpDir=/tmp/krn-puge-$$
+TmpDir=$KRN_TMP/krn-list-$$
 mkdir $TmpDir
 InstalledKernel=$TmpDir/InstalledKernel
 WorkspaceList=$TmpDir/WorkspaceList

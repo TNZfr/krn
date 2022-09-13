@@ -17,8 +17,8 @@ then
     exit 1
 fi
 
-ListeDistante=/tmp/ListeDistante-$$.txt
-ListeVersion=/tmp/ListeVersion-$$.txt
+ListeDistante=$KRN_TMP/ListeDistante-$$.txt
+ListeVersion=$KRN_TMP/ListeVersion-$$.txt
 
 Debut=$(TopHorloge)
 
@@ -83,9 +83,6 @@ else
     echo "No kernel sources available."
 fi
 
-# Menage de fin de traitement
-rm -f $ListeDistante $ListeVersion
-
 #-------------------------------------------------------------------------------
 # La suite ne concerne que les distribs DEBIAN
 # --------------------------------------------
@@ -106,6 +103,9 @@ then
 	printf "%-10s \033[32mUbuntu package (deb)\033[m\n" $VersionFound
     done
 fi
+
+# Menage de fin de traitement
+rm -f $ListeDistante $ListeVersion
 
 echo   ""
 printf "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
