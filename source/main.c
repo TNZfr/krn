@@ -8,6 +8,53 @@
 #include "krn.h"
 
 //------------------------------------------------------------------------------
+typedef struct
+{
+  char *Libelle;
+  int  (*Fonction)(int NbArg, char**Arg);
+  
+} KRNCMD;
+
+// ATTENTION : Garder la liste triee
+int NbCommandeKRN = 33;
+KRNCMD CommandeKRN[] =
+  {
+   "cc"               ,krn_Compile,
+   "cci"              ,krn_CompilInstall,
+   "ccs"              ,krn_CompileSign,
+   "ccsi"             ,krn_CompilSignInstall,
+   "cf"               ,krn_Configure,
+   "changelog"        ,krn_ChangeLog,
+   "cl"               ,krn_ChangeLog,
+   "compile"          ,krn_Compile,
+   "compilesign"      ,krn_CompileSign,
+   "compilinstall"    ,krn_CompilInstall,
+   "compilsigninstall",krn_CompilSignInstall,
+   "configure"        ,krn_Configure,
+   "get"              ,krn_GetKernel,
+   "getsource"        ,krn_GetSource,
+   "gk"               ,krn_GetKernel,
+   "gs"               ,krn_GetSource,
+   "install"          ,krn_InstallKernel,
+   "installsign"      ,krn_InstallSignKernel,
+   "is"               ,krn_InstallSignKernel,
+   "list"             ,krn_ListKernel,
+   "ls"               ,krn_ListKernel,
+   "purge"            ,krn_Purge,
+   "remove"           ,krn_RemoveKernel,
+   "savelog"          ,krn_SaveLog,
+   "sc"               ,krn_SetConfig,
+   "se"               ,krn_SearchKernel,
+   "search"           ,krn_SearchKernel,
+   "setconfig"        ,krn_SetConfig,
+   "sign"             ,krn_SignKernel,
+   "sk"               ,krn_SignKernel,
+   "sl"               ,krn_SaveLog,
+   "verifykernel"     ,krn_VerifyKernel,
+   "vk"               ,krn_VerifyKernel
+  };
+
+//------------------------------------------------------------------------------
 void DisplayHelp()
 {
   printf ("\n");

@@ -3,12 +3,30 @@
 #include <string.h>
 
 //------------------------------------------------------------------------------
-void GetCurrentVersion (char *CurrentVersion, int LgCurrentVersion)
+char *BashLine (char *CommandLine, char *Buffer, int LgBuffer)
 {
   FILE *Output;
-  char *Separateur;
-  char  Enreg[256];
 
-  Output = popen ("cat /proc/version|cut -d' ' -f3","r");
-  fgets(CurrentVersion,LgCurrentVersion,Output);
+  Output = popen (CommandLine,"r");
+  fgets  (Buffer,LgBuffer,Output);
+  pclose (Output);
+
+  return Buffer;
 }
+
+//------------------------------------------------------------------------------
+void BashList (char *CommandLine,
+		char *Buffer, int LgBuffer,
+		void (*CallBack)(char *Buffer))
+{
+  FILE *Output;
+
+  Output = popen (CommandLine,"r");
+  while (!feof(Output))
+    {
+      if (!fgets (Buffer,LgBuffer,Output)) continue;
+      CallBack (Buffer);
+    }
+  pclose (Output);
+}
+

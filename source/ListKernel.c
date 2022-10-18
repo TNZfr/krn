@@ -1,28 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//------------------------------------------------------------------------------
-void GetCurrentVersion (char *CurrentVersion, int LgCurrentVersion)
-{
-  FILE *Output;
-  char *Separateur;
-  char  Enreg[256];
 
-  Output = popen ("cat /proc/version|cut -d' ' -f3","r");
-  fgets(CurrentVersion,LgCurrentVersion,Output);
+#include "krn.h"
+
+//------------------------------------------------------------------------------
+void ListModules ()
+{
+}
+
+//------------------------------------------------------------------------------
+void ListWorkspace ()
+{
 }
 
 //------------------------------------------------------------------------------
 int krn_ListKernel(int NbArg, char**Arg)
 {
-  char CurrentVersion [256];
-
+  char *Workspace;
+  char  CurVersion [256];
   
   // Liste des noyaux installes
   printf ("\n");
-  printf ("Current kernel : \033[34m%s\033[m\n", GetCurrentVersion (CurrentVersion,sizeof(CurrentVersion)));
+  printf ("Current kernel : \033[34m%s\033[m\n", BashLine ("uname -r",CurVersion,sizeof(CurVersion)));
+  printf ("\n");
+  printf ("Installed kernel(s)\n");
+  printf ("-------------------\n");
+  ListModules ();
 
   // Liste des paquets / sources du depot local
+  Workspace = getenv("KRN_WORKSPACE");
+  if (!Workspace)
+        printf ("Local workspace : \033[31mKRN_WORKSPACE not defined\033[m (cf krn Configure)\n");
+  else  printf ("Local workspace : %s\n", Workspace);
+  printf ("-------------------\n");
+  if (Workspace) ListWorkspace ();
 
   if (!NbArg) return 0;
 
@@ -30,24 +42,7 @@ int krn_ListKernel(int NbArg, char**Arg)
   return krn_SearchKernel (NbArg, Arg);
 }
 
-
-
-GetInstalledKernel > $InstalledKernel
-NbObjet=$(cat $InstalledKernel|wc -l)
-if [ $NbObjet -eq 0 ]
-then
-    echo ""
-    echo " *** Modules directories not found."
-    echo ""
-    rm -rf $TmpDir
-    exit 0
-fi
-
-
-# 1. Liste des noyaux installes
-# -----------------------------
-ListInstalledKernel
-
+/*
 # 2. Liste des paquets compiles en local
 # --------------------------------------
 if [ ! -d $KRN_WORKSPACE ]
@@ -99,3 +94,4 @@ done
 rm -rf $TmpDir
 echo ""
 [ $# -ne 0 ] && SearchKernel.sh $1
+*/
