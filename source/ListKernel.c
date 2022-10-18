@@ -90,8 +90,4 @@ do
 	    printf "%-10s $_Libelle\n" $_Version
     esac
 done
-
-rm -rf $TmpDir
-echo ""
-[ $# -ne 0 ] && SearchKernel.sh $1
 */
