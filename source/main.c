@@ -99,6 +99,16 @@ void DisplayHelp()
 }
 
 //------------------------------------------------------------------------------
+void LoadConfig_CB (char *Enreg)
+{
+  char *Value;
+  
+  if (Enreg[strlen(Enreg)-1] == '\n') Enreg[strlen(Enreg)-1]='\0';
+  Value = strchr (Enreg,'='); Value[0] = '\0'; Value ++;
+  setenv (Enreg,Value,1);
+}
+
+//------------------------------------------------------------------------------
 int LoadConfig()
 {
   char  CmdNum = 0;
@@ -107,27 +117,15 @@ int LoadConfig()
   int   FreeSpace;
   
   // definition repertoire temporaire
-  Commande = popen ("echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4","r");
-  fgets(Enreg,sizeof(Enreg),Commande);
-  pclose (Commande);
-  FreeSpace = atoi(Enreg);
+  FreeSpace = atoi(BashLine("echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4",Enreg,sizeof(Enreg)));
   if (FreeSpace > 2048)
        setenv ("KRN_TMP","/dev/shm",1);
   else setenv ("KRN_TMP","/tmp",    1);
 
   // Chargement des varaibles KRN
-  Commande = popen (". $HOME/.krn/bashrc; env|grep -e ^KRN_ -e ^KRNSB_","r");
-  while (!feof(Commande))
-  {
-    char *Value;
-      
-    if (!fgets(Enreg,sizeof(Enreg),Commande)) continue;
-    
-    if (Enreg[strlen(Enreg)-1] == '\n') Enreg[strlen(Enreg)-1]='\0';
-    Value = strchr (Enreg,'='); Value[0] = '\0'; Value ++;
-    setenv (Enreg,Value,1);
-  }
-  pclose (Commande);
+  BashList (". $HOME/.krn/bashrc; env|grep -e ^KRN_ -e ^KRNSB_",
+	    Enreg, sizeof(Enreg),
+	    &LoadConfig_CB );
 }
 
 //------------------------------------------------------------------------------
@@ -142,9 +140,11 @@ int CompareCommande (const void *P1, const void *P2)
 int main (int NbArg, char **Arg)
 {
   register int i;
+  register int Status;
   KRNCMD  *Commande;
   KRNCMD   Recherche;
   char   **Parametres;
+  char     TempoCmd[256];
   
   if (NbArg < 2)
     {
@@ -168,7 +168,17 @@ int main (int NbArg, char **Arg)
       return 1;
     }
   
+  // Repertoire temporaire
+  sprintf (TempoCmd,"%s/krn-%06d", getenv("KRN_TMP"), getpid());
+  setenv  ("KRN_TMPDIR",TempoCmd,1);
+  system  ("mkdir -p $KRN_TMPDIR");
+
+  // Execution de la commmande
   if (NbArg > 2)
-       return Commande->Fonction (NbArg - 2, &Arg[2]);
-  else return Commande->Fonction (0,NULL);
+       Status = Commande->Fonction (NbArg - 2, &Arg[2]);
+  else Status = Commande->Fonction (0,NULL);
+
+  // Nettoyage
+  system ("rm -rf $KRN_TMPDIR");
+  return Status;
 }
