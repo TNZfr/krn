@@ -58,7 +58,7 @@ KRNCMD CommandeKRN[] =
 void DisplayHelp()
 {
   printf ("\n");
-  printf (" \033[30;42m KRN v6.1 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions\n");
+  printf (" \033[30;42m KRN v7.0 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions\n");
   printf ("\n\n");
   printf ("\033[37;44m Syntax \033[m : krn Command Parameters ...\n");
   printf ("\n");

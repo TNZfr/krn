@@ -5,11 +5,6 @@
 #include "krn.h"
 
 //------------------------------------------------------------------------------
-void ListModules ()
-{
-}
-
-//------------------------------------------------------------------------------
 void ListWorkspace ()
 {
 }
@@ -18,15 +13,15 @@ void ListWorkspace ()
 int krn_ListKernel(int NbArg, char**Arg)
 {
   char *Workspace;
-  char  CurVersion [256];
+  char  Buffer [256];
   
   // Liste des noyaux installes
   printf ("\n");
-  printf ("Current kernel : \033[34m%s\033[m\n", BashLine ("uname -r",CurVersion,sizeof(CurVersion)));
-  printf ("\n");
+  printf ("Current kernel : \033[34m%s\033[m\n", BashLine ("uname -r",Buffer,sizeof(Buffer)));
   printf ("Installed kernel(s)\n");
   printf ("-------------------\n");
-  ListModules ();
+  ListInstalledKernel();
+  printf ("\n");
 
   // Liste des paquets / sources du depot local
   Workspace = getenv("KRN_WORKSPACE");

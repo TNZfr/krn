@@ -22,3 +22,4 @@ int krn_VerifyKernel      (int NbArg, char**Arg);
 //------------------------------------------------------------------------------
 char *BashLine (char *CommandLine, char *Buffer, int LgBuffer);
 void  BashList (char *CommandLine, char *Buffer, int LgBuffer, void (*CallBack)(char *Buffer));
+void  ListInstalledKernel ();
