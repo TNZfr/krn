@@ -38,28 +38,6 @@ int krn_ListKernel(int NbArg, char**Arg)
 }
 
 /*
-# 2. Liste des paquets compiles en local
-# --------------------------------------
-if [ ! -d $KRN_WORKSPACE ]
-then
-    echo "Local workspace $KRN_WORKSPACE not found."
-    echo ""
-    rm -rf $TmpDir
-    exit 0
-fi
-
-GetWorkspaceList   > $WorkspaceList
-NbObjet=$(cat $WorkspaceList|wc -l)
-if [ $NbObjet -eq 0 ]
-then
-    echo " *** Empty workspace ***"
-    echo ""
-    rm -rf $TmpDir
-    exit 0
-fi
-
-echo "Local workspace : $KRN_WORKSPACE"
-echo "---------------"
 linux-version sort <<EOF > ${WorkspaceList}.sort
 $(cat $WorkspaceList) 
 EOF
