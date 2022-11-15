@@ -10,7 +10,7 @@ PurgeWorkspace ()
     # On purge tout le workspace
     if [ "$Version" = all ]
     then	
-	for Version in $(linux-version sort $(cat $WorkspaceList|cut -d',' -f1|sort|uniq))
+	for Version in $(cat $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version sort)
 	do
 	    PurgeWorkspace $Version
 	done

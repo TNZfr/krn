@@ -29,7 +29,7 @@ Version=$1
 
 # 1. Recherche des sources git.kernel.org
 # ---------------------------------------
-Url=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+Url=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/refs/
 printf "\033[34mgit.kernel.org\033[m : Getting available versions ... "
 wget -q $Url -O $ListeDistante
 echo "done."
@@ -46,7 +46,7 @@ grep tar.gz $ListeDistante|tr ['<>'] ['\n\n']|grep ^linux|grep rc|cut -d'-' -f2,
 
 if [ $(cat $ListeVersion|wc -l) -gt 0 ]
 then
-    for VersionFound in $(linux-version sort $(cat $ListeVersion))
+    for VersionFound in $(cat $ListeVersion|linux-version sort)
     do
 	printf "%-10s \033[mKernel source archive (gz)\033[m\n" $VersionFound
     done
@@ -71,11 +71,11 @@ then
 fi
 
 # Récupération de la liste des versions présentes
-grep tar.xz $ListeDistante|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|grep $Version > $ListeVersion
+grep tar.xz $ListeDistante|grep linux-$Version|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|linux-version sort > $ListeVersion
 
 if [ $(cat $ListeVersion|wc -l) -gt 0 ]
 then
-    for VersionFound in $(linux-version sort $(cat $ListeVersion))
+    for VersionFound in $(cat $ListeVersion)
     do
 	printf "%-10s \033[mKernel source archive (xz)\033[m\n" $VersionFound
     done
@@ -98,7 +98,7 @@ then
     printf "\033[34m---------------\033[m\n"
 
     # Affichage de la liste
-    for VersionFound in $(linux-version sort $(grep "href=\"v" $ListeDistante|cut -d'>' -f7|cut -d/ -f1|cut -c2-|grep $Version))
+    for VersionFound in $(grep "href=\"v" $ListeDistante|grep v$Version|cut -d'>' -f7|cut -d/ -f1|cut -c2-|linux-version sort)
     do
 	printf "%-10s \033[32mUbuntu package (deb)\033[m\n" $VersionFound
     done

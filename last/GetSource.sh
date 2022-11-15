@@ -20,14 +20,14 @@ GetKernelSource ()
     # 2. Selection de la source
     if [ "$(echo $Version|grep rc)" = "" ]
     then
-	# Version stable 
+	# Version stable
 	Url=https://cdn.kernel.org/pub/linux/kernel/$Branch
 	Archive=linux-$Version.tar.xz
 
 	echo "cdn.kernel.org : Searching $Archive ..."
     else
 	# Version RC
-	Url=https://git.kernel.org/torvalds/t
+	Url=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot
 	Archive=linux-$Version.tar.gz
 
 	echo "git.kernel.org : Searching $Archive ..."

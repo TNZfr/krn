@@ -168,7 +168,7 @@ ListInstalledKernel ()
     echo ""
     echo "Installed kernel(s)"
     echo "-------------------"
-    for _Enreg in $(linux-version sort $(GetInstalledKernel))
+    for _Enreg in $(GetInstalledKernel|linux-version sort)
     do
 	_ModuleDir=$(echo $_Enreg|cut -d',' -f3)
 	printf "%-20s \033[36mModule directory size\033[m %s\n"    \

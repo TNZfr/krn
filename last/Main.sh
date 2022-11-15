@@ -38,7 +38,7 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v6.1 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v6.2 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
     echo   ""
     echo   ""
     echo   ""
@@ -97,7 +97,7 @@ export KRN_ARCHITECTURE=$(echo $KRN_ARCHITECTURE|tr [:upper:] [:lower:])
 export KRN_TMP=/tmp
 KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4);
 [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
-[ $KRN_DEVSHM -gt 2048 ] && export KRN_TMP=/dev/shm 
+[ $KRN_DEVSHM -gt 1024 ] && export KRN_TMP=/dev/shm 
 
 # ---------------------
 # Parsing des commandes
