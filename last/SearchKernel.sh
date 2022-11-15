@@ -31,7 +31,7 @@ Version=$1
 # ---------------------------------------
 Url=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/refs/
 printf "\033[34mgit.kernel.org\033[m : Getting available versions ... "
-wget -q $Url -O $ListeDistante
+wget -q --no-check-certificate $Url -O $ListeDistante
 echo "done."
 printf "\033[34m--------------\033[m\n"
 
@@ -60,7 +60,7 @@ echo ""
 Branch="v$(echo $Version|cut -c1).x"
 Url=https://cdn.kernel.org/pub/linux/kernel/$Branch/
 printf "\033[34mcdn.kernel.org\033[m : Getting available versions ... "
-wget -q $Url -O $ListeDistante
+wget -q --no-check-certificate $Url -O $ListeDistante
 echo "done."
 printf "\033[34m--------------\033[m\n"
 
