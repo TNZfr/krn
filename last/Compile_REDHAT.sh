@@ -31,8 +31,9 @@ CheckStatus ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Compile Archive "
+    echo "Syntax : krn Compile Version|Archive "
     echo ""
+    echo "  Version : Linux version"
     echo "  Archive : Linux source archive (tar.xz or tar.gz)"
     echo ""
     exit 1
