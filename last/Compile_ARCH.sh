@@ -43,18 +43,25 @@ CheckStatus ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Compile Archive "
+    echo "Syntax : krn Compile Version|Archive "
     echo ""
+    echo "  Version : Linux version"
     echo "  Archive : Linux source archive (tar.xz or tar.gz)"
     echo ""
     exit 1
 fi
 
-Archive=$1
-if [ ! -f $Archive ]
+Param=$1
+if [ ! -f $Param ]
 then
-    echo "$Archive not found."
-    exit 1
+    GetSource.sh $Param
+    Archive=$(ls -1 $KRN_WORKSPACE/linux-$Version.tar.?? 2>/dev/null)
+    if [ "$Archive" = "" ]
+    then
+	exit 1
+    fi
+else
+    Archive=$Param
 fi
 
 cd $(dirname $Archive)

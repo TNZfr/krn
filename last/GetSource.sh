@@ -39,7 +39,7 @@ GetKernelSource ()
     then 
 	echo "Download error (status $Status)" 
 	rm -f $KRN_WORKSPACE/$Archive
-	return 0
+	return 1
     fi
     echo "Archive downloaded from (git/cdn).kernel.org"
     echo "Archive available : $KRN_WORKSPACE/$Archive"

@@ -54,6 +54,7 @@ PurgeWorkspace ()
 		    # Compilation terminée (normalement en erreur)
 		    _FreeDisk=$(du -hs $KRN_WORKSPACE/$_Fichier|tr ['\t'] [' ']|cut -d' ' -f1)
 		    printf "Version %-10s : Compilation directory ${_Fichier%/} purged ($_FreeDisk freed)\n" $Version
+		    [ -L $KRN_WORKSPACE/$_Fichier ] && rm -rf $(readlink -f $KRN_WORKSPACE/$_Fichier)
 		    rm -rf $KRN_WORKSPACE/$_Fichier
 		fi
 		;;
