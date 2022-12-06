@@ -55,7 +55,7 @@ Param=$1
 if [ ! -f $Param ]
 then
     GetSource.sh $Param
-    Archive=$(ls -1 $KRN_WORKSPACE/linux-$Version.tar.?? 2>/dev/null)
+    Archive=$(ls -1 $KRN_WORKSPACE/linux-$Param.tar.?? 2>/dev/null)
     if [ "$Archive" = "" ]
     then
 	exit 1
