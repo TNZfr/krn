@@ -77,9 +77,9 @@ do
     $KRN_sudo mkinitcpio -k $KernelVersion -g       /boot/initrd.img-$KernelVersion
     CheckStatus   
 
-    printh "DKMS modules build for $KernelVersion ..."
-    $KRN_sudo dkms autoinstall -k $KernelVersion
-    CheckStatus   
+    #printh "DKMS modules build for $KernelVersion ..."
+    #$KRN_sudo dkms autoinstall -k $KernelVersion
+    #CheckStatus   
 
     echo ""
     cd $TempDir

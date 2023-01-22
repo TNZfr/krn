@@ -37,12 +37,23 @@ cd       $TempDir
 # Telechargement des paquets
 # --------------------------
 GetKernel.sh $*
+[ $? -ne 0 ] && exit 1
 echo ""
 
 # Installation des paquets
 # ------------------------
 for Version in $*
 do
+    if [ ${Version:0:3} = "ckc" ]
+    then
+	if [ "$(echo $Version|grep rc)" = "" ]
+	then
+	    Version=$(echo $Version|cut -d'-' -f2)
+	else
+	    Version=$(echo $Version|cut -d'-' -f2,3)
+	fi
+    fi
+    
     [ ! -d $Version ] && continue
     cd $Version
 

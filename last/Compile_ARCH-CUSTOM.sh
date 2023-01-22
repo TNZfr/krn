@@ -84,7 +84,7 @@ echo ""
 Debut=$(TopHorloge)
 TmpDir=$PWD/Compil-$$
 KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4); [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
-if [ "$KRN_DEVSHM" -gt 5120 ]
+if [ "$KRN_DEVSHM" -gt $KRN_MINTMPFS ]
 then
     printh "Build temporary workspace on /dev/shm/Compil-$$ (tmpfs)"
     mkdir /dev/shm/Compil-$$

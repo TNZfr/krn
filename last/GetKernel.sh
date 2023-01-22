@@ -10,6 +10,17 @@ GetKernelPackage ()
     echo ""
 
     # 1.Recherche dans le repertoire de stockage (deb)
+    if [ ${Version:0:3} = "ckc" ]
+    then
+	export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
+	if [ "$(echo $Version|grep rc)" = "" ]
+	then
+	    Version=$(echo $Version|cut -d'-' -f2)
+	else
+	    Version=$(echo $Version|cut -d'-' -f2,3)
+	fi
+    fi
+
     NbFound=$(ls -1 $KRN_WORKSPACE/linux-*$Version*.deb 2>/dev/null|wc -l)
     if [ $NbFound -ge 3 ]
     then
@@ -19,14 +30,17 @@ GetKernelPackage ()
     fi
 
     # 2.Recherche sur Ubuntu/Mainline
-    GetKernelPackage_UbuntuMainline $Version
-    NbFound=$?
-    [ $NbFound -ge 4 ] && return 0
-
-    if [ $NbFound -gt 0 ]
+    if [ ${Version:0:3} != "ckc" ]
     then
-	echo "Not enough packages, file(s) removed."
-	rm -f linux-*$Version*.deb
+	GetKernelPackage_UbuntuMainline $Version
+	NbFound=$?
+	[ $NbFound -ge 4 ] && return 0
+
+	if [ $NbFound -gt 0 ]
+	then
+	    echo "Not enough packages, file(s) removed."
+	    rm -f linux-*$Version*.deb
+	fi
     fi
 
     echo ""
@@ -101,6 +115,19 @@ Debut=$(TopHorloge)
 ListeVersion=$*
 for Version in $ListeVersion
 do
+    # Misundersting filter
+    NbCKC=$(ls -1d $KRN_WORKSPACE/ckc-$Version-* 2>/dev/null|wc -l)
+    if [ $NbCKC -gt 0 ]
+    then
+	echo ""
+	echo " $NbCKC Custom Kernel match(es) version $Version :"
+	for CustomKernel in $(ls -1d $KRN_WORKSPACE/ckc-$Version-*)
+	do
+	    printf "\t\033[35m$(basename $CustomKernel)\033[m\n"
+	done
+	exit 1		    
+    fi
+    
     case $(echo $KRN_MODE|cut -d- -f1) in
 	ARCH)
 	    if [ -L $Version ]
@@ -109,10 +136,52 @@ do
 		continue
 	    fi
 	    
+	    if [ ${Version:0:3} = "ckc" ]
+	    then
+		export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
+		
+		if [ "$(echo $Version|grep rc)" = "" ]
+		then
+		    Version=$(echo $Version|cut -d'-' -f2)
+		else
+		    Version=$(echo $Version|cut -d'-' -f2,3)
+		fi
+	    fi
+	    
 	    if [ -d $KRN_WORKSPACE/ARCH-linux-$Version ]
 	    then
 		echo "* ARCH-linux-$Version found in workspace, link $Version created"
 		ln -s $KRN_WORKSPACE/ARCH-linux-${Version} $Version
+	    else
+		exit 1
+	    fi
+	    ;;
+
+	GENTOO)
+	    if [ -L $Version ]
+	    then
+		echo "* link already exists for ${KRN_MODE}-$Version"
+		continue
+	    fi
+	    
+	    if [ ${Version:0:3} = "ckc" ]
+	    then
+		export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
+		
+		if [ "$(echo $Version|grep rc)" = "" ]
+		then
+		    Version=$(echo $Version|cut -d'-' -f2)
+		else
+		    Version=$(echo $Version|cut -d'-' -f2,3)
+		fi
+	    fi
+	    
+	    if [ -d $KRN_WORKSPACE/${KRN_MODE}-$Version ]
+	    then
+		echo "* ${KRN_MODE}-$Version found in workspace, link $Version created"
+		ln -s $KRN_WORKSPACE/${KRN_MODE}-${Version} $Version
+	    else
+		exit 1
 	    fi
 	    ;;
 
@@ -121,11 +190,24 @@ do
 	    PackageVersion=$Version
 	    [ "$(echo $PackageVersion|cut -d. -f3)" = "" ] && PackageVersion=${PackageVersion}.0
 	    
+	    if [ ${PackageVersion:0:3} = "ckc" ]
+	    then
+		export KRN_WORKSPACE=$KRN_WORKSPACE/$PackageVersion
+		if [ "$(echo $Version|grep rc)" = "" ]
+		then
+		    PackageVersion=$(echo $PackageVersion|cut -d'-' -f2)
+		else
+		    PackageVersion=$(echo $PackageVersion|cut -d'-' -f2,3)
+		fi
+	    fi
+	    
 	    NbFound=$(ls -1 $KRN_WORKSPACE/kernel*-${PackageVersion}_*.rpm 2>/dev/null|wc -l)
 	    if [ $NbFound -ge 2 ]
 	    then
 		echo "Version $PackageVersion : $NbFound packages available from $KRN_WORKSPACE"
 		cp $KRN_WORKSPACE/kernel*-${PackageVersion}_*.rpm $PWD
+	    else
+		exit 1
 	    fi
 	    ;;	
 

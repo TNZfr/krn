@@ -58,21 +58,25 @@ do
 
     case $_Type in
 	dir)
-	    _ProcessID=$(echo $_Libelle|tr ['\033'] [' ']|cut -d' ' -f4|cut -d- -f2)
+	    _DirName=$(echo $_Libelle|tr ['\033'] [' ']|cut -d' ' -f4)
+	    _ProcessID=$(basename $_DirName|cut -d- -f2)
 	    if [ -d /proc/$_ProcessID ]
 	    then
 		# Compilation en cours
-		printf "%-10s $_Libelle : \033[32;5mRunning\033[m\n" $_Version
+		printf "%-11s $_Libelle : \033[32;5mRunning\033[m\n" $_Version
 	    else
 		# Compilation terminée (normalement en erreur)
-		printf "%-10s $_Libelle : \033[30;41mFAILED\033[m\n" $_Version
+		printf "%-11s $_Libelle : \033[30;41mFAILED\033[m\n" $_Version
 	    fi
 	    ;;
 	*)
-	    printf "%-10s $_Libelle\n" $_Version
+	    printf "%-11s $_Libelle\n" $_Version
     esac
 done
 
 rm -rf $TmpDir
 echo ""
-[ $# -ne 0 ] && SearchKernel.sh $*
+[ $# -eq 0 ] && exit 0
+
+# Recherche des noyaux 
+SearchKernel.sh $*

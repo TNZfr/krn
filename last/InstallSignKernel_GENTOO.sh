@@ -77,9 +77,9 @@ do
     $KRN_sudo mkinitcpio -k $KernelVersion -g       /boot/initrd.img-$KernelVersion
     CheckStatus   
 
-    printh "DKMS modules build for $KernelVersion ..."
-    $KRN_sudo dkms autoinstall -k $KernelVersion
-    CheckStatus   
+    #printh "DKMS modules build for $KernelVersion ..."
+    #$KRN_sudo dkms autoinstall -k $KernelVersion
+    #CheckStatus   
 
     echo ""
     cd $TempDir
@@ -90,6 +90,10 @@ done
 printh "GRUB update ..."
 $KRN_sudo grub-mkconfig -o /boot/grub/grub.cfg
 CheckStatus
+
+# Signature des noyaux traites
+# ----------------------------
+SignKernel_${KRN_MODE}.sh $*
 
 # Menage de fin de traitement
 # ---------------------------

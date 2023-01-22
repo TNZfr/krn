@@ -4,7 +4,7 @@
 function RunCommand
 {
     RunCommand_Name=$*
-    AcctFile_Commande=$(for Name in $*; do echo ${Name%.ksh};done)
+    AcctFile_Commande=$(for Name in $*; do echo ${Name%.sh};done)
     AcctFile_Commande=$(echo $AcctFile_Commande|sed 's/ //g')
 
     # --------------------------------
@@ -38,9 +38,13 @@ function RunCommand
 if [ $# -eq 0 ]
 then
     echo   ""
-    printf " \033[30;42m KRN v6.3 \033[m : Kernel management tool for Debian based, Redhat based and ArchLinux distributions"
+    printf " \033[30;42m KRN v7.0 \033[m : Kernel management tool\n"
     echo   ""
-    echo   ""
+    echo   " - Mode DEBIAN      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
+    echo   " - Mode REDHAT      : Redhat based distributions (RHEL, Centos, Fedora ...)"
+    echo   " - Mode ARCH        : Arch-Linux distribution with kernel named version"
+    echo   " - Mode ARCH-CUSTOM : Arch-Linux distribution with fixed kernel name"
+    echo   " - Mode GENTOO      : Gentoo distribution"
     echo   ""
     printf "\033[37;44m Syntax \033[m : krn Command Parameters ...\n"
     echo  ""
@@ -58,6 +62,7 @@ then
     echo  "Install            : Install selected kernel from local (and Ubuntu/Mainline in DEBIAN mode)"
     echo  "Remove             : Remove selected installed kernel"
     echo  ""
+    echo  "CreateSign         : Create signature certificate and enroll in UEFI/SecureBoot (or not)"
     echo  "Sign           (SK): Sign installed kernel (DEBIAN only)"
     echo  "VerifyKernel   (VK): Verify installed kernel and module signatures"
     echo  "InstallSign    (IS): Install and sign selected kernel (DEBIAN only)"
@@ -66,13 +71,19 @@ then
     printf "\033[34m-------------------------\033[m\n"
     echo  "ChangeLog           (CL): Get Linux changelog file from kernel.org and display selection"
     echo  "GetSource           (GS): Get Linux sources archive from kernel.org"
-    echo  "SetConfig           (SC): Display and set default config file for kernel compilation"
     echo  ""
-    echo  "Compile             (CC): Compile kernel"
+    echo  "Compile             (CC): Get sources and compile kernel"
     echo  "CompilInstall      (CCI): Get sources, compile and install kernel"
     echo  ""
     echo  "CompileSign        (CCS): Compile and sign kernel (DEBIAN only)"
     echo  "CompilSignInstall (CCSI): Get sources, compile, sign and install kernel (DEBIAN only)"
+    echo  ""
+    echo  "SetConfig           (SC): Display and set default config file for kernel compilation"
+    echo  "KernelConfig        (KC): Generate a custom kernel config file (Cf krn SetConfig)"
+    echo  "ConfComp           (KCC): Configure kernel and compile"
+    echo  "ConfCompInstall   (KCCI): Configure kernel, compile and install"
+    echo  "ConfCompSign      (KCCS): Configure kernel and compile signed kernel/modules"
+    echo  "ConfCompSignInst (KCCSI): Configure kernel, compile signed kernel/modules and install"
     echo  ""
     printf "\033[34m Log management \033[m\n"
     printf "\033[34m----------------\033[m\n"
@@ -108,26 +119,35 @@ Commande=$(echo $1|tr [:upper:] [:lower:])
 
 case $Commande in
 
-    "configure"        |"cf")   RunCommand Configure.sh                     ;;
-    "purge"                 )   RunCommand Purge.sh                         ;;
-    "list"             |"ls")   RunCommand ListKernel.sh                    ;;
-    "search"           |"se")   RunCommand SearchKernel.sh                  ;;
-    "get"              |"gk")   RunCommand GetKernel.sh                     ;;
-    "install"               )   RunCommand InstallKernel_${KRN_MODE}.sh     ;;
-    "sign"             |"sk")   RunCommand SignKernel_${KRN_MODE}.sh        ;;
-    "installsign"      |"is")   RunCommand InstallSignKernel_${KRN_MODE}.sh ;;
-    "remove"                )   RunCommand RemoveKernel_${KRN_MODE}.sh      ;;
+    "configure"        |"cf")    RunCommand Configure.sh                     ;;
+    "purge"                 )    RunCommand Purge.sh                         ;;
+    "list"             |"ls")    RunCommand ListKernel.sh                    ;;
+    "search"           |"se")    RunCommand SearchKernel.sh                  ;;
+    "get"              |"gk")    RunCommand GetKernel.sh                     ;;
+    "install"               )    RunCommand InstallKernel_${KRN_MODE}.sh     ;;
     
-    "changelog"        |"cl")   RunCommand ChangeLog.sh                     ;;
-    "getsource"        |"gs")   RunCommand GetSource.sh                     ;;
-    "setconfig"        |"sc")   RunCommand SetConfig.sh                     ;;
-    "verifykernel"     |"vk")   RunCommand VerifyKernel.sh                  ;;
-    "compile"          |"cc")   RunCommand Compile_${KRN_MODE}.sh           ;;
-    "compilinstall"    |"cci")  RunCommand CompilInstall_${KRN_MODE}.sh     ;;
-    "compilesign"      |"ccs")  RunCommand CompileSign_${KRN_MODE}.sh       ;;
-    "compilsigninstall"|"ccsi") RunCommand CompilSignInstall_${KRN_MODE}.sh ;;
+    "createsign"            )    RunCommand CreateSign.sh                    ;;
+    "sign"             |"sk")    RunCommand SignKernel_${KRN_MODE}.sh        ;;
+    "installsign"      |"is")    RunCommand InstallSignKernel_${KRN_MODE}.sh ;;
+    "remove"                )    RunCommand RemoveKernel_${KRN_MODE}.sh      ;;
+    
+    "changelog"        |"cl")    RunCommand ChangeLog.sh                     ;;
+    "getsource"        |"gs")    RunCommand GetSource.sh                     ;;
 
-    "savelog"          |"sl")   SaveLog.sh ;;
+    "setconfig"        |"sc")    RunCommand SetConfig.sh                     ;;
+    "kernelconfig"     |"kc")    RunCommand KernelConfig.sh                  ;;
+    "confcomp"         |"kcc")   RunCommand ConfComp.sh                      ;;
+    "confcompinstall"  |"kcci")  RunCommand ConfCompInstall.sh               ;;
+    "confcompsign"     |"kccs")  RunCommand ConfCompSign.sh                  ;;
+    "confcompsigninst" |"kccsi") RunCommand ConfCompSignInst.sh              ;;
+    
+    "verifykernel"     |"vk")    RunCommand VerifyKernel.sh                  ;;
+    "compile"          |"cc")    RunCommand Compile_${KRN_MODE}.sh           ;;
+    "compilinstall"    |"cci")   RunCommand CompilInstall_${KRN_MODE}.sh     ;;
+    "compilesign"      |"ccs")   RunCommand CompileSign_${KRN_MODE}.sh       ;;
+    "compilsigninstall"|"ccsi")  RunCommand CompilSignInstall_${KRN_MODE}.sh ;;
+
+    "savelog"          |"sl")    SaveLog.sh ;;
 
     *)
 	echo "Kernel management : 'krn $1' unknown command."

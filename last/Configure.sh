@@ -58,6 +58,8 @@ CreateConfiguration ()
     Saisie KRNSB_PEM          ""         "Signing kernel : cert file full path (.pem)"
     Saisie KRNSB_DER          ""         "Signing kernel : cert file full path (.der)"
 
+    echo "export KRN_MINTMPFS=5120" >> $KRN_RC
+
     printh "$KRN_RC created."
 
     printh "Directories verification ..."
@@ -103,7 +105,7 @@ then
     . $KRN_RC
     
     NbVariable=$(env|grep -e ^KRN_ -e ^KRNSB_|wc -l)
-    if [ $NbVariable -lt 9 ]
+    if [ $NbVariable -lt 10 ]
     then
 	Configure.sh RESET
 	. $KRN_RC

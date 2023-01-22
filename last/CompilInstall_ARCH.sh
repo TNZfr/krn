@@ -20,6 +20,7 @@ do
     # Verification avant compilation
     # ------------------------------
     GetKernel.sh $Version
+    [ $? -ne 0 ] && exit 1
     if [ -L $Version ]
     then
 	echo   ""

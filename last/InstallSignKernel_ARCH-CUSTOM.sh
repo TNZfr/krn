@@ -66,15 +66,11 @@ do
 
     # Copie des fichiers dans /boot
     printh "Deploy vmlinuz-$KernelVersion ..."
-    $KRN_sudo cp $(find arch -name bzImage -type f) /boot/vmlinuz-$KernelVersion
-    CheckStatus
-    
-    printh "Deploy config-$KernelVersion ..."
-    $KRN_sudo cp .config                            /boot/config-$KernelVersion
+    $KRN_sudo cp $(find arch -name bzImage -type f) /boot/vmlinuz-linux-custom
     CheckStatus
     
     printh "Build initrd.img-$KernelVersion ..."
-    $KRN_sudo mkinitcpio -k $KernelVersion -g       /boot/initrd.img-$KernelVersion
+    $KRN_sudo mkinitcpio -k $KernelVersion -g       /boot/initramfs-linux-custom.img
     CheckStatus   
 
     printh "DKMS modules build for $KernelVersion ..."
@@ -85,11 +81,9 @@ do
     cd $TempDir
 done
 
-# Mise a jour de GRUB
-# -------------------
-printh "GRUB update ..."
-$KRN_sudo grub-mkconfig -o /boot/grub/grub.cfg
-CheckStatus
+# Signature des noyaux traites
+# ----------------------------
+SignKernel_${KRN_MODE}.sh $*
 
 # Menage de fin de traitement
 # ---------------------------

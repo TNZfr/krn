@@ -62,10 +62,7 @@ if [ ! -f $Param ]
 then
     GetSource.sh $Param
     Archive=$(ls -1 $KRN_WORKSPACE/linux-$Param.tar.?? 2>/dev/null)
-    if [ "$Archive" = "" ]
-    then
-	exit 1
-    fi
+    [ "$Archive" = "" ] && exit 1
 else
     Archive=$Param
 fi
@@ -92,7 +89,7 @@ echo ""
 Debut=$(TopHorloge)
 TmpDir=$PWD/Compil-$$
 KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4); [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
-if [ "$KRN_DEVSHM" -gt 5120 ]
+if [ "$KRN_DEVSHM" -gt $KRN_MINTMPFS ]
 then
     printh "Build temporary workspace on /dev/shm/Compil-$$ (tmpfs)"
     mkdir /dev/shm/Compil-$$
@@ -166,7 +163,7 @@ sbsign                 \
     ${Vmlinuz}
 
 mv -f ${Vmlinuz}.signed ${Vmlinuz}
-kecho ""
+echo ""
 
 printh "Signing kernel modules $Version ..."
 export KBUILD_SIGN_PIN=$KRNSB_PASS

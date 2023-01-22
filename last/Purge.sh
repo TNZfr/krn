@@ -8,22 +8,70 @@ PurgeWorkspace ()
     Version=$1
 
     # On purge tout le workspace
+    # --------------------------
     if [ "$Version" = all ]
     then	
+	NbCKC=$(ls -1d $KRN_WORKSPACE/ckc-*-* 2>/dev/null|wc -l)
+	[ $NbCKC -gt 0 ] && for Version in $(ls -1d $KRN_WORKSPACE/ckc-*-*)
+	do
+	    PurgeWorkspace $Version
+	done
+	
 	for Version in $(cat $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version sort)
 	do
 	    PurgeWorkspace $Version
 	done
+
 	return
     fi
 
+    # Gestion des ckc
+    # ---------------
+    if [ ${Version:0:3} = "ckc" ]
+    then
+	if [ "$(echo $Version|grep rc)" = "" ]
+	then
+	    CKC_Version=$(echo $Version|cut -d'-' -f2)
+	else
+	    CKC_Version=$(echo $Version|cut -d'-' -f2,3)
+	fi
+	
+	# Noyau installe
+	if [ "$(grep "^$CKC_Version," $InstalledKernel)" != "" ]
+	then
+	    printf "\033[31mVersion %-10s\033[m : \033[31mINSTALLED\033[m, no purge for $_Fichier\n" $CKC_Version
+	    return
+	fi
+
+	# Compilation en cours
+	NbCompil=$(ls -1d $KRN_WORKSPACE/$Version/Compil-* 2>/dev/null|wc -l)
+	[ $NbCompil -gt 0 ] && for Compil in $(ls -1d $KRN_WORKSPACE/$Version/Compil-*)
+	do
+	    ProcessID=$(basename $Compil|cut -d'-' -f2)
+	    if [ -d /proc/$ProcessID ]
+	    then
+		printf "\033[31mVersion %-10s\033[m : \033[31mRunning COMPIL\033[m, no purge for $Version\n" $CKC_Version
+		return
+	    fi
+	done
+	_FreeDisk=$(du -hs $KRN_WORKSPACE/$Version|tr ['\t'] [' ']|cut -d' ' -f1)
+	printf "Version %-10s : $Version purged ($_FreeDisk freed).\n" $CKC_Version
+	rm -rf $KRN_WORKSPACE/$Version
+	return 
+    fi
+
+    # Gestion des paquets / sources / compilation
+    # -------------------------------------------
     IsInstalled=$(grep "^$Version," $InstalledKernel)
     grep "^$Version," $WorkspaceList | while read Enreg 
     do
-	_Type="$(echo $Enreg|cut -d',' -f2)"
+	_Type="$(   echo $Enreg|cut -d',' -f2)"
 	_Libelle="$(echo $Enreg|cut -d',' -f3)"
 	_Fichier="$(echo $Enreg|cut -d',' -f4)"
 
+	# filtre pour les ckc
+	[ ${_Fichier:0:3} = "ckc" ] && continue
+	
 	case $_Type in
 	    tar)
 		_FreeDisk=$(du -hs $KRN_WORKSPACE/$_Fichier|tr ['\t'] [' ']|cut -d' ' -f1)
@@ -40,7 +88,12 @@ PurgeWorkspace ()
 
 		_FreeDisk=$(du -hs $KRN_WORKSPACE/$_Fichier|tr ['\t'] [' ']|cut -d' ' -f1)
 		printf "Version %-10s : $_Libelle $_Fichier purged ($_FreeDisk freed).\n" $Version
-		rm -f $KRN_WORKSPACE/$_Fichier
+		if [ $_Type = arc ]
+		then
+		    rm -rf $KRN_WORKSPACE/$_Fichier
+		else
+		    rm -f  $KRN_WORKSPACE/$_Fichier
+		fi
 		[ -L $KRN_WORKSPACE/$Version ] && rm -f $KRN_WORKSPACE/$Version
 		;;
 

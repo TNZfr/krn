@@ -171,7 +171,7 @@ ListInstalledKernel ()
     for _Enreg in $(GetInstalledKernel|linux-version sort)
     do
 	_ModuleDir=$(echo $_Enreg|cut -d',' -f3)
-	printf "%-20s \033[36mModule directory size\033[m %s\n"    \
+	printf "%-22s \033[36mModule directory size\033[m %s\n"    \
 	       $(basename $_ModuleDir)                              \
 	       $(du -hs   $_ModuleDir|tr ['\t'] [' ']|cut -d' ' -f1)
     done
@@ -184,9 +184,12 @@ GetWorkspaceList()
     CurrentDir=$PWD
     cd $KRN_WORKSPACE
     
-    _ListeFichier=$(ls -1)
+    _ListeFichier=$(ls -1|grep -v "Compil-"; find -name "Compil-*")
     [ "$_ListeFichier" != "" ] && for _Fichier in $_ListeFichier
     do
+	# suppression du ./ au debut en retour du find
+	[ ${_Fichier:0:2} = "./" ] && _Fichier=${_Fichier:2}
+	
 	_TypeObjet=""
 	[ $_Fichier != ${_Fichier%.deb} ]    && _TypeObjet="deb,\033[32mDebian package (deb)\033[m"
 	[ $_Fichier != ${_Fichier%.rpm} ]    && _TypeObjet="rpm,\033[32mRedhat package (rpm)\033[m"
@@ -221,7 +224,7 @@ GetWorkspaceList()
 	    
 	    # Repertoire install ARCH Linux
 	    # -----------------------------
-	    ARCH-linux-*)
+	    ARCH-linux-*|GENTOO-linux-*)
 		[ ! -d $_Fichier ] && continue
 		
 		_TypeObjet="arc,\033[36mDirectory $_Fichier\033[m"
@@ -230,7 +233,7 @@ GetWorkspaceList()
 	    
 	    # Repertoire de build
 	    # -------------------
-	    Compil-*)
+	    *Compil-*)
 		[ ! -d $_Fichier ] && continue
 		
 		_TypeObjet="dir,\033[33mCompilation directory ${_Fichier%/}\033[m"
@@ -241,12 +244,32 @@ GetWorkspaceList()
 		then
 		    cd ..
 		    _Version=Unknown
-		    continue
+		else
+		    cd $_SourceDir
+		    _Version=$(make kernelversion 2>/dev/null)
 		fi
-		cd $_SourceDir
-		_Version=$(make kernelversion 2>/dev/null)
 		cd $KRN_WORKSPACE
 		;;
+
+	    # Noyaux custom
+	    # -------------
+	    ckc-*-*)
+		_rc=$(echo $_Fichier|grep rc)
+		if [ "$_rc" = "" ]
+		then
+		    _Version=$(echo $_Fichier|cut -d'-' -f2)
+		else
+		    _Version=$(echo $_Fichier|cut -d'-' -f2,3)
+		fi
+		_Contenu=$(ls -1 $_Fichier 2>/dev/null)
+		if   [ "$(echo $_Contenu|grep ARCH-linux)" != "" ];   then _TypeObjet="ckc,\033[36mDirectory $_Contenu\033[m Custom \033[35m$_Fichier\033[m"
+		elif [ "$(echo $_Contenu|grep GENTOO-linux)" != "" ]; then _TypeObjet="ckc,\033[36mDirectory $_Contenu\033[m Custom \033[35m$_Fichier\033[m"
+		elif [ "$(echo $_Contenu|grep .deb)" != "" ];         then _TypeObjet="ckc,\033[32mDebian package (deb)\033[m Custom \033[35m$_Fichier\033[m"
+		elif [ "$(echo $_Contenu|grep .rpm)" != "" ];	      then _TypeObjet="ckc,\033[32mRedhat package (rpm)\033[m Custom \033[35m$_Fichier\033[m"
+		else _TypeObjet="ckc,\033[31mEmpty\033[m Custom \033[35m$_Fichier\033[m"
+		fi
+		;;
+
 
 	    # Fichiers inconnus
 	    # -----------------

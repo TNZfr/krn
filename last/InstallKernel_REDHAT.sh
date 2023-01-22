@@ -22,6 +22,7 @@ cd       $TempDir
 # Telechargement des paquets
 # --------------------------
 GetKernel.sh $VersionList
+[ $? -ne 0 ] && exit 1
 echo ""
 
 # Installation des paquets
@@ -29,6 +30,16 @@ echo ""
 ListeRPM=""
 for Version in $VersionList
 do
+    if [ ${Version:0:3} = "ckc" ]
+    then
+	if [ "$(echo $Version|grep rc)" = "" ]
+	then
+	    Version=$(echo $Version|cut -d'-' -f2)
+	else
+	    Version=$(echo $Version|cut -d'-' -f2,3)
+	fi
+    fi
+    
     [ "$(echo $Version|cut -d. -f3)" = "" ] && Version=${Version}.0
     ListeRPM="$ListeRPM $(ls -1 kernel*-${Version}_*.rpm)"
 done

@@ -3,6 +3,18 @@
 . $KRN_EXE/_libkernel.sh
 
 #-------------------------------------------------------------------------------
+CheckTool ()
+{
+    printf "Checking $1 ... "
+    which $1 > /dev/null ; CT_Status=$?
+    [ $CT_Status -eq 0 ] && echo "OK" && return
+
+    echo "Not available"
+    echo ""
+    exit 1
+}
+
+#-------------------------------------------------------------------------------
 CheckStatus ()
 {
     Status=$?
@@ -50,10 +62,7 @@ if [ ! -f $Param ]
 then
     GetSource.sh $Param
     Archive=$(ls -1 $KRN_WORKSPACE/linux-$Param.tar.?? 2>/dev/null)
-    if [ "$Archive" = "" ]
-    then
-	exit 1
-    fi
+    [ "$Archive" = "" ] && exit 1
 else
     Archive=$Param
 fi
@@ -61,15 +70,19 @@ fi
 # Compilation / signature
 # -----------------------
 cd $(dirname $Archive)
-DebDirectory=$PWD
+MainDirectory=$PWD
 Archive=$(basename $Archive)
 
-# Installation des prerequis
-# --------------------------
-ToolsList="build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr libelf-dev flex bison libncurses-dev rsync git curl dwarves zstd"
-printh "Verifying tools installation ..."
-Uninstalled=$(dpkg -l $ToolsList|grep -v -e "^S" -e "^|" -e "^+++" -e "^ii")
-[ "$Uninstalled" != "" ] && $KRN_sudo apt install -y $ToolsList
+# Controle des prerequis
+# ----------------------
+echo ""
+CheckTool make
+CheckTool gcc
+CheckTool flex
+CheckTool bison
+CheckTool zstd
+CheckTool cpio
+echo ""
 
 # Creation / controle espace de compilation
 # -----------------------------------------
@@ -116,10 +129,11 @@ CheckStatus
 #-------------------------------------------------------------------------------
 # Compilation
 #
-printh "- Make bindeb-pkg (compil) ..."
-make bindeb-pkg -j"$(nproc)"           \
-     LOCALVERSION=-${KRN_ARCHITECTURE} \
-     KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" > $TmpDir/Make-2-bindebpkg.log 2>&1
+printh "- Make (bzImage compil) ..."
+make -j"$(nproc)" > $TmpDir/Make-2-bzimage.log 2>&1
+CheckStatus
+printh "- Make modules (compil) ..."
+make modules -j"$(nproc)" > $TmpDir/Make-3-modules.log 2>&1
 CheckStatus
 
 #-------------------------------------------------------------------------------
@@ -133,10 +147,8 @@ cat $KRNSB_PRIV $KRNSB_PEM > certs/signing_key.pem
 #-------------------------------------------------------------------------------
 # Relink de bzImage
 #
-printh "- Make bindeb-pkg (relink kernel) ..."
-make bindeb-pkg -j"$(nproc)"           \
-     LOCALVERSION=-${KRN_ARCHITECTURE} \
-     KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" > $TmpDir/Make-3-bindebpkg.log 2>&1
+printh "- Make (relink kernel) ..."
+make -j"$(nproc)" > $TmpDir/Make-4-bzimage.log 2>&1
 CheckStatus
 
 #-------------------------------------------------------------------------------
@@ -153,28 +165,33 @@ sbsign                 \
 mv -f ${Vmlinuz}.signed ${Vmlinuz}
 echo ""
 
-#-------------------------------------------------------------------------------
-# Fabrication des paquets finaux 
-#
-printh "- Make bindeb-pkg (signed kernel) ..."
-make bindeb-pkg -j"$(nproc)"           \
-     LOCALVERSION=-${KRN_ARCHITECTURE} \
-     KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" > $TmpDir/Make-4-bindebpkg.log 2>&1
-CheckStatus
+printh "Signing kernel modules $Version ..."
+export KBUILD_SIGN_PIN=$KRNSB_PASS
 
+for ModuleBinary in $(find . -name "*.ko")
+do
+    scripts/sign-file \
+	sha256        \
+	$KRNSB_PRIV   \
+	$KRNSB_DER    \
+	$ModuleBinary
+done
+#-------------------------------------------------------------------------------
 printh "Finalizing ..."
-mv $TmpDir/linux-*.deb $DebDirectory 2>/dev/null
+find -name *.o -exec rm {} \;
+cd $TmpDir
+mv $Directory $MainDirectory/${KRN_MODE}-$Directory 2>/dev/null
 
 printh "Cleaning ..."
-cd $DebDirectory
+cd $Mainirectory
 rm -rf $TmpDir $Archive /dev/shm/Compil-$$
 
 echo ""
 printf "\033[44m CompileSign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo ""
 
-echo "Available packages in $PWD :"
-ls -lh linux-*${KernelVersion}*.deb 2>/dev/null
+echo "Available compiled kernel in $PWD :"
+ls -1 ${KRN_MODE}-linux-* 2>/dev/null|linux-version sort
 echo ""
 
 exit 0

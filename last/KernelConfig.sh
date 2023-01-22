@@ -3,38 +3,17 @@
 . $KRN_EXE/_libkernel.sh
 
 #-------------------------------------------------------------------------------
-CheckStatus ()
-{
-    Status=$?
-    [ $Status -eq 0 ] && return
-
-    echo   ""
-    echo   "ERROR : Return code $Status"
-    echo   "        Temporary workspace $TmpDir is left as is for analysis"
-    echo   ""
-    echo   "        Available log files :"
-    for LogFile in $TmpDir/Make-?-*.log
-    do
-	echo   "          $LogFile"
-    done
-    echo   ""
-    echo   "        Don't forget to remove it because :"
-    printf "        ";du -hs $TmpDir 
-    echo   ""
-    exit 1
-}
-
-#-------------------------------------------------------------------------------
 # main
 #
 
-if [ $# -lt 1 ]
+if [ $# -lt 2 ]
 then
     echo ""
-    echo "Syntax : krn Compile Version|Archive "
+    echo "Syntax : krn KernelConfig Version|Archive Label"
     echo ""
     echo "  Version : Linux version"
     echo "  Archive : Linux source archive (tar.xz or tar.gz)"
+    echo "  Label   : Configuration label"
     echo ""
     exit 1
 fi
@@ -51,6 +30,8 @@ then
 else
     Archive=$Param
 fi
+
+Libelle=$2
 
 cd $(dirname $Archive)
 DebDirectory=$PWD
@@ -92,38 +73,36 @@ else
 fi
 
 cd $TmpDir/$Directory
-printh "Compiling $(basename $PWD) ..."
+printh "Configuring $(basename $PWD) ..."
 KernelVersion=$(make kernelversion)
+FinalConfig=$KRN_WORKSPACE/config-${KernelVersion}-${Libelle}
 
-if [ -L $HOME/.krn/CompilConfig ]
+if [ -f $FinalConfig ]
 then
-    printh "- Set owner config ($(basename $(readlink -f $HOME/.krn/CompilConfig))) ..."
-    cp $HOME/.krn/CompilConfig .config
+    printh "- Resume from existing $(basename $FinalConfig)"
+    cp -f $FinalConfig .config
+else
+    printh "- Make olddefconfig ..."
+    make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 fi
 
-printh "- Make olddefconfig ..."
-make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
-CheckStatus
-
-printh "- Make bindeb-pkg ..."
-make bindeb-pkg -j"$(nproc)"           \
-     LOCALVERSION=-"$KRN_ARCHITECTURE" \
-     KDEB_PKGVERSION="$KernelVersion-krn-$(date +%Y%m%d)" > $TmpDir/Make-2-bindebpkg.log 2>&1
-CheckStatus
+printh "- Make nconfig ..."
+make nconfig 
 
 printh "Finalizing ..."
-mv $TmpDir/linux-*.deb $DebDirectory 2>/dev/null
+cp .config $FinalConfig
+printh "- $FinalConfig created."
 
 printh "Cleaning ..."
 cd $DebDirectory
-rm -rf $TmpDir $Archive /dev/shm/Compil-$$
+rm -rf $TmpDir /dev/shm/Compil-$$
 
 echo ""
-printf "\033[44m Compile $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m KernelConfig elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo ""
 
-echo "Available packages in $PWD :"
-ls -lh linux-*${KernelVersion}*.deb 2>/dev/null
+echo "Available Config files in $PWD :"
+ls -lh config-*-* 2>/dev/null
 echo ""
 
 exit 0

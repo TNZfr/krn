@@ -20,8 +20,20 @@ do
     # Verification avant compilation
     # ------------------------------
     PackageVersion=$Version
-    [ "$(echo $PackageVersion|cut -d. -f3)" = "" ] && PackageVersion=${PackageVersion}.0
-    [ "$(echo $Version|grep rc)" != "" ] && PackageVersion=${PackageVersion}-$(echo $Version|cut -d'-' -f2)
+    if [ ${PackageVersion:0:3} = "ckc" ]
+    then
+	export KRN_WORKSPACE=$KRN_WORKSPACE/$PackageVersion
+	if [ "$(echo $Version|grep rc)" = "" ]
+	then
+	    PackageVersion=$(echo $PackageVersion|cut -d'-' -f2)
+	else
+	    PackageVersion=$(echo $PackageVersion|cut -d'-' -f2,3)
+	fi
+    else
+	[ "$(echo $PackageVersion|cut -d. -f3)" = "" ] && PackageVersion=${PackageVersion}.0
+	[ "$(echo $Version|grep rc)" != "" ] && PackageVersion=${PackageVersion}-$(echo $Version|cut -d'-' -f2)
+    fi
+    
     NbPaquet=$(ls -1 $KRN_WORKSPACE/linux-*${PackageVersion}*.deb 2>/dev/null|wc -l)
     if [ $NbPaquet -ge 3 ]
     then

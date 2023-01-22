@@ -91,12 +91,16 @@ printh "GRUB update ..."
 $KRN_sudo grub-mkconfig -o /boot/grub/grub.cfg
 CheckStatus
 
+# Signature des noyaux traites
+# ----------------------------
+SignKernel_${KRN_MODE}.sh $*
+
 # Menage de fin de traitement
 # ---------------------------
 rm -rf $TempDir
 
 echo   ""
-printf "\033[44m InstallKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m InstallSignKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 
 exit 0

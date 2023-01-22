@@ -60,7 +60,6 @@ then
     exit 1
 fi
 
-Debut=$(TopHorloge)
 for KernelVersion in $*
 do
     VerifyOneKernel $KernelVersion

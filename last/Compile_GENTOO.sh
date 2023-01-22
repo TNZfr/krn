@@ -3,6 +3,18 @@
 . $KRN_EXE/_libkernel.sh
 
 #-------------------------------------------------------------------------------
+CheckTool ()
+{
+    printf "Checking $1 ... "
+    which $1 > /dev/null ; CT_Status=$?
+    [ $CT_Status -eq 0 ] && echo "OK" && return
+
+    echo "Not available"
+    echo ""
+    exit 1
+}
+
+#-------------------------------------------------------------------------------
 CheckStatus ()
 {
     Status=$?
@@ -53,26 +65,19 @@ else
 fi
 
 cd $(dirname $Archive)
-RpmDirectory=$PWD
+MainDirectory=$PWD
 Archive=$(basename $Archive)
 
-# Installation des prerequis
-# --------------------------
-InstalledPackage=$KRN_TMP/InstalledPackage-$$
-printh "Verifying tools installation ..."
-rpm -qa > $InstalledPackage
-ToolsList="gcc flex bison elfutils-libelf-devel openssl-devel rpm-build zstd"
-for Tool in $ToolsList
-do
-    grep -q ^$Tool $InstalledPackage
-    if [ $? -ne 0 ]
-    then
-	$KRN_sudo yum install -y $ToolsList
-	rm -f $InstalledPackage
-	break 
-    fi
-done
-rm -f $InstalledPackage
+# Controle des prerequis
+# ----------------------
+echo ""
+CheckTool make
+CheckTool gcc
+CheckTool flex
+CheckTool bison
+CheckTool zstd
+CheckTool cpio
+echo ""
 
 # Creation / controle espace de compilation
 # -----------------------------------------
@@ -110,29 +115,36 @@ if [ -L $HOME/.krn/CompilConfig ]
 then
     printh "- Set owner config ($(basename $(readlink -f $HOME/.krn/CompilConfig))) ..."
     cp $HOME/.krn/CompilConfig .config
-fi
+else
+    printh "- Using current config ..."
+fi 
 
 printh "- Make olddefconfig ..."
-make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
+make olddefconfig         > $TmpDir/Make-1-olddefconfig.log 2>&1
 CheckStatus
 
-printh "- Make binrpm-pkg ..."
-make binrpm-pkg -j"$(nproc)" LOCALVERSION=-"$KRN_ARCHITECTURE" > $TmpDir/Make-2-binrpmpkg.log 2>&1
+printh "- Make (bzImage) ..."
+make         -j"$(nproc)" > $TmpDir/Make-2-bzimage.log 2>&1
+CheckStatus
+
+printh "- Make modules ..."
+make modules -j"$(nproc)" > $TmpDir/Make-3-modules.log 2>&1
 CheckStatus
 
 printh "Finalizing ..."
-mv -f $(find $HOME/rpmbuild/RPMS -name "kernel*-${KernelVersion}_*.rpm") $RpmDirectory 2>/dev/null
+cd $TmpDir
+mv $Directory $MainDirectory/${KRN_MODE}-$Directory 2>/dev/null
 
 printh "Cleaning ..."
-cd $RpmDirectory
-rm -rf $TmpDir /dev/shm/Compil-$$ $Archive
+cd $MainDirectory
+rm -rf $TmpDir $Archive /dev/shm/Compil-$$
 
 echo ""
 printf "\033[44m Compile $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo ""
 
-echo "Available packages in $PWD :"
-ls -lh kernel*-${KernelVersion}_*.rpm 2>/dev/null
+echo "Available compiled kernel in $PWD :"
+ls -dlh ${KRN_MODE}-linux-*/ 2>/dev/null
 echo ""
 
 exit 0
