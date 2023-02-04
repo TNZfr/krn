@@ -251,25 +251,27 @@ GetWorkspaceList()
 		cd $KRN_WORKSPACE
 		;;
 
+	    # Configuration custom
+	    # --------------------
+	    config-*-*)
+		[ "$(echo $_Fichier|grep rc)" = "" ] && _Field="2" || _Field="2,3"
+		_Version=$(echo $_Fichier|cut -d'-' -f$_Field)
+		_TypeObjet="cfg,Kernel Configuration \033[34m$_Fichier\033[m"
+		;;
+
 	    # Noyaux custom
 	    # -------------
 	    ckc-*-*)
-		_rc=$(echo $_Fichier|grep rc)
-		if [ "$_rc" = "" ]
-		then
-		    _Version=$(echo $_Fichier|cut -d'-' -f2)
-		else
-		    _Version=$(echo $_Fichier|cut -d'-' -f2,3)
-		fi
+		[ "$(echo $_Fichier|grep rc)" = "" ] && _Field="2" || _Field="2,3"
+		_Version=$(echo  $_Fichier|cut -d'-' -f$_Field)
 		_Contenu=$(ls -1 $_Fichier 2>/dev/null)
-		if   [ "$(echo $_Contenu|grep ARCH-linux)" != "" ];   then _TypeObjet="ckc,\033[36mDirectory $_Contenu\033[m Custom \033[35m$_Fichier\033[m"
-		elif [ "$(echo $_Contenu|grep GENTOO-linux)" != "" ]; then _TypeObjet="ckc,\033[36mDirectory $_Contenu\033[m Custom \033[35m$_Fichier\033[m"
-		elif [ "$(echo $_Contenu|grep .deb)" != "" ];         then _TypeObjet="ckc,\033[32mDebian package (deb)\033[m Custom \033[35m$_Fichier\033[m"
-		elif [ "$(echo $_Contenu|grep .rpm)" != "" ];	      then _TypeObjet="ckc,\033[32mRedhat package (rpm)\033[m Custom \033[35m$_Fichier\033[m"
+		if   [ "${_Contenu:0:11}" = "ARCH-linux-" ];   then _TypeObjet="ckc,\033[36mDirectory $_Contenu\033[m Custom \033[35m$_Fichier\033[m"
+		elif [ "${_Contenu:0:13}" = "GENTOO-linux-" ]; then _TypeObjet="ckc,\033[36mDirectory $_Contenu\033[m Custom \033[35m$_Fichier\033[m"
+		elif [ "$(echo $_Contenu|grep .deb)" != "" ];  then _TypeObjet="ckc,\033[32mDebian package (deb)\033[m Custom \033[35m$_Fichier\033[m"
+		elif [ "$(echo $_Contenu|grep .rpm)" != "" ];  then _TypeObjet="ckc,\033[32mRedhat package (rpm)\033[m Custom \033[35m$_Fichier\033[m"
 		else _TypeObjet="ckc,\033[31mEmpty\033[m Custom \033[35m$_Fichier\033[m"
 		fi
 		;;
-
 
 	    # Fichiers inconnus
 	    # -----------------

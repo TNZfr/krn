@@ -73,7 +73,7 @@ PurgeWorkspace ()
 	[ ${_Fichier:0:3} = "ckc" ] && continue
 	
 	case $_Type in
-	    tar)
+	    tar|cfg)
 		_FreeDisk=$(du -hs $KRN_WORKSPACE/$_Fichier|tr ['\t'] [' ']|cut -d' ' -f1)
 		printf "Version %-10s : $_Libelle $_Fichier purged ($_FreeDisk freed).\n" $Version
 		rm -f $KRN_WORKSPACE/$_Fichier
