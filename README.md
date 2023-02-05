@@ -6,3 +6,6 @@ Kernel management tool for :
 * GENTOO distribution (semi-manual)
 
 All informations for installation and use are available in wiki.
+
+Just below the main help page : 
+![](https://i.imgur.com/wgS4cI9.png)
