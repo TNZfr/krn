@@ -27,33 +27,28 @@ Libelle=$2
 [ -f $Version ] && Version=$(echo ${Version%.tar.??}|cut -d'-' -f2-)
 
 # Libelle ou KernelConfig
-[ "${Libelle:0:7}" = "config-" ] && \
-    [ $PWD != $KRN_WORKSPACE ]   && \
-    [ ! -f $Libelle ]            && \
-    Libelle=$KRN_WORKSPACE/$Libelle
-
-if [ -f $Libelle ]
+FinalConfig=UnsetKernelConfig
+if [ ${Libelle:0:7} = "config-" ]   
 then
+    [ ! -f $Libelle ] && Libelle=$KRN_WORKSPACE/$Libelle
+    if [ ! -f $Libelle ]
+    then
+	echo ""
+	echo "ERROR : $(basename $Libelle) not found (even in $KRN_WORKSPACE)"
+	echo ""
+	exit 1
+    fi
+    
     FinalConfig=$(readlink -f $Libelle)
     [ "$(basename $Libelle|grep rc)" = "" ] && LabelField=3 || LabelField=4
     Libelle=$(basename $Libelle|cut -d'-' -f$LabelField)
-
-    if [ "$Libelle" = "" ]
-    then
-	echo   ""
-	echo   " ERROR : Bad filename format : $Libelle"
-	printf " Expected : config-\033[32mVersion\033[m-\033[32mLabel\033[m\n"
-	echo   ""
-	exit 1
-    fi
-else
-    FinalConfig=UnsetKernelConfig
 fi 
 
 Debut=$(TopHorloge)
 
 # Configuration noyau
 # -------------------
+KernelSource=""
 if [ $FinalConfig = UnsetKernelConfig ]
 then
     KernelConfig.sh $Version $Libelle
@@ -66,16 +61,23 @@ then
 	exit 1
     fi
 fi
+KernelSource=$(ls -1tr $KRN_WORKSPACE/linux-$Version.tar.??|tail -1) 
 SetConfig.sh $FinalConfig >/dev/null
 
 # Creation du workspace custom
 # ----------------------------
-[ "$(echo $Version|grep rc)" != "" ] \
-    && CustomWorkspace=$KRN_WORKSPACE/ckc-$(echo $Version|cut -d'-' -f1).0-$(echo $Version|cut -d'-' -f2)-$Libelle \
-    || CustomWorkspace=$KRN_WORKSPACE/ckc-$Version-$Libelle
+if [ "$(echo $Version|grep rc)" = "" ]
+then
+    CustomWorkspace=$KRN_WORKSPACE/ckc-$Version-$Libelle
+else
+    CustomWorkspace=$KRN_WORKSPACE/ckc-$(echo $Version|cut -d'-' -f1).0-$(echo $Version|cut -d'-' -f2)-$Libelle
+fi
 
 mkdir -p $CustomWorkspace
 export KRN_WORKSPACE=$CustomWorkspace
+
+# Source telecharge avec KernelConfig
+[ "$KernelSource" != "" ] && mv -f $KernelSource $KRN_WORKSPACE
 
 # Compilation du noyau
 # --------------------
@@ -93,9 +95,6 @@ esac
 # Retour a la config par defaut
 # -----------------------------
 SetConfig.sh DEFAULT >/dev/null
-
-# Sauvegarde du fichier de config
-# -------------------------------
 
 echo ""
 printf "\033[44m $CommandName elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

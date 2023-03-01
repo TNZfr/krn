@@ -91,7 +91,7 @@ make nconfig
 
 printh "Finalizing ..."
 cp .config $FinalConfig
-printh "- $FinalConfig created."
+printh "$FinalConfig created."
 
 printh "Cleaning ..."
 cd $DebDirectory

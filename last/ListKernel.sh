@@ -58,7 +58,7 @@ do
 
     case $_Type in
 	dir)
-	    _DirName=$(echo $_Libelle|tr ['\033'] [' ']|cut -d' ' -f4)
+	    _DirName=$(grep "$_Version,$_Type" ${WorkspaceList}|cut -d',' -f4)
 	    _ProcessID=$(basename $_DirName|cut -d- -f2)
 	    if [ -d /proc/$_ProcessID ]
 	    then

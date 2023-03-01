@@ -236,7 +236,15 @@ GetWorkspaceList()
 	    *Compil-*)
 		[ ! -d $_Fichier ] && continue
 		
-		_TypeObjet="dir,\033[33mCompilation directory ${_Fichier%/}\033[m"
+		if [ ${_Fichier:0:4} = "ckc-" ]
+		then
+		    RepCustom=$(dirname  ${_Fichier%/})
+		    RepCompil=$(echo $_Fichier|cut -d/ -f2)
+		    _TypeObjet="dir,\033[33mCompilation directory \033[35m$RepCustom\033[33m/$RepCompil\033[m"
+		else
+		    _TypeObjet="dir,\033[33mCompilation directory ${_Fichier%/}\033[m"
+		fi
+		
 		cd $_Fichier
 		
 		_SourceDir=$(ls -1d linux-*/ 2>/dev/null)

@@ -44,6 +44,7 @@ PurgeWorkspace ()
 	fi
 
 	# Compilation en cours
+	CompilToDelete=""
 	NbCompil=$(ls -1d $KRN_WORKSPACE/$Version/Compil-* 2>/dev/null|wc -l)
 	[ $NbCompil -gt 0 ] && for Compil in $(ls -1d $KRN_WORKSPACE/$Version/Compil-*)
 	do
@@ -53,10 +54,11 @@ PurgeWorkspace ()
 		printf "\033[31mVersion %-10s\033[m : \033[31mRunning COMPIL\033[m, no purge for $Version\n" $CKC_Version
 		return
 	    fi
+	    CompilToDelete="$CompilToDelete $Compil /dev/shm/$(basename $Compil)"
 	done
 	_FreeDisk=$(du -hs $KRN_WORKSPACE/$Version|tr ['\t'] [' ']|cut -d' ' -f1)
 	printf "Version %-10s : $Version purged ($_FreeDisk freed).\n" $CKC_Version
-	rm -rf $KRN_WORKSPACE/$Version
+	rm -rf $CompilToDelete $KRN_WORKSPACE/$Version
 	return 
     fi
 
