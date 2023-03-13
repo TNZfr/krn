@@ -1,1 +1,0 @@
-RemoveKernel_ARCH.sh

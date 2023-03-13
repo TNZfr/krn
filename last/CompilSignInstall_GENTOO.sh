@@ -1,1 +1,0 @@
-CompilSignInstall_ARCH.sh

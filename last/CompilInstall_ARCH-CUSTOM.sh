@@ -1,1 +1,0 @@
-CompilInstall_ARCH.sh
