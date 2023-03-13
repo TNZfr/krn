@@ -84,8 +84,8 @@ export KRN_WORKSPACE=$CustomWorkspace
 case $CommandName in
     ConfComp)         Compile_${KRN_MODE}.sh           $Version ;;
     ConfCompSign)     CompileSign_${KRN_MODE}.sh       $Version ;;
-    ConfCompInstall)  CompilInstall_${KRN_MODE}.sh     $Version ;;
-    ConfCompSignInst) CompilSignInstall_${KRN_MODE}.sh $Version ;;
+    ConfCompInstall)  CompileInstall_${KRN_MODE}.sh     $Version ;;
+    ConfCompSignInst) CompileSignInstall_${KRN_MODE}.sh $Version ;;
     *)
 	echo ""
 	echo "Unkonwn krn command : $CommandName"
