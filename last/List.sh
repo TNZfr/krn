@@ -86,4 +86,4 @@ echo ""
 [ $# -eq 0 ] && exit 0
 
 # Recherche des noyaux 
-SearchKernel.sh $*
+Search.sh $*
