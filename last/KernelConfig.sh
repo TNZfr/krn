@@ -62,7 +62,7 @@ fi
 # Restauration archive
 # --------------------
 printh "Extracting archive ..."
-TypeArchive=$(echo $(file $Archive|cut -d: -f2))
+TypeArchive=$(echo $(file $(readlink -f $Archive)|cut -d: -f2))
 if [ "${TypeArchive:0:18}" = "XZ compressed data" ]
 then
     tar xaf $Archive -C $TmpDir
@@ -86,8 +86,9 @@ else
     make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 fi
 
-printh "- Make nconfig ..."
-make nconfig 
+[ "$KRN_CONFIGUI" = "" ] && export KRN_CONFIGUI=nconfig
+printh "- Make $KRN_CONFIGUI ..."
+make $KRN_CONFIGUI 
 
 printh "Finalizing ..."
 cp .config $FinalConfig

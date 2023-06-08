@@ -77,7 +77,7 @@ mkdir -p $CustomWorkspace
 export KRN_WORKSPACE=$CustomWorkspace
 
 # Source telecharge avec KernelConfig
-[ "$KernelSource" != "" ] && mv -f $KernelSource $KRN_WORKSPACE
+[ "$KernelSource" != "" ] && ln -s $KernelSource $KRN_WORKSPACE/$(basename $KernelSource)
 
 # Compilation du noyau
 # --------------------

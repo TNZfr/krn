@@ -81,7 +81,7 @@ fi
 # Restauration archive
 # --------------------
 printh "Extracting archive ..."
-TypeArchive=$(echo $(file $Archive|cut -d: -f2))
+TypeArchive=$(echo $(file $(readlink -f $Archive)|cut -d: -f2))
 if [ "${TypeArchive:0:18}" = "XZ compressed data" ]
 then
     tar xaf $Archive -C $TmpDir
