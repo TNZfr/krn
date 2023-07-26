@@ -7,9 +7,9 @@ GetKernelPackage ()
 {
     Version=$1
     [ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
-    echo ""
 
     # 1.Recherche dans le repertoire de stockage (deb)
+    PrevWorkspace=$KRN_WORKSPACE
     if [ ${Version:0:3} = "ckc" ]
     then
 	export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
@@ -26,6 +26,7 @@ GetKernelPackage ()
     then
 	echo "Version $Version : $NbFound packages available from $KRN_WORKSPACE"
 	cp $KRN_WORKSPACE/linux-*$Version*.deb $PWD
+	export KRN_WORKSPACE=$PrevWorkspace
 	return 0
     fi
 
@@ -112,6 +113,7 @@ fi
 
 Debut=$(TopHorloge)
 
+echo ""
 ListeVersion=$*
 for Version in $ListeVersion
 do
@@ -119,7 +121,6 @@ do
     NbCKC=$(ls -1d $KRN_WORKSPACE/ckc-$Version-* 2>/dev/null|wc -l)
     if [ $NbCKC -gt 0 ]
     then
-	echo ""
 	echo " $NbCKC Custom Kernel match(es) version $Version :"
 	for CustomKernel in $(ls -1d $KRN_WORKSPACE/ckc-$Version-*)
 	do

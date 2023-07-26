@@ -151,7 +151,7 @@ then
     exit 0
 fi
 
-GetWorkspaceList   > $WorkspaceList
+GetWorkspaceList > $WorkspaceList
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
 then

@@ -238,9 +238,9 @@ GetWorkspaceList()
 		then
 		    RepCustom=$(dirname  ${_Fichier%/})
 		    RepCompil=$(echo $_Fichier|cut -d/ -f2)
-		    _TypeObjet="dir,\033[33mCompilation directory \033[35m$RepCustom\033[33m/$RepCompil\033[m"
+		    _TypeObjet="dir,\033[33mCompilation directory \033[35m$RepCustom\033[33m/$RepCompil"
 		else
-		    _TypeObjet="dir,\033[33mCompilation directory ${_Fichier%/}\033[m"
+		    _TypeObjet="dir,\033[33mCompilation directory ${_Fichier%/}"
 		fi
 		
 		cd $_Fichier

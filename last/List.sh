@@ -38,7 +38,7 @@ then
     exit 0
 fi
 
-GetWorkspaceList   > $WorkspaceList
+GetWorkspaceList > $WorkspaceList
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
 then
@@ -65,8 +65,9 @@ do
     
     case $_Type in
 	dir)
-	    _DirName=$(echo $_Libelle|cut -d' ' -f3); _DirName=${_DirName%\033[m}
+	    _DirName=$(echo $_Libelle|cut -d' ' -f3)
 	    _ProcessID=$(basename $_DirName|cut -d- -f2)
+								 
 	    if [ -d /proc/$_ProcessID ]
 	    then
 		# Compilation en cours
