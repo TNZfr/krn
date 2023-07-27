@@ -15,7 +15,7 @@ then
     echo "  Archive .... : Linux source archive (tar.xz or tar.gz)"
     echo "  Label ...... : Configuration label"
     echo ""
-    echo "  default .... : Use default kernel config provided par sources"
+    echo "  default .... : Use default kernel config"
     echo "  KernelConfig : Use existant kernel config file as source"
     echo ""
     exit 1
