@@ -8,4 +8,4 @@ Kernel management tool for :
 All informations for installation and use are available in wiki.
 
 Just below the main help page : 
-![](https://i.imgur.com/3GzT5uq.png)
+![](https://i.imgur.com/cbmwa0D.png)
