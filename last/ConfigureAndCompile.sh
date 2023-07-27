@@ -35,7 +35,7 @@ then
 fi
 KernelConfig=$(readlink -f $KernelConfig)
 [ "$(basename $KernelConfig|grep rc)" = "" ] && LabelField=3 || LabelField=4
-KernelConfig=$(basename $KernelConfig|cut -d'-' -f$LabelField)
+Libelle=$(basename $KernelConfig|cut -d'-' -f$LabelField)
 
 Debut=$(TopHorloge)
 
