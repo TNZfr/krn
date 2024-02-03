@@ -53,8 +53,10 @@ VerifyOneKernel ()
 
 if [ $# -lt 1 ]
 then
+    [ "$KRN_CLI" = "" ] && _Prefix="krn "
+    
     echo ""
-    echo "Syntax : krn VerifyKernel Version ..."
+    echo "Syntax : ${_Prefix}VerifyKernel Version ..."
     echo "  Version : number version (format x.y.z)"
     echo ""
     exit 1

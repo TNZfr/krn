@@ -5,7 +5,7 @@
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Install Version ..."
+    echo "Syntax : ${KRN_Help_Prefix}Install Version ..."
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"
@@ -52,6 +52,7 @@ ListeDEB=$(echo $ListeDEB)
 # ---------------------------
 rm -rf $TempDir
 
+ListInstalledKernel
 echo   ""
 printf "\033[44m Install $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""

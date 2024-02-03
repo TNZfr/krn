@@ -73,7 +73,7 @@ SignOneKernel ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Sign Version ..."
+    echo "Syntax : ${KRN_Help_Prefix}Sign Version ..."
     echo "  Version  : number version (format x.y.z)"
     echo ""
     exit 1

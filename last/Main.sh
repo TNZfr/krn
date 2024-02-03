@@ -1,5 +1,7 @@
 #!/bin/bash
 
+KRN_VERSION=v9.0
+
 #-------------------------------------------------------------------------------
 function RunCommand
 {
@@ -32,13 +34,10 @@ function RunCommand
 }
 
 #-------------------------------------------------------------------------------
-# main
-#
-
-if [ $# -eq 0 ]
-then
+function Help
+{
     echo   ""
-    printf " \033[30;42m KRN v8.3 \033[m : Kernel management tool\n"
+    printf " \033[30;42m KRN $KRN_VERSION \033[m : Kernel management tool\n"
     echo   ""
     echo   " - Mode DEBIAN      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
     echo   " - Mode REDHAT      : Redhat based distributions (RHEL, Centos, Fedora ...)"
@@ -48,14 +47,21 @@ then
     echo   ""
     printf "\033[37;44m Syntax \033[m : krn Command Parameters ...\n"
     echo  ""
+    printf "\033[34m Tool management \033[m\n"
+    printf "\033[34m-----------------\033[m\n"
+    echo  "Help            (H): Display main help page"
+    echo  "CLI                : Launch KRN command interpreter."
+    echo  "Detach         (DT): Detach KRN command in an other terminal or in a log file."
+    echo  "Watch          (WA): Detach KRN command in an other terminal refreshed every 10 seconds."
+    echo  ""
     printf "\033[34m Workspace management \033[m\n"
     printf "\033[34m----------------------\033[m\n"
     echo  "Configure      (CF): Display parameters. To reset, run krn configure RESET"
+    echo  "List           (LS): List current kernel, installed kernel and available kernels from local"
     echo  "Purge              : Remove packages and kernel build directories from workspace"
     echo  ""
     printf "\033[34m Kernel from Local or Ubuntu/Mainline \033[m\n"
     printf "\033[34m--------------------------------------\033[m\n"
-    echo  "List           (LS): List current kernel, installed kernel and available kernels from local"
     echo  "Search         (SE): Search available kernels from Kernel.org (and Ubuntu/Mainline in DEBIAN mode)"
     echo  ""
     echo  "Get                : Get Debian packages from local (and Ubuntu/Mainline in DEBIAN mode)"
@@ -90,13 +96,63 @@ then
     printf "\033[34m----------------\033[m\n"
     echo "SaveLog (SL)      : Save logs in directory defined by KRN_ACCOUNTING"
     echo ""
-    exit 0
-fi
+}
+
+#-------------------------------------------------------------------------------
+function DirectCommand
+{
+    export KRN_CLI=TRUE
+    
+    echo   ""
+    printf " \033[30;42m KRN $KRN_VERSION \033[m : Kernel management tool\n"
+    echo   ""
+    echo   "Commands summary : "
+    echo   "  - Help for main manual page."
+    echo   "  - Exit or Ctrl^D"
+    echo   ""
+    cli_status=0
+    while [ $cli_status -eq 0 ]
+    do
+	Command_Parameters=""
+	printf "Krn/\033[34m$(uname -r)\033[m > "
+	read Command_Parameters
+	cli_status=$?
+	
+	case $(echo "$Command_Parameters"|tr [:upper:] [:lower:]) in
+	    "")
+		# Rien a faire
+	    ;;
+	    
+	    "exit" )
+		cli_status=1
+		;;
+	    *)
+		Main.sh $Command_Parameters
+	esac
+    done
+    echo ""
+}
+
+#-------------------------------------------------------------------------------
+# main
+#
 
 # Definition du repertoire des binaires
 # -------------------------------------
 export KRN_EXE=$(dirname $(readlink -f $0))
 export PATH=$KRN_EXE:$PATH
+
+if [ $# -eq 0 ]
+then
+    echo   ""
+    printf " \033[30;42m KRN $KRN_VERSION \033[m : Kernel management tool\n"
+    echo   ""
+    echo   "Commands summary : "
+    echo   "  - krn Help for main manual page."
+    echo   "  - krn CLI for command interpreter."
+    echo   ""
+    exit 0
+fi
 
 # Chargement des variables
 # ------------------------
@@ -104,7 +160,8 @@ export PATH=$KRN_EXE:$PATH
 export KRN_MODE=$(        echo $KRN_MODE        |tr [:lower:] [:upper:])
 export KRN_ARCHITECTURE=$(echo $KRN_ARCHITECTURE|tr [:upper:] [:lower:])
 
-[ $LOGNAME = root ] && export KRN_sudo="" || export KRN_sudo="sudo"
+[ "$KRN_CLI" = "" ] && export KRN_Help_Prefix="krn " || export KRN_Help_Prefix=""
+[ $LOGNAME = root ] && export KRN_sudo=""            || export KRN_sudo="sudo"
 
 export KRN_TMP=/tmp
 KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4);
@@ -119,6 +176,11 @@ Commande=$(echo $1|tr [:upper:] [:lower:])
 [ $# -gt 1 ] && Parametre="$(echo $*|cut -f2- -d' ')"
 
 case $Commande in
+
+    "help"             |"h" )    Help                              ;;
+    "cli"                   )    DirectCommand                     ;;
+    "detach"           |"dt")    Detach.sh $Parametre              ;;
+    "watch"            |"wa")    Watch.sh  $Parametre              ;;
 
     "configure"        |"cf")    RunCommand Configure.sh           ;;
     "purge"                 )    RunCommand Purge.sh               ;;

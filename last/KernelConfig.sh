@@ -9,7 +9,7 @@
 if [ $# -lt 2 ]
 then
     echo ""
-    echo "Syntax : krn KernelConfig Version|Archive Label [default|KernelConfig]"
+    echo "Syntax : ${KRN_Help_Prefix}KernelConfig Version|Archive Label [default|KernelConfig]"
     echo ""
     echo "  Version .... : Linux version"
     echo "  Archive .... : Linux source archive (tar.xz or tar.gz)"

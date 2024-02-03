@@ -123,7 +123,7 @@ PurgeWorkspace ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Purge Version ... [all]"
+    echo "Syntax : ${KRN_Help_Prefix}Purge Version ... [all]"
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"

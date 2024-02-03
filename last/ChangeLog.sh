@@ -8,7 +8,7 @@
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn ChangeLog Version [Pattern] [...]"
+    echo "Syntax : ${KRN_Help_Prefix}ChangeLog Version [Pattern] [...]"
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"

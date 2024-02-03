@@ -9,7 +9,7 @@
 if [ $# -lt 2 ]
 then
     echo ""
-    echo "Syntax : krn CreateSignature Filename SignerName"
+    echo "Syntax : ${KRN_Help_Prefix}CreateSignature Filename SignerName"
     echo "  Filename   : Basename for certifcate files (without extension)"
     echo "  SignerName : Signer Name for certificates"
     echo ""

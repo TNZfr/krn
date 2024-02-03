@@ -31,7 +31,7 @@ CheckStatus ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn CompileSign Version|Archive "
+    echo "Syntax : ${KRN_Help_Prefix}CompileSign Version|Archive "
     echo ""
     echo "  Version : Linux version"
     echo "  Archive : Linux source archive (tar.xz or tar.gz)"
@@ -114,10 +114,15 @@ cd $TmpDir/$Directory
 printh "Compiling $(basename $PWD) ..."
 KernelVersion=$(make kernelversion)
 
-if [ -L $HOME/.krn/CompilConfig ]
+# Get config filename
+CompilConfig=""
+[ -L $HOME/.krn/CompilConfig ]     && CompilConfig=$(readlink -f $HOME/.krn/CompilConfig)
+[ -L $KRN_WORKSPACE/CompilConfig ] && CompilConfig=$(readlink -f $KRN_WORKSPACE/CompilConfig)
+
+if [ "$CompilConfig" != "" ]
 then
-    printh "- Set owner config ($(basename $(readlink -f $HOME/.krn/CompilConfig))) ..."
-    cp $HOME/.krn/CompilConfig .config
+    printh "- Set owner config ($(basename $CompilConfig)) ..."
+    cp $CompilConfig .config
 fi
 
 printh "- Make olddefconfig ..."

@@ -9,7 +9,7 @@ Debut=$(TopHorloge)
 if [ $# -eq 0 ]
 then
     echo ""
-    echo "Syntax : krn Search Version"
+    echo "Syntax : ${KRN_Help_Prefix}Search Version"
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"

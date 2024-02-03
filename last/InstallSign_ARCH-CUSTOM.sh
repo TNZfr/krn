@@ -21,7 +21,7 @@ CheckStatus ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Install Version ..."
+    echo "Syntax : ${KRN_Help_Prefix}Install Version ..."
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"
@@ -89,6 +89,7 @@ SignKernel_${KRN_MODE}.sh $*
 # ---------------------------
 rm -rf $TempDir
 
+ListInstalledKernel
 echo   ""
 printf "\033[44m InstallSignKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""

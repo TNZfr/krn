@@ -5,7 +5,7 @@
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn CompileSignInstall Version ..."
+    echo "Syntax : ${KRN_Help_Prefix}CompileSignInstall Version ..."
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"

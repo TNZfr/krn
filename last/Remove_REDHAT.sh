@@ -69,7 +69,7 @@ RemoveOneKernel ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Remove Version ..."
+    echo "Syntax : ${KRN_Help_Prefix}Remove Version ..."
     echo "  Version : number version (format x.y.z)"
     echo ""
     exit 1

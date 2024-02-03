@@ -6,7 +6,7 @@
 # Main
 
 echo   ""
-echo   "Syntax : krn SetConfig [ConfigFile|DEFAULT]"
+echo   "Syntax : ${KRN_Help_Prefix}SetConfig [ConfigFile|DEFAULT]"
 echo   ""
 echo   "  ConfigFile : Config file used for kernel compilation"
 echo   ""

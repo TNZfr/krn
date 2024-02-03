@@ -10,7 +10,7 @@ CommandName=$(basename ${0%.sh})
 if [ $# -lt 2 ]
 then
     echo ""
-    echo "Syntax : krn $CommandName Version|Archive KernelConfig"
+    echo "Syntax : ${KRN_Help_Prefix}$CommandName Version|Archive KernelConfig"
     echo ""
     echo "  Version .... : Linux version"
     echo "  Archive .... : Linux source archive (tar.xz or tar.gz)"
@@ -42,7 +42,6 @@ Debut=$(TopHorloge)
 # Configuration noyau
 # -------------------
 KernelSource=$(ls -1tr $KRN_WORKSPACE/linux-$Version.tar.?? 2>/dev/null|tail -1)
-SetConfig.sh $KernelConfig >/dev/null
 
 # Creation du workspace custom
 # ----------------------------
@@ -56,14 +55,17 @@ fi
 mkdir -p $CustomWorkspace
 export KRN_WORKSPACE=$CustomWorkspace
 
-# Source telecharge avec KernelConfig
+# Setting kernel config file
+ln -s $KernelConfig $KRN_WORKSPACE/CompilConfig
+
+# Source already downloaded
 [ "$KernelSource" != "" ] && ln -s $KernelSource $KRN_WORKSPACE/$(basename $KernelSource)
 
 # Compilation du noyau
 # --------------------
 case $CommandName in
-    ConfComp)         Compile_${KRN_MODE}.sh           $Version ;;
-    ConfCompSign)     CompileSign_${KRN_MODE}.sh       $Version ;;
+    ConfComp)         Compile_${KRN_MODE}.sh            $Version ;;
+    ConfCompSign)     CompileSign_${KRN_MODE}.sh        $Version ;;
     ConfCompInstall)  CompileInstall_${KRN_MODE}.sh     $Version ;;
     ConfCompSignInst) CompileSignInstall_${KRN_MODE}.sh $Version ;;
     *)
@@ -71,10 +73,6 @@ case $CommandName in
 	echo "Unkonwn krn command : $CommandName"
 	echo ""
 esac
-
-# Retour a la config par defaut
-# -----------------------------
-SetConfig.sh DEFAULT >/dev/null
 
 echo ""
 printf "\033[44m $CommandName elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

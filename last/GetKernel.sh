@@ -103,7 +103,7 @@ GetKernelPackage_UbuntuMainline ()
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : krn Get Version ..."
+    echo "Syntax : ${KRN_Help_Prefix}Get Version ..."
     echo ""
     echo "  Version : as it appears in krn List output command"
     echo "            or just the version number"
