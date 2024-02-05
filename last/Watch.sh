@@ -55,7 +55,7 @@ if   [ "$(which konsole)" != "" ]
 then
     konsole                       \
 	-ptabtitle="$KRN_Title"   \
-	-e bash -c "$KRN_Command" &
+	-e bash -c "$KRN_Command" 2>/dev/null &
 #-------------------------------------------------------------------------------
 # Gnome-terminal
 # --------------

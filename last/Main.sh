@@ -45,7 +45,7 @@ function Help
     echo   " - Mode ARCH-CUSTOM : Arch-Linux distribution with fixed kernel name"
     echo   " - Mode GENTOO      : Gentoo distribution"
     echo   ""
-    printf "\033[37;44m Syntax \033[m : krn Command Parameters ...\n"
+    printf "\033[37;44m Syntax \033[m : ${KRN_Help_Prefix}Command Parameters ...\n"
     echo  ""
     printf "\033[34m Tool management \033[m\n"
     printf "\033[34m-----------------\033[m\n"
