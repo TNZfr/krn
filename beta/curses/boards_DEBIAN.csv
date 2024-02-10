@@ -1,0 +1,143 @@
+Board Name,BSC command,Index,Title,Step
+,,,,
+GetSource,BoardGenerator,,KRNC_GenDynamicBoard.sh,
+GetSource,window,,$KRN_MODE GetSource,
+GetSource,append_tabbed,%02d,Download ,GS%02d
+,,,,
+Compile,BoardGenerator,,KRNC_GenStaticBoard.sh,
+Compile,window,,$KRN_MODE Compile Install $KRNC_Parameter,
+Compile,append_tabbed,1,Source download,CC01
+Compile,append_tabbed,2,Tools control,CC02
+Compile,append_tabbed,3,Build directory,CC03
+Compile,append_tabbed,4,Archive Extract,CC04
+Compile,append_tabbed,5,Kernel config,CC05
+Compile,append_tabbed,6,Make OldDefConfig,CC06
+Compile,append_tabbed,7,Make bindeb-pkg,CC07
+Compile,append_tabbed,8,Delivery,CC08
+,,,,
+Install,BoardGenerator,,KRNC_GenStaticBoard.sh,
+Install,window,,$KRN_MODE Install $KRNC_Parameter,
+Install,append_tabbed,1,Package collect,INS01
+Install,append_tabbed,2,Install,INS02
+,,,,
+Remove,BoardGenerator,,KRNC_GenDynamicBoard.sh,
+Remove,window,,$KRN_MODE Remove,
+Remove,append_tabbed,%02da,Remove ,REM%02da
+,,,,
+Sign,BoardGenerator,,KRNC_GenStaticBoard.sh,
+Sign,window,,$KRN_MODE Sign $KRNC_Parameter,
+Sign,append_tabbed,1,Signing files,SIG01
+Sign,append_tabbed,2,Signing Kernel,SIG02
+Sign,append_tabbed,3,Signing modules,SIG03
+Sign,append_tabbed,4,Update GRUB,SIG04
+,,,,
+InstallSign,BoardGenerator,,KRNC_GenStaticBoard.sh,
+InstallSign,window,,$KRN_MODE Install Sign $KRNC_Parameter,
+InstallSign,append_tabbed,1,Signing files,IS01
+InstallSign,append_tabbed,2,Package available,IS02
+InstallSign,append_tabbed,3,Install,IS03
+InstallSign,append_tabbed,4,Signing files,SIG01
+InstallSign,append_tabbed,5,Signing Kernel,SIG02
+InstallSign,append_tabbed,6,Signing modules,SIG03
+InstallSign,append_tabbed,7,Update GRUB,SIG04
+,,,,
+CompileInstall,BoardGenerator,,KRNC_GenStaticBoard.sh,
+CompileInstall,window,,$KRN_MODE Compile Install $KRNC_Parameter,
+CompileInstall,append_tabbed,1,Package available,CCI01
+CompileInstall,append_tabbed,2,Source download,CCI02
+CompileInstall,append_tabbed,3,Tools control,CC02
+CompileInstall,append_tabbed,4,Build directory,CC03
+CompileInstall,append_tabbed,5,Archive Extract,CC04
+CompileInstall,append_tabbed,6,Kernel config,CC05
+CompileInstall,append_tabbed,7,Make OldDefConfig,CC06
+CompileInstall,append_tabbed,8,Make bindeb-pkg,CC07
+CompileInstall,append_tabbed,9,Delivery ,CC08
+CompileInstall,append_tabbed,10,Install,CCI03
+,,,,
+CompileSign,BoardGenerator,,KRNC_GenStaticBoard.sh,
+CompileSign,window,,$KRN_MODE Compile Sign $KRNC_Parameter,
+CompileSign,append_tabbed,1,Signing files,CCS01
+CompileSign,append_tabbed,2,Source download,CCS02
+CompileSign,append_tabbed,3,Tools control,CCS03
+CompileSign,append_tabbed,4,Build directory,CCS04
+CompileSign,append_tabbed,5,Archive Extract,CCS05
+CompileSign,append_tabbed,6,Kernel config,CCS06
+CompileSign,append_tabbed,7,Make OldDefConfig,CCS07
+CompileSign,append_tabbed,8,Main compilation ,CCS08
+CompileSign,append_tabbed,9,Import / relink,CCS09
+CompileSign,append_tabbed,10,Signing kernel ,CCS10
+CompileSign,append_tabbed,11,Package delivery ,CCS11
+,,,,
+CompileSignInstall,BoardGenerator,,KRNC_GenStaticBoard.sh,
+CompileSignInstall,window,,$KRN_MODE Compile Sign $KRNC_Parameter,
+CompileSignInstall,append_tabbed,1,Signing files,CCSI01
+CompileSignInstall,append_tabbed,2,Package available,CCSI02
+CompileSignInstall,append_tabbed,3,Source download,CCSI03
+CompileSignInstall,append_tabbed,4,Tools control,CCS03
+CompileSignInstall,append_tabbed,5,Build directory,CCS04
+CompileSignInstall,append_tabbed,6,Archive Extract,CCS05
+CompileSignInstall,append_tabbed,7,Kernel config,CCS06
+CompileSignInstall,append_tabbed,8,Make OldDefConfig,CCS07
+CompileSignInstall,append_tabbed,9,Main compilation ,CCS08
+CompileSignInstall,append_tabbed,10,Import / relink,CCS09
+CompileSignInstall,append_tabbed,11,Signing kernel ,CCS10
+CompileSignInstall,append_tabbed,12,Package delivery ,CCS11
+CompileSignInstall,append_tabbed,13,Install,CCSI04
+,,,,
+ConfComp,BoardGenerator,,KRNC_GenStaticBoard.sh,
+ConfComp,window,,$KRN_MODE Compile Custom $KRNC_Parameter,
+ConfComp,append_tabbed,1,Create custom directory,KCC01
+ConfComp,append_tabbed,2,Source download,CC01
+ConfComp,append_tabbed,3,Tools control,CC02
+ConfComp,append_tabbed,4,Build directory,CC03
+ConfComp,append_tabbed,5,Archive Extract,CC04
+ConfComp,append_tabbed,6,Kernel config,CC05
+ConfComp,append_tabbed,7,Make OldDefConfig,CC06
+ConfComp,append_tabbed,8,Make bindeb-pkg,CC07
+ConfComp,append_tabbed,9,Delivery,CC08
+,,,,
+ConfCompInstall,BoardGenerator,,KRNC_GenStaticBoard.sh,
+ConfCompInstall,window,,$KRN_MODE Compile Install Custom $KRNC_Parameter,
+ConfCompInstall,append_tabbed,1,Create custom directory,KCC01
+ConfCompInstall,append_tabbed,2,Package available,CCI01
+ConfCompInstall,append_tabbed,3,Source download,CCI02
+ConfCompInstall,append_tabbed,4,Tools control,CC02
+ConfCompInstall,append_tabbed,5,Build directory,CC03
+ConfCompInstall,append_tabbed,6,Archive Extract,CC04
+ConfCompInstall,append_tabbed,7,Kernel config,CC05
+ConfCompInstall,append_tabbed,8,Make OldDefConfig,CC06
+ConfCompInstall,append_tabbed,9,Make bindeb-pkg,CC07
+ConfCompInstall,append_tabbed,10,Delivery ,CC08
+ConfCompInstall,append_tabbed,11,Install,CCI03
+,,,,
+ConfCompSign,BoardGenerator,,KRNC_GenStaticBoard.sh,
+ConfCompSign,window,,$KRN_MODE Compile Sign Custom $KRNC_Parameter,
+ConfCompSign,append_tabbed,1,Create custom directory,KCC01
+ConfCompSign,append_tabbed,2,Signing files,CCS01
+ConfCompSign,append_tabbed,3,Source download,CCS02
+ConfCompSign,append_tabbed,4,Tools control,CCS03
+ConfCompSign,append_tabbed,5,Build directory,CCS04
+ConfCompSign,append_tabbed,6,Archive Extract,CCS05
+ConfCompSign,append_tabbed,7,Kernel config,CCS06
+ConfCompSign,append_tabbed,8,Make OldDefConfig,CCS07
+ConfCompSign,append_tabbed,9,Main compilation ,CCS08
+ConfCompSign,append_tabbed,10,Import / relink,CCS09
+ConfCompSign,append_tabbed,11,Signing kernel ,CCS10
+ConfCompSign,append_tabbed,12,Package delivery ,CCS11
+,,,,
+ConfCompSignInst,BoardGenerator,,KRNC_GenStaticBoard.sh,
+ConfCompSignInst,window,,$KRN_MODE Compile Sign Install Custom $KRNC_Parameter,
+ConfCompSignInst,append_tabbed,1,Create custom directory,KCC01
+ConfCompSignInst,append_tabbed,2,Signing files,CCSI01
+ConfCompSignInst,append_tabbed,3,Package available,CCSI02
+ConfCompSignInst,append_tabbed,4,Source download,CCSI03
+ConfCompSignInst,append_tabbed,5,Tools control,CCS03
+ConfCompSignInst,append_tabbed,6,Build directory,CCS04
+ConfCompSignInst,append_tabbed,7,Archive Extract,CCS05
+ConfCompSignInst,append_tabbed,8,Kernel config,CCS06
+ConfCompSignInst,append_tabbed,9,Make OldDefConfig,CCS07
+ConfCompSignInst,append_tabbed,10,Main compilation ,CCS08
+ConfCompSignInst,append_tabbed,11,Import / relink,CCS09
+ConfCompSignInst,append_tabbed,12,Signing kernel ,CCS10
+ConfCompSignInst,append_tabbed,13,Package delivery ,CCS11
+ConfCompSignInst,append_tabbed,14,Install,CCSI04

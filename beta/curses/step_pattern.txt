@@ -1,0 +1,20 @@
+
+. $KRN_EXE/curses/_libcurses.sh
+
+#----------------------------------------
+_CursesVar KRNC_PID=$$
+#----------------------------------------
+
+
+_CursesStep debut STEP "\033[5;46m Running \033[m"
+
+Succes
+_CursesStep fin STEP "\033[22;32mFound\033[m"
+_CursesStep fin STEP "\033[22;32mDone\033[m"
+_CursesStep fin STEP "\033[22;32mInstalled\033[m"
+
+Erreur
+_CursesStep fin STEP "\033[31mFAILED\033[m"
+_CursesStep fin STEP "\033[31mOne or more missing parameter\033[m"
+_CursesStep fin STEP "\033[31mParameter not defined\033[m"
+_CursesStep fin STEP "\033[31mMissing file(s)\033[m"
