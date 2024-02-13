@@ -82,6 +82,9 @@ case $CommandName in
 	echo ""
 esac
 
+# Cleaning custom workspace
+rm -f $KRN_WORKSPACE/CompilConfig
+
 echo ""
 printf "\033[44m $CommandName elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo ""
