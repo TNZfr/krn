@@ -22,7 +22,14 @@ _CloseCurses ()
 _CursesVar ()
 {
     [ "$KRNC_TMP" = "" ] && return
-    for _var in $*; do echo $_var >> $KRNC_VAR; done
+    for _var in $*
+    do
+	echo $_var >> $KRNC_VAR
+	if [ "${_var:0:9}" = "KRNC_PID=" ]
+	then
+	    grep ^KRNC_PID $KRNC_VAR|head -1 >> $KRNC_VAR
+	fi
+    done
 }
 
 #-------------------------------------------------------------------------------
