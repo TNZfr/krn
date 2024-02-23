@@ -25,7 +25,8 @@ main ()
     addsep
     if [ ! -f $KRNC_ErrorLog ]
     then
-	tail_file $KRNC_TMP/exec.log -20
+	(tail -20 $KRNC_TMP/exec.log; echo -e "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")|head -20 > $KRNC_TMP/exec.viewport
+	append_file $KRNC_TMP/exec.viewport
     else
 	append_file $KRNC_ErrorLog
     fi
