@@ -140,7 +140,7 @@ WorkspaceList=$KRN_WORKSPACE/.CompletionList
 
 Debut=$(TopHorloge)
 
-GetInstalledKernel
+GetInstalledKernel > $InstalledKernel
 NbObjet=$(cat $InstalledKernel|wc -l)
 if [ $NbObjet -eq 0 ]
 then
