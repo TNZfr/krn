@@ -178,11 +178,16 @@ ListInstalledKernel ()
 }
 
 #-------------------------------------------------------------------------------
-GetWorkspaceList()
+_RefreshWorkspaceList()
 {
     CurrentDir=$PWD
     cd $KRN_WORKSPACE
     
+    # List generation only if modified
+    [ "$(ls -1atr|tail -1)" = ".CompletionList" ] && return
+
+    > .CompletionList
+
     _ListeFichier=$(ls -1|grep -v "Compil-"; find -name "Compil-*")
     [ "$_ListeFichier" != "" ] && for _Fichier in $_ListeFichier
     do
@@ -286,8 +291,7 @@ GetWorkspaceList()
 	esac
 
 	# Enregistrement : Version,Type,LibelleType,NomObjet
-	printf "$_Version,$_TypeObjet,$_Fichier\n"
+	printf "$_Version,$_TypeObjet,$_Fichier\n" >> .CompletionList
     done
     cd $CurrentDir
 }
-

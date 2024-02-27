@@ -136,11 +136,11 @@ fi
 TmpDir=$KRN_TMP/krn-purge-$$
 mkdir $TmpDir
 InstalledKernel=$TmpDir/InstalledKernel
-WorkspaceList=$TmpDir/WorkspaceList
+WorkspaceList=$KRN_WORKSPACE/.CompletionList
 
 Debut=$(TopHorloge)
 
-GetInstalledKernel > $InstalledKernel
+GetInstalledKernel
 NbObjet=$(cat $InstalledKernel|wc -l)
 if [ $NbObjet -eq 0 ]
 then
@@ -151,7 +151,7 @@ then
     exit 0
 fi
 
-GetWorkspaceList > $WorkspaceList
+_RefreshWorkspaceList
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
 then

@@ -45,6 +45,12 @@ function Help
     echo   " - Mode ARCH-CUSTOM : Arch-Linux distribution with fixed kernel name"
     echo   " - Mode GENTOO      : Gentoo distribution"
     echo   ""
+    printf "\033[34m Bash auto completion \033[m\n"
+    echo   "In your bash_completion management, for example ~/.bash_completion,"
+    echo   "insert following line :"
+    printf "\033[1m. \$(dirname \$(readlink -f \$(which krn)))/_Completion.sh\033[m\n"
+    echo   ""
+    echo   ""
     printf "\033[37;44m Syntax \033[m : ${KRN_Help_Prefix}Command Parameters ...\n"
     echo  ""
     printf "\033[34m Tool management \033[m\n"
@@ -213,6 +219,10 @@ case $Commande in
     
     "savelog"           |"sl")    SaveLog.sh ;;
 
+    # Internal commands
+    "_updatecompletion") _RefreshWorkspaceList ;;
+    "_getvar") env|grep "^${Parametre}="|cut -d'=' -f2 ;;
+    
     *)
 	echo "Kernel management : 'krn $1' unknown command."
 	Status=1

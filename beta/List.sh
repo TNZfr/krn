@@ -8,7 +8,7 @@
 TmpDir=$KRN_TMP/krn-list-$$
 mkdir $TmpDir
 InstalledKernel=$TmpDir/InstalledKernel
-WorkspaceList=$TmpDir/WorkspaceList
+WorkspaceList=$KRN_WORKSPACE/.CompletionList
 
 GetInstalledKernel > $InstalledKernel
 NbObjet=$(cat $InstalledKernel|wc -l)
@@ -38,7 +38,7 @@ then
     exit 0
 fi
 
-GetWorkspaceList > $WorkspaceList
+_RefreshWorkspaceList
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
 then
