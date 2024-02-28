@@ -16,12 +16,27 @@ _krn_completion_configfile ()
 
 _krn_completion ()
 {
+    if [ ${#COMP_WORDS[@]} -gt 1 ]
+    then
+	case $(echo ${COMP_WORDS[1]}|tr [:upper:] [:lower:]) in
+	    watch|wa|detach|dt|curses|cu)
+		local _Last=${COMP_WORDS[${#COMP_WORDS[@]}-1]}
+		
+		#echo -en "\n${#COMP_WORDS[@]} : [${COMP_WORDS[1]}] : ${COMP_WORDS[*]} -> "
+		
+		unset COMP_WORDS[1]
+		COMP_WORDS=(${COMP_WORDS[*]})
+		[ -z "$_Last" ] && COMP_WORDS+=("")
+		
+		#echo "${#COMP_WORDS[@]} : [${COMP_WORDS[1]}] : ${COMP_WORDS[*]}"
+		;;
+	esac
+    fi
+    
     case ${#COMP_WORDS[@]} in
 	1|2)
 	    KRN_EXE=$(krn _GetVar KRN_EXE)
 	    COMPREPLY=($(grep -i "^${COMP_WORDS[1]}" $KRN_EXE/_Completion.dat|cut -d',' -f2|sort|uniq))
-	    
-	    #COMPREPLY=($(echo $KRN_CMD|tr [' '] ['\n']|grep -i "^${COMP_WORDS[1]}"|tr ['\n'] [' ']))
 	    ;;
 	3)
 	    case $(echo ${COMP_WORDS[1]}|tr [:upper:] [:lower:]) in
