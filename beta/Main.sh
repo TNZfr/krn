@@ -48,7 +48,7 @@ function Help
     printf "\033[34m Bash auto completion \033[m\n"
     echo   "In your bash_completion management, for example ~/.bash_completion,"
     echo   "insert following line :"
-    printf "\033[1m. \$(dirname \$(readlink -f \$(which krn)))/_Completion.sh\033[m\n"
+    printf "\033[1m. \$(krn _GetVar KRN_EXE)/_Completion.sh\033[m\n"
     echo   ""
     echo   ""
     printf "\033[37;44m Syntax \033[m : ${KRN_Help_Prefix}Command Parameters ...\n"
