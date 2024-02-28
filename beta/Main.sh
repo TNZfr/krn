@@ -220,8 +220,8 @@ case $Commande in
     "savelog"           |"sl")    SaveLog.sh ;;
 
     # Internal commands
-    "_updatecompletion") _RefreshWorkspaceList ;;
-    "_getvar") env|grep "^${Parametre}="|cut -d'=' -f2 ;;
+    "_updatecompletion") _RefreshWorkspaceList    ;;
+    "_getvar")           eval echo \$${Parametre} ;;
     
     *)
 	echo "Kernel management : 'krn $1' unknown command."
