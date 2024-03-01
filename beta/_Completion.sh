@@ -34,21 +34,29 @@ _krn_completion ()
 	    KRN_EXE=$(krn _GetVar KRN_EXE)
 	    COMPREPLY=($(grep -i "^${COMP_WORDS[1]}" $KRN_EXE/_Completion.csv|cut -d',' -f2|sort|uniq))
 	    ;;
-	3)
+
+	*)
 	    case $(echo ${COMP_WORDS[1]}|tr [:upper:] [:lower:]) in
-		# Param2 = Installed Kernels
+		# Param = Installed Kernels
 		remove|verifykernel|vk|sign|sk)
+		    cur=${COMP_WORDS[${#COMP_WORDS[@]} - 1]}
 		    _kernel_versions;
 		    ;;
-		
-		# Param2 = Config file in workspace
-		setconfig|sc)
-		    _krn_completion_configfile ${COMP_WORDS[2]};
-		    COMPREPLY+=("DEFAULT")
-		    ;;
 
+		# Param = Config file in workspace
+		setconfig|sc)
+		    if [ ${#COMP_WORDS[@]} -eq 3 ]
+		    then
+			_krn_completion_configfile ${COMP_WORDS[2]};
+			COMPREPLY+=("DEFAULT")
+		    fi
+		    ;;
+		
 		configure|cf)
-		    COMPREPLY+=("RESET")
+		    if [ ${#COMP_WORDS[@]} -eq 3 ]
+		    then
+			COMPREPLY=($(compgen -W "edit RESET" "${COMP_WORDS[2]}"))
+		    fi
 		    ;;
 		
 		install|installsign|is)
@@ -59,7 +67,7 @@ _krn_completion ()
 		    _List="$(grep -v -e ",ckc," -e ",cfg," $KRN_WORKSPACE/.CompletionList|cut -d',' -f1) \
                            $(grep       ",ckc,"            $KRN_WORKSPACE/.CompletionList|cut -d',' -f4)"
 		    _List=$(echo $_List)
-		    COMPREPLY=($(compgen -W "$_List" "${COMP_WORDS[2]}"))
+		    COMPREPLY=($(compgen -W "$_List" "${COMP_WORDS[${#COMP_WORDS[@]} - 1]}"))
 		    ;;
 		
 		purge)
@@ -70,34 +78,31 @@ _krn_completion ()
 		    _List="$(grep -v -e ",ckc," $KRN_WORKSPACE/.CompletionList|cut -d',' -f1) \
                            $(grep       ",ckc," $KRN_WORKSPACE/.CompletionList|cut -d',' -f4)"
 		    _List=$(echo $_List)
-		    COMPREPLY=($(compgen -W "$_List" "${COMP_WORDS[2]}"))
+		    COMPREPLY=($(compgen -W "$_List" "${COMP_WORDS[${#COMP_WORDS[@]} - 1]}"))
+		    ;;
+
+		# krn Commande P1  P2
+		# CW0 CW1      CW2 CW3
+		confcomp*|kcc*)
+		    if [ ${#COMP_WORDS[@]} -eq 4 ]
+		    then
+			_krn_completion_configfile ${COMP_WORDS[3]}
+		    fi
+		    ;;
+
+		# krn Commande Version Label Config
+		# CW0 CW1      CW2     CW3   CW4
+		kernelconfig|kc)
+		    if [ ${#COMP_WORDS[@]} -eq 5 ]
+		    then
+			_krn_completion_configfile ${COMP_WORDS[4]}
+			[ "${COMP_WORDS[4]:0:1}" != "c" ] && COMPREPLY+=("default")
+		    fi
 		    ;;
 		
 		*)
 	    esac
 	    ;;
-
-	4)
-	    # krn Commande P1  P2
-	    # CW0 CW1      CW2 CW3
-	    case $(echo ${COMP_WORDS[1]}|tr [:upper:] [:lower:]) in
-		confcomp*|kcc*)
-		    _krn_completion_configfile ${COMP_WORDS[3]};		
-		    ;;
-	    esac
-	    ;;
-	
-	5)
-	    # krn Commande P1  P2  P3
-	    # CW0 CW1      CW2 CW3 CW4
-	    case $(echo ${COMP_WORDS[1]}|tr [:upper:] [:lower:]) in
-		kernelconfig|kc)
-		    _krn_completion_configfile ${COMP_WORDS[4]};
-		    COMPREPLY+=("default")
-		    ;;
-	    esac
-	    ;;
-
 	*)
     esac
 }

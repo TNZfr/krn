@@ -111,6 +111,7 @@ else
     tar xfz $Archive -C $TmpDir
     Directory=$(tar tfz $Archive|head -1)
 fi
+touch $KRN_WORKSPACE # Force refresh krn List
 
 cd $TmpDir/$Directory
 printh "Compiling $(basename $PWD) ..."
