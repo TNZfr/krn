@@ -84,6 +84,36 @@ DisplayConfiguration ()
 }
 
 #------------------------------------------------------------------------------------------------
+CheckInstallCompletion ()
+{
+    BashComp=$HOME/.bash_completion
+    LocalCompletion=$KRN_RCDIR/_Completion.sh
+
+    [ ! -f $LocalCompletion ] && \
+	cp $KRN_EXE/_Completion.sh $LocalCompletion && \
+	printh "Bash completion installed"
+
+    CksVersion=$(cat $KRN_EXE/_Completion.sh | cksum)
+    CksLocal=$(  cat $LocalCompletion        | cksum)
+    [ "$CksVersion" != "$CksLocal" ] && \
+	cp $KRN_EXE/_Completion.sh $LocalCompletion &&\
+	printh "Bash completion upgraded"
+
+    MissingCall=FALSE
+    if [ -f $BashComp ]
+    then
+	grep -q "^source $LocalCompletion" $BashComp
+	[ $? -eq 1 ] && MissingCall=TRUE
+    else
+	MissingCall=TRUE
+    fi
+    
+    [ $MissingCall = TRUE ] && \
+	echo   "source $LocalCompletion" >> $HOME/.bash_completion && \
+	printh "Bash completion deployed / updated"
+}
+
+#------------------------------------------------------------------------------------------------
 # main
 #
 KRN_RCDIR=$HOME/.krn
@@ -107,8 +137,8 @@ case $1 in
 	NbVariable=$(env|grep -e ^KRN_ -e ^KRNSB_|wc -l)
 	if [ $NbVariable -lt 10 ]
 	then
-	Configure.sh RESET
-	. $KRN_RC
+	    Configure.sh RESET
+	    . $KRN_RC
 	fi
 	return
 	;;
@@ -119,6 +149,10 @@ case $1 in
 
     *)
 esac
+
+# Bash Completion
+# ---------------
+CheckInstallCompletion
 
 # Pas de parametres, affichage de la config
 # -----------------------------------------
