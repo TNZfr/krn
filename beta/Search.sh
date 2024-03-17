@@ -46,7 +46,7 @@ grep tar.gz $ListeDistante|tr ['<>'] ['\n\n']|grep ^linux|grep rc|cut -d'-' -f2,
 
 if [ $(cat $ListeVersion|wc -l) -gt 0 ]
 then
-    for VersionFound in $(cat $ListeVersion|linux-version sort)
+    for VersionFound in $(cat $ListeVersion|linux-version-sort)
     do
 	printf "%-10s \033[mKernel source archive (gz)\033[m\n" $VersionFound
     done
@@ -71,7 +71,7 @@ then
 fi
 
 # Récupération de la liste des versions présentes
-grep tar.xz $ListeDistante|grep linux-$Version|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|linux-version sort > $ListeVersion
+grep tar.xz $ListeDistante|grep linux-$Version|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|linux-version-sort > $ListeVersion
 
 if [ $(cat $ListeVersion|wc -l) -gt 0 ]
 then
@@ -98,7 +98,7 @@ then
     printf "\033[34m---------------\033[m\n"
 
     # Affichage de la liste
-    for VersionFound in $(grep "href=\"v" $ListeDistante|grep v$Version|cut -d'>' -f7|cut -d/ -f1|cut -c2-|linux-version sort)
+    for VersionFound in $(grep "href=\"v" $ListeDistante|grep v$Version|cut -d'>' -f7|cut -d/ -f1|cut -c2-|linux-version-sort)
     do
 	printf "%-10s \033[32mUbuntu package (deb)\033[m\n" $VersionFound
     done

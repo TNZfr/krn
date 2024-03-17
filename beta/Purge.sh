@@ -17,7 +17,7 @@ PurgeWorkspace ()
 	    PurgeWorkspace $Version
 	done
 	
-	for Version in $(cat $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version sort)
+	for Version in $(cat $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version-sort)
 	do
 	    PurgeWorkspace $Version
 	done

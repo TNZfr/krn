@@ -197,7 +197,7 @@ printf "\033[44m CompileSign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(
 echo ""
 
 echo "Available compiled kernel in $PWD :"
-ls -1 ARCH-linux-* 2>/dev/null|linux-version sort
+ls -1 ARCH-linux-* 2>/dev/null|linux-version-sort
 echo ""
 
 exit 0
