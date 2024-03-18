@@ -14,6 +14,9 @@ typedef struct
   char *String;
 } LNXVER;
 
+#define FALSE 0
+#define TRUE  1
+
 //------------------------------------------------------------------------------
 void LV_Parse (LNXVER *LV, char *String)
 {
@@ -31,15 +34,15 @@ void LV_Parse (LNXVER *LV, char *String)
 
   LV->Minor = (short)atoi(Suivant);
 
-  Tiret =strstr (Suivant,"-rc");
+  Tiret = strstr (Suivant,"-rc");
   if (Tiret)
   {
-    LV->NotRC = 0;
+    LV->NotRC   = FALSE;
     LV->Release = (short)atoi(&Tiret[3]);
   }
   else
   {
-    LV->NotRC = 1;
+    LV->NotRC   = TRUE;
     LV->Release = 0;
 
     Suivant = strchr (Suivant, '.');
