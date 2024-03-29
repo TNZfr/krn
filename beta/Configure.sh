@@ -58,7 +58,8 @@ CreateConfiguration ()
     Saisie KRNSB_PEM          ""         "Signing kernel : cert file full path (.pem)"
     Saisie KRNSB_DER          ""         "Signing kernel : cert file full path (.der)"
 
-    echo "export KRN_MINTMPFS=5120" >> $KRN_RC
+    echo "export KRN_MINTMPFS=5120"    >> $KRN_RC
+    echo "export KRN_CONFIGUI=nconfig" >> $KRN_RC
 
     printh "$KRN_RC created."
 
@@ -95,9 +96,12 @@ CheckInstallCompletion ()
 
     CksVersion=$(cat $KRN_EXE/_Completion.sh | cksum)
     CksLocal=$(  cat $LocalCompletion        | cksum)
-    [ "$CksVersion" != "$CksLocal" ] && \
-	cp $KRN_EXE/_Completion.sh $LocalCompletion &&\
+    if [ "$CksVersion" != "$CksLocal" ]
+    then
+	cp $KRN_EXE/_Completion.sh $LocalCompletion
+	echo   ""
 	printh "Bash completion upgraded"
+    fi
 
     MissingCall=FALSE
     if [ -f $BashComp ]
@@ -108,16 +112,19 @@ CheckInstallCompletion ()
 	MissingCall=TRUE
     fi
     
-    [ $MissingCall = TRUE ] && \
-	echo   "source $LocalCompletion" >> $HOME/.bash_completion && \
+    if [ $MissingCall = TRUE ]
+    then
+	echo   "source $LocalCompletion" >> $HOME/.bash_completion
+	echo   ""
 	printh "Bash completion deployed / updated"
+    fi
 }
 
 #------------------------------------------------------------------------------------------------
 # main
 #
-KRN_RCDIR=$HOME/.krn
-KRN_RC=$KRN_RCDIR/bashrc
+export KRN_RCDIR=$HOME/.krn
+export KRN_RC=$KRN_RCDIR/bashrc
 
 # En cas de RESET, on resaisie tous les parametres
 # ------------------------------------------------

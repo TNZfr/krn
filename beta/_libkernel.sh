@@ -139,40 +139,57 @@ VerifySigningConditions ()
 }
 
 #-------------------------------------------------------------------------------
-GetInstalledKernel ()
+_RefreshInstalledKernel ()
 {
-    _ModulesDir=""
-    [ -d /usr/lib/modules ] && _ModulesDir=/usr/lib/modules
-    [ -d /lib/modules ]     && _ModulesDir=/lib/modules
-    [ "$_ModulesDir" = "" ] && return
+    _ModuleList=$KRN_RCDIR/.ModuleList
+    _ModuleDir=""
+    [ -d /usr/lib/modules ] && _ModuleDir=/usr/lib/modules
+    [ -d /lib/modules ]     && _ModuleDir=/lib/modules
+    [ "$_ModuleDir" = "" ] && return
 
-    for _ModulesVersion in $(ls -1 $_ModulesDir)
+    if   [ ! -f $_ModuleList ]
+    then
+	# Creation 
+	touch $_ModuleList
+	
+    elif [ $_ModuleDir -ot $_ModuleList ]
+    then
+	# no update needed
+	return
+    fi
+
+    > $_ModuleList
+    for _ModuleVersion in $(ls -1 $_ModuleDir)
     do
-	if [ "$(echo $_ModulesVersion|grep rc)" = "" ]
+	if [ "$(echo $_ModuleVersion|grep rc)" = "" ]
 	then
-	    _Version=$(echo $_ModulesVersion|cut -d- -f1)
+	    _Version=$(echo $_ModuleVersion|cut -d- -f1)
 	else
-	    _Version=$(echo $_ModulesVersion|cut -d- -f1,2)
+	    _Version=$(echo $_ModuleVersion|cut -d- -f1,2)
 	fi
 	
-	# Format : Version;NomModule;FullPath
-	echo "$_Version,$_ModulesVersion,$_ModulesDir/$_ModulesVersion"
+	# Format : Version;NomModule;FullPath;Directory Size
+	_Size=$(echo $(du -hs $_ModuleDir/$_ModuleVersion|tr ['\t'] [' ']|cut -d' ' -f1))
+	echo "$_Version,$_ModuleVersion,$_ModuleDir/$_ModuleVersion,$_Size" >> $_ModuleList
     done
 }
 
 #-------------------------------------------------------------------------------
 ListInstalledKernel ()
 {
-    
+    _RefreshInstalledKernel
+    _ModuleList=$KRN_RCDIR/.ModuleList
+   
     echo ""
     echo "Installed kernel(s)"
     echo "-------------------"
-    for _Enreg in $(GetInstalledKernel|linux-version-sort)
+    cat $_ModuleList|linux-version-sort|while read _Enreg
     do
-	_ModuleDir=$(echo $_Enreg|cut -d',' -f3)
-	printf "%-22s \033[36mModule directory size\033[m %s\n"    \
-	       $(basename $_ModuleDir)                              \
-	       $(du -hs   $_ModuleDir|tr ['\t'] [' ']|cut -d' ' -f1)
+	_ModuleDir=$( echo $_Enreg|cut -d',' -f2)
+	_ModuleSize=$(echo $_Enreg|cut -d',' -f4)
+	
+	printf "%-22s \033[36mModule directory size\033[m %s\n" \
+	       $_ModuleDir $_ModuleSize
     done
     echo ""
 }

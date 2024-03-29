@@ -46,10 +46,8 @@ function Help
     echo   " - Mode GENTOO      : Gentoo distribution"
     echo   ""
     printf "\033[34m Bash auto completion \033[m\n"
-    echo   "In your bash_completion management, for example ~/.bash_completion,"
-    echo   "insert following line :"
-    printf "\033[1m. \$(krn _GetVar KRN_EXE)/_Completion.sh\033[m\n"
-    echo   ""
+    printf "\033[34m----------------------\033[m\n"
+    echo   "run command : krn Configure"
     echo   ""
     printf "\033[37;44m Syntax \033[m : ${KRN_Help_Prefix}Command Parameters ...\n"
     echo  ""
@@ -58,7 +56,7 @@ function Help
     echo  "Help            (H): Display main help page"
     echo  "CLI                : Launch KRN command interpreter."
     echo  "Detach         (DT): Detach KRN command in an other terminal or in a log file."
-    echo  "Watch          (WA): Detach KRN command in an other terminal refreshed every 10 seconds."
+    echo  "Watch          (WA): Detach KRN command in an other terminal refreshed every 5 seconds."
     echo  ""
     printf "\033[34m Workspace management \033[m\n"
     printf "\033[34m----------------------\033[m\n"
@@ -101,6 +99,13 @@ function Help
     printf "\033[34m Log management \033[m\n"
     printf "\033[34m----------------\033[m\n"
     echo "SaveLog (SL)      : Save logs in directory defined by KRN_ACCOUNTING"
+    echo ""
+    printf "\033[34m Advanced usage \033[m\n"
+    printf "\033[34m----------------\033[m\n"
+    echo "Update            : Update cache of available versions (cdn, git ...)"
+    echo "Upgrade           : Upgrade kernels set installed on the system"
+    echo "AutoRemove    (AR): Auto remove old kernels and keep the 2 last versions"
+    echo "AutoClean     (AC): Auto purge old kernels in then workspace directory"
     echo ""
 }
 
@@ -218,6 +223,12 @@ case $Commande in
     "confcompsigninst"  |"kccsi") RunCommand ConfCompSignInst.sh ;;
     
     "savelog"           |"sl")    SaveLog.sh ;;
+
+    # Advanced usages
+    "update"         ) RunCommand Update.sh     ;;
+    "upgrade"        ) RunCommand Upgrade.sh    ;;
+    "autoremove"|"ar") RunCommand AutoRemove.sh ;;
+    "autoclean" |"ac") RunCommand AutoClean.sh  ;;
 
     # Internal commands
     "_updatecompletion") _RefreshWorkspaceList    ;;

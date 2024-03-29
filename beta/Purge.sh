@@ -39,7 +39,7 @@ PurgeWorkspace ()
 	# Noyau installe
 	if [ "$(grep "^$CKC_Version," $InstalledKernel)" != "" ]
 	then
-	    printf "\033[31mVersion %-10s\033[m : \033[31mINSTALLED\033[m, no purge for $_Fichier\n" $CKC_Version
+	    printf "\033[31mVersion %-10s\033[m : \033[31mINSTALLED\033[m, no purge for $Version\n" $CKC_Version
 	    return
 	fi
 
@@ -133,32 +133,20 @@ then
     exit 1
 fi
 
-TmpDir=$KRN_TMP/krn-purge-$$
-mkdir $TmpDir
-InstalledKernel=$TmpDir/InstalledKernel
-WorkspaceList=$KRN_WORKSPACE/.CompletionList
-
 Debut=$(TopHorloge)
 
-GetInstalledKernel > $InstalledKernel
-NbObjet=$(cat $InstalledKernel|wc -l)
-if [ $NbObjet -eq 0 ]
-then
-    echo ""
-    echo " *** Modules directories not found."
-    echo ""
-    rm -rf $TmpDir
-    exit 0
-fi
+_RefreshInstalledKernel
+InstalledKernel=$KRN_RCDIR/.ModuleList
 
 _RefreshWorkspaceList
+WorkspaceList=$KRN_WORKSPACE/.CompletionList
+
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
 then
     echo ""
     echo " *** Empty workspace, nothing to purge"
     echo ""
-    rm -rf $TmpDir
     exit 0
 fi
 
@@ -176,6 +164,4 @@ echo   "  After purge  : $SizeAfter"
 echo   ""
 printf "\033[44m Purge elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
-
-rm -rf $TmpDir
 exit 0

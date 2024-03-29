@@ -51,3 +51,9 @@ verifykernel,VerifyKernel
 vk,VerifyKernel
 watch,Watch
 wa,Watch
+update,Update
+upgrade,Upgrade
+autoremove,AutoRemove
+ar,AutoRemove
+autoclean,AutoClean
+ac,AutoClean

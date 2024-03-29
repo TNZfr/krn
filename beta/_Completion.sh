@@ -51,6 +51,20 @@ _krn_completion ()
 			COMPREPLY+=("DEFAULT")
 		    fi
 		    ;;
+
+		list|ls)
+		    if [ ${#COMP_WORDS[@]} -eq 3 ]
+		    then
+			COMPREPLY+=("FORCE")
+		    fi
+		    ;;
+		
+		upgrade)
+		    if [ ${#COMP_WORDS[@]} -eq 3 ]
+		    then
+			COMPREPLY+=("RC")
+		    fi
+		    ;;
 		
 		configure|cf)
 		    if [ ${#COMP_WORDS[@]} -eq 3 ]
@@ -106,7 +120,4 @@ _krn_completion ()
 	*)
     esac
 }
-
 complete -F _krn_completion krn
-
-
