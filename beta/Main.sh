@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KRN_VERSION=v9.1-Beta
+KRN_VERSION=v9.1-rc2
 
 #-------------------------------------------------------------------------------
 function RunCommand
