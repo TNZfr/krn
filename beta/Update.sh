@@ -215,7 +215,7 @@ then
 		    esac
 		done
 	
-	Liste="$(sort $Version|tr ['\n'] [' '])"
+	Liste="$(cat $Version|tr ['\n'] [' '])"
 	printf "%-12s : $Liste\n" $Version
     done
     cd $CurrentDirectory
