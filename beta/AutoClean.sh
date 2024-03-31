@@ -13,7 +13,7 @@ NbItem=$(grep -v ",cfg," $WorkspaceList|wc -l)
 if [ $NbItem -eq 0 ]
 then
     echo ""
-    echo "Workspace install already clean."
+    echo "Workspace already clean."
     echo ""
     exit 0
 fi
