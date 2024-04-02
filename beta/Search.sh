@@ -64,6 +64,7 @@ do
 		    deb) echo -e "[\033[32mWorkspace deb package\033[m]"         >> $TempDir/$Version ;;
 		    rpm) echo -e "[\033[32mWorkspace rpm package\033[m]"         >> $TempDir/$Version ;;
 		    arc) echo -e "[\033[mWorkspace compil directory\033[m]"      >> $TempDir/$Version ;;
+		    dir) echo -e "[\033[33mWorkspace build\033[m]"               >> $TempDir/$Version ;;
 		esac
 	    done
     
