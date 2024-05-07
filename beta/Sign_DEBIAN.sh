@@ -43,7 +43,7 @@ SignOneKernel ()
 	      --cert $KRNSB_PEM  \
 	      ${BootVmlinuz}
     
-    mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
+    $KRN_sudo mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
     _CursesStep fin SIG02 "\033[22;32mDone\033[m"
    
     # Signature des modules installes
