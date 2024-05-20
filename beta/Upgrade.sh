@@ -3,7 +3,7 @@
 source $KRN_EXE/_libkernel.sh
 
 #-------------------------------------------------------------------------------
-ExitUpdate ()
+ExitUpgrade ()
 {
     # Menage de fin de traitement
     rm -rf $TempDir
@@ -31,7 +31,13 @@ mkdir -p $TempDir
 
 # 1. Derniere version disponible
 # ------------------------------
-RunningKernel=$(uname -r|cut -d'-' -f1)
+LastKernel=$(ls -1tr /lib/modules|tail -1)
+if [ "$(echo $LastKernel|grep rc)" != "" ]
+then
+    LastKernel=$(echo $LastKernel|cut -d'-' -f1,2)
+else
+    LastKernel=$(echo $LastKernel|cut -d'-' -f1)
+fi
 
 #
 # LastRecord    : x.y,   x.y.z, x.y-rc  (in BDD)
@@ -54,12 +60,12 @@ else
     fi	
 fi
 
-Sorted=$(echo -e "${RunningKernel}_2\n${LastAvailable}_1"|sort|tail -1)
-if [ $Sorted = ${RunningKernel}_2 ]
+Sorted=$(echo -e "${LastKernel}_2\n${LastAvailable}_1"|sort|tail -1)
+if [ $Sorted = ${LastKernel}_2 ]
 then
     echo ""
     echo "System is up to date. No kernel install needed."
-    ExitUpdate
+    ExitUpgrade
 fi
 
 # 2. Installation derniere version disponible
@@ -133,4 +139,4 @@ case $Choice in
 		|| echo "Choice #$Choice not available."
 esac
 
-ExitUpdate
+ExitUpgrade

@@ -7,7 +7,8 @@
 SignOneKernel ()
 {
     Version=$1
-
+    _Step=$2
+    
     # Parsing /controle du parametre
     # ------------------------------
     ModuleDirectory=$(ls -1 /lib/modules|grep ^$Version 2>/dev/null)
@@ -35,7 +36,7 @@ SignOneKernel ()
 
     # Signature de vmlinuz
     # --------------------
-    _CursesStep debut SIG02 "\033[5;46m Running \033[m"
+    _CursesStep debut SIG${_Step}a "\033[5;46m Running \033[m"
     printh "Signing kernel $Version ..."
     echo "Memory tips : $KRNSB_PASS"
     $KRN_sudo sbsign             \
@@ -44,12 +45,12 @@ SignOneKernel ()
 	      ${BootVmlinuz}
     
     $KRN_sudo mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
-    _CursesStep fin SIG02 "\033[22;32mDone\033[m"
+    _CursesStep fin SIG${_Step}a "\033[22;32mDone\033[m"
    
     # Signature des modules installes
     # -------------------------------
     echo ""
-    _CursesStep debut SIG03 "\033[5;46m Running \033[m"
+    _CursesStep debut SIG${_Step}b "\033[5;46m Running \033[m"
     printh "Signing kernel modules $Version ..."
     CurrentDir=$PWD
     cd $ModuleDirectory
@@ -67,7 +68,7 @@ SignOneKernel ()
     done
     cd $CurrentDir
     printh "Done."
-    _CursesStep fin SIG03 "\033[22;32mDone\033[m"
+    _CursesStep fin SIG${_Step}b "\033[22;32mDone\033[m"
     echo ""
 }
 
@@ -98,9 +99,11 @@ esac
 _CursesStep fin SIG01 "\033[22;32mFound\033[m"
 
 echo ""
+Param=1
 for KernelVersion in $*
 do
-    SignOneKernel $KernelVersion
+    SignOneKernel $KernelVersion $(printf "%02d" $Param)
+    (( Param += 1))
 done
 
 # Mise a jour de GRUB par securite

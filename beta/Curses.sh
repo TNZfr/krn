@@ -9,13 +9,8 @@
 # Script run by KRN Detach 
 #
 _MainCommand=$1
-
-export KRN_EXE=$(dirname $(readlink -f $0))
-export PATH=$KRN_EXE:$PATH
-
-. $KRN_EXE/Configure.sh LOAD
-export KRN_MODE=$(        echo $KRN_MODE        |tr [:lower:] [:upper:])
-export KRN_ARCHITECTURE=$(echo $KRN_ARCHITECTURE|tr [:upper:] [:lower:])
+_KrnParameter=$*
+export KRNC_Parameter=$(echo $*|cut -d' ' -f2-)
 
 # Board Availability for current mode
 # -----------------------------------
@@ -66,8 +61,9 @@ then
     fi
     
     _InitCurses
-    $KRN_EXE/Main.sh $* > $KRNC_TMP/exec.log 2>&1 &
-    $KRN_EXE/curses/KRNC_main.sh $_CursesBoard $*
+    _InitBoard  $KRNC_BDD $_CursesBoard $_KrnParameter
+    ($KRN_EXE/Main.sh $_KrnParameter > $KRNC_TMP/exec.log 2>&1; _CursesVar KRNC_fin=$(TopHorloge))&
+    $KRN_EXE/curses/KRN_Curses $KRNC_BOARD
     _CloseCurses
 else
     if [ "$_MainCommand" != "" ]

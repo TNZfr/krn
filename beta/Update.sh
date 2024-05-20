@@ -173,8 +173,15 @@ printh "$NbVersion kernel vesion(s) found."
 # ---------------------------------
 rm -rf $TempDir/*
 
-RunningKernel=$(uname -r|cut -d'-' -f1)
-Index=$(grep -n ^$RunningKernel $KRN_RemoteVersion|tail -1|cut -d':' -f1)
+LastKernel=$(ls -1tr /lib/modules|tail -1)
+if [ "$(echo $LastKernel|grep rc)" != "" ]
+then
+    LastKernel=$(echo $LastKernel|cut -d'-' -f1,2)
+else
+    LastKernel=$(echo $LastKernel|cut -d'-' -f1)
+fi
+
+Index=$(grep -n "^$LastKernel," $KRN_RemoteVersion|tail -1|cut -d':' -f1)
 NbRecord=$(cat $KRN_RemoteVersion|wc -l)
 
 if [ $Index -lt $NbRecord ]

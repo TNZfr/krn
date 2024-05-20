@@ -28,29 +28,32 @@ void LV_Parse (LNXVER *LV, char *String)
 
   if (Virgule) *Virgule='\0';
 
-  LV->Major = (short)atoi(String);
-  Suivant = strchr (String, '.');
-  Suivant ++;
-
-  LV->Minor = (short)atoi(Suivant);
-
-  Tiret = strstr (Suivant,"-rc");
-  if (Tiret)
+  if (LV->String[0] != 0 && strcmp(LV->String,"Unknown") != 0)
   {
-    LV->NotRC   = FALSE;
-    LV->Release = (short)atoi(&Tiret[3]);
-  }
-  else
-  {
-    LV->NotRC   = TRUE;
-    LV->Release = 0;
+    LV->Major = (short)atoi(String);
+    Suivant = strchr (String, '.');
+    Suivant ++;
 
-    Suivant = strchr (Suivant, '.');
-    if (Suivant)
-    {
-      Suivant ++;
-      LV->Release = (short)atoi(Suivant);
-    }
+    LV->Minor = (short)atoi(Suivant);
+
+    Tiret = strstr (Suivant,"-rc");
+    if (Tiret)
+      {
+	LV->NotRC   = FALSE;
+	LV->Release = (short)atoi(&Tiret[3]);
+      }
+    else
+      {
+	LV->NotRC   = TRUE;
+	LV->Release = 0;
+
+	Suivant = strchr (Suivant, '.');
+	if (Suivant)
+	  {
+	    Suivant ++;
+	    LV->Release = (short)atoi(Suivant);
+	  }
+      }
   }
   if (Virgule) *Virgule=',';
 }

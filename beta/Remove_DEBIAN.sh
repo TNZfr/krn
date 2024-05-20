@@ -11,12 +11,12 @@ RemoveOneKernel ()
 
     # Parsing /controle du parametre
     # ------------------------------
-    _CursesStep debut REM${_Step}a "\033[5;46m Running \033[m"
+    _CursesStep debut REM${_Step} "\033[5;46m Running \033[m"
     ModuleDirectory=$(ls -1 /lib/modules|grep ^$Version 2>/dev/null)
     if [ "$ModuleDirectory" = "" ]
     then
 	echo "Version $Version not installed."
-	_CursesStep fin REM${_Step}a "\033[31mNot installed\033[m"
+	_CursesStep fin REM${_Step} "\033[31mNot installed\033[m"
 	return
     fi
     
@@ -27,7 +27,7 @@ RemoveOneKernel ()
 	    then
 		echo "Version $(uname -r) is the current running kernel."
 		echo "Can't be uninstalled while in use."
-		_CursesStep fin REM${_Step}a "\033[31mCurrent running kernel\033[m"
+		_CursesStep fin REM${_Step} "\033[31mCurrent running kernel\033[m"
 		return
 	    fi
 	    Version=$(echo $ModuleDirectory|cut -d'-' -f1,2)
@@ -39,7 +39,7 @@ RemoveOneKernel ()
 	    echo "Provided parameter references $NbModule installed kernels."
 	    echo $ModuleDirectory|tr [' '] ['\n']
 	    echo ""
-	    _CursesStep fin REM${_Step}a "\033[31m$NbModule installed kernels\033[m"
+	    _CursesStep fin REM${_Step} "\033[31m$NbModule installed kernels\033[m"
 	    return
     esac
 
@@ -70,7 +70,7 @@ RemoveOneKernel ()
 	$KRN_sudo rm -rf $ModuleDirectory
 	echo "done."
    fi
-    _CursesStep fin REM${_Step}a "\033[22;32m${Version} removed\033[m"
+    _CursesStep fin REM${_Step} "\033[22;32m${Version} removed\033[m"
 }
 
 #-------------------------------------------------------------------------------
