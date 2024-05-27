@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KRN_VERSION=v9.0
+KRN_VERSION=v9.1
 
 #-------------------------------------------------------------------------------
 function RunCommand
@@ -39,11 +39,15 @@ function Help
     echo   ""
     printf " \033[30;42m KRN $KRN_VERSION \033[m : Kernel management tool\n"
     echo   ""
-    echo   " - Mode DEBIAN      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
-    echo   " - Mode REDHAT      : Redhat based distributions (RHEL, Centos, Fedora ...)"
-    echo   " - Mode ARCH        : Arch-Linux distribution with kernel named version"
-    echo   " - Mode ARCH-CUSTOM : Arch-Linux distribution with fixed kernel name"
-    echo   " - Mode GENTOO      : Gentoo distribution"
+    echo   " - DEBIAN mode      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
+    echo   " - REDHAT mode      : Redhat based distributions (RHEL, Centos, Fedora ...)"
+    echo   " - ARCH mode        : Arch-Linux distribution with kernel named version"
+    echo   " - ARCH-CUSTOM mode : Arch-Linux distribution with fixed kernel name"
+    echo   " - GENTOO mode      : Gentoo distribution"
+    echo   ""
+    printf "\033[34m Bash auto completion \033[m\n"
+    printf "\033[34m----------------------\033[m\n"
+    echo   "run command : krn Configure"
     echo   ""
     printf "\033[37;44m Syntax \033[m : ${KRN_Help_Prefix}Command Parameters ...\n"
     echo  ""
@@ -52,7 +56,8 @@ function Help
     echo  "Help            (H): Display main help page"
     echo  "CLI                : Launch KRN command interpreter."
     echo  "Detach         (DT): Detach KRN command in an other terminal or in a log file."
-    echo  "Watch          (WA): Detach KRN command in an other terminal refreshed every 10 seconds."
+    echo  "Watch          (WA): Detach KRN command in an other terminal refreshed every 5 seconds."
+    echo  "Curses         (CU): Display step list of KRN command giving information and elapsed time."
     echo  ""
     printf "\033[34m Workspace management \033[m\n"
     printf "\033[34m----------------------\033[m\n"
@@ -95,6 +100,13 @@ function Help
     printf "\033[34m Log management \033[m\n"
     printf "\033[34m----------------\033[m\n"
     echo "SaveLog (SL)      : Save logs in directory defined by KRN_ACCOUNTING"
+    echo ""
+    printf "\033[34m Advanced usage \033[m\n"
+    printf "\033[34m----------------\033[m\n"
+    echo "Update            : Update cache of available versions (cdn, git ...)"
+    echo "Upgrade           : Upgrade kernels set installed on the system"
+    echo "AutoRemove    (AR): Auto remove old kernels and keep the 2 last versions"
+    echo "AutoClean     (AC): Auto purge old kernels in then workspace directory"
     echo ""
 }
 
@@ -177,41 +189,52 @@ Commande=$(echo $1|tr [:upper:] [:lower:])
 
 case $Commande in
 
-    "help"             |"h" )    Help                              ;;
-    "cli"                   )    DirectCommand                     ;;
-    "detach"           |"dt")    Detach.sh $Parametre              ;;
-    "watch"            |"wa")    Watch.sh  $Parametre              ;;
+    "help"              |"h" )    Help                              ;;
+    "cli"                    )    DirectCommand                     ;;
+    "curses"            |"cu")    Curses.sh $Parametre              ;;
+    "detach"            |"dt")    Detach.sh $Parametre              ;;
+    "watch"             |"wa")    Watch.sh  $Parametre              ;;
 
-    "configure"        |"cf")    RunCommand Configure.sh           ;;
-    "purge"                 )    RunCommand Purge.sh               ;;
-    "list"             |"ls")    RunCommand List.sh                ;;
-    "search"           |"se")    RunCommand Search.sh              ;;
-    "get"              |"gk")    RunCommand GetKernel.sh           ;;
-    "install"               )    RunCommand Install_${KRN_MODE}.sh ;;
-    "remove"                )    RunCommand Remove_${KRN_MODE}.sh  ;;
+    "configure"         |"cf")    RunCommand Configure.sh           ;;
+    "purge"                  )    RunCommand Purge.sh               ;;
+    "list"              |"ls")    RunCommand List.sh                ;;
+    "search"            |"se")    RunCommand Search.sh              ;;
+    "get"               |"gk")    RunCommand GetKernel.sh           ;;
+    "install"                )    RunCommand Install_${KRN_MODE}.sh ;;
+    "remove"                 )    RunCommand Remove_${KRN_MODE}.sh  ;;
     
-    "createsign"            )    RunCommand CreateSign.sh              ;;
-    "sign"             |"sk")    RunCommand Sign_${KRN_MODE}.sh        ;;
-    "installsign"      |"is")    RunCommand InstallSign_${KRN_MODE}.sh ;;
-    "verifykernel"     |"vk")    RunCommand VerifyKernel.sh            ;;
+    "createsign"             )    RunCommand CreateSign.sh              ;;
+    "sign"              |"sk")    RunCommand Sign_${KRN_MODE}.sh        ;;
+    "installsign"       |"is")    RunCommand InstallSign_${KRN_MODE}.sh ;;
+    "verifykernel"      |"vk")    RunCommand VerifyKernel.sh            ;;
     
-    "changelog"        |"cl")    RunCommand ChangeLog.sh ;;
-    "getsource"        |"gs")    RunCommand GetSource.sh ;;
+    "changelog"         |"cl")    RunCommand ChangeLog.sh ;;
+    "getsource"         |"gs")    RunCommand GetSource.sh ;;
 
     "compile"           |"cc")    RunCommand Compile_${KRN_MODE}.sh            ;;
     "compileinstall"    |"cci")   RunCommand CompileInstall_${KRN_MODE}.sh     ;;
     "compilesign"       |"ccs")   RunCommand CompileSign_${KRN_MODE}.sh        ;;
     "compilesigninstall"|"ccsi")  RunCommand CompileSignInstall_${KRN_MODE}.sh ;;
 
-    "setconfig"        |"sc")    RunCommand SetConfig.sh        ;;
-    "kernelconfig"     |"kc")    RunCommand KernelConfig.sh     ;;
-    "confcomp"         |"kcc")   RunCommand ConfComp.sh         ;;
-    "confcompinstall"  |"kcci")  RunCommand ConfCompInstall.sh  ;;
-    "confcompsign"     |"kccs")  RunCommand ConfCompSign.sh     ;;
-    "confcompsigninst" |"kccsi") RunCommand ConfCompSignInst.sh ;;
+    "setconfig"         |"sc")    RunCommand SetConfig.sh        ;;
+    "kernelconfig"      |"kc")    RunCommand KernelConfig.sh     ;;
+    "confcomp"          |"kcc")   RunCommand ConfComp.sh         ;;
+    "confcompinstall"   |"kcci")  RunCommand ConfCompInstall.sh  ;;
+    "confcompsign"      |"kccs")  RunCommand ConfCompSign.sh     ;;
+    "confcompsigninst"  |"kccsi") RunCommand ConfCompSignInst.sh ;;
     
-    "savelog"          |"sl")    SaveLog.sh ;;
+    "savelog"           |"sl")    SaveLog.sh ;;
 
+    # Advanced usages
+    "update"         ) RunCommand Update.sh     ;;
+    "upgrade"        ) RunCommand Upgrade.sh    ;;
+    "autoremove"|"ar") RunCommand AutoRemove.sh ;;
+    "autoclean" |"ac") RunCommand AutoClean.sh  ;;
+
+    # Internal commands
+    "_updatecompletion") _RefreshWorkspaceList    ;;
+    "_getvar")           eval echo \$${Parametre} ;;
+    
     *)
 	echo "Kernel management : 'krn $1' unknown command."
 	Status=1

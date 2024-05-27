@@ -19,6 +19,7 @@ AfficheDuree ()
     Fin=$2
 
     AD_Duree=$(echo "scale=6; $Fin - $Debut"|bc)
+    [ "${AD_Duree:0:1}" = "-" ] && return
     [ "${AD_Duree:0:1}" = "." ] && AD_Duree="0$AD_Duree"
     
     Seconde=$(echo $AD_Duree|cut -d. -f1)
@@ -110,7 +111,7 @@ VerifySigningConditions ()
 	echo ""
 	echo "Missing signing parameters (Cf krn Configure)" 
 	echo ""
-	exit 1
+	return 1
     fi
 
     if [ -z "$KRNSB_PRIV" ] || [ -z "$KRNSB_DER" ] || [ -z "$KRNSB_PEM" ]
@@ -122,7 +123,7 @@ VerifySigningConditions ()
 	printf " - \033[34mPulbic Key\033[m  : %s\n" $(env|grep ^KRNSB_DER)
 	printf " - \033[34mCertificat\033[m  : %s\n" $(env|grep ^KRNSB_PEM)
 	echo ""
-	exit 1
+	return 2
     fi
 
     if [ ! -f $KRNSB_PRIV ] || [ ! -f $KRNSB_DER ] || [ ! -f $KRNSB_PEM ]
@@ -133,55 +134,77 @@ VerifySigningConditions ()
 	printf " - $KRNSB_DER  : %s\n" "$([ -f $KRNSB_DER ]  && printf "\033[32mFound.\033[m" || printf "\033[31mNOT FOUND.\033[m")"
 	printf " - $KRNSB_PEM  : %s\n" "$([ -f $KRNSB_PEM ]  && printf "\033[32mFound.\033[m" || printf "\033[31mNOT FOUND.\033[m")"
 	echo ""
-	exit 1
+	return 3
     fi
 }
 
 #-------------------------------------------------------------------------------
-GetInstalledKernel ()
+_RefreshInstalledKernel ()
 {
-    _ModulesDir=""
-    [ -d /usr/lib/modules ] && _ModulesDir=/usr/lib/modules
-    [ -d /lib/modules ]     && _ModulesDir=/lib/modules
-    [ "$_ModulesDir" = "" ] && return
+    _ModuleList=$KRN_RCDIR/.ModuleList
+    _ModuleDir=""
+    [ -d /usr/lib/modules ] && _ModuleDir=/usr/lib/modules
+    [ -d /lib/modules ]     && _ModuleDir=/lib/modules
+    [ "$_ModuleDir" = "" ] && return
 
-    for _ModulesVersion in $(ls -1 $_ModulesDir)
+    if   [ ! -f $_ModuleList ]
+    then
+	# Creation 
+	touch $_ModuleList
+	
+    elif [ $_ModuleDir -ot $_ModuleList ]
+    then
+	# no update needed
+	return
+    fi
+
+    > $_ModuleList
+    for _ModuleVersion in $(ls -1 $_ModuleDir)
     do
-	if [ "$(echo $_ModulesVersion|grep rc)" = "" ]
+	if [ "$(echo $_ModuleVersion|grep rc)" = "" ]
 	then
-	    _Version=$(echo $_ModulesVersion|cut -d- -f1)
+	    _Version=$(echo $_ModuleVersion|cut -d- -f1)
 	else
-	    _Version=$(echo $_ModulesVersion|cut -d- -f1,2)
+	    _Version=$(echo $_ModuleVersion|cut -d- -f1,2)
 	fi
 	
-	# Format : Version;NomModule;FullPath
-	echo "$_Version,$_ModulesVersion,$_ModulesDir/$_ModulesVersion"
+	# Format : Version;NomModule;FullPath;Directory Size
+	_Size=$(echo $(du -hs $_ModuleDir/$_ModuleVersion|tr ['\t'] [' ']|cut -d' ' -f1))
+	echo "$_Version,$_ModuleVersion,$_ModuleDir/$_ModuleVersion,$_Size" >> $_ModuleList
     done
 }
 
 #-------------------------------------------------------------------------------
 ListInstalledKernel ()
 {
-    
+    _RefreshInstalledKernel
+    _ModuleList=$KRN_RCDIR/.ModuleList
+   
     echo ""
     echo "Installed kernel(s)"
     echo "-------------------"
-    for _Enreg in $(GetInstalledKernel|linux-version sort)
+    cat $_ModuleList|linux-version-sort|while read _Enreg
     do
-	_ModuleDir=$(echo $_Enreg|cut -d',' -f3)
-	printf "%-22s \033[36mModule directory size\033[m %s\n"    \
-	       $(basename $_ModuleDir)                              \
-	       $(du -hs   $_ModuleDir|tr ['\t'] [' ']|cut -d' ' -f1)
+	_ModuleDir=$( echo $_Enreg|cut -d',' -f2)
+	_ModuleSize=$(echo $_Enreg|cut -d',' -f4)
+	
+	printf "%-22s \033[36mModule directory size\033[m %s\n" \
+	       $_ModuleDir $_ModuleSize
     done
     echo ""
 }
 
 #-------------------------------------------------------------------------------
-GetWorkspaceList()
+_RefreshWorkspaceList()
 {
     CurrentDir=$PWD
     cd $KRN_WORKSPACE
     
+    # List generation only if modified
+    [ "$(ls -1atr|tail -1)" = ".CompletionList" ] && return
+
+    > .CompletionList
+
     _ListeFichier=$(ls -1|grep -v "Compil-"; find -name "Compil-*")
     [ "$_ListeFichier" != "" ] && for _Fichier in $_ListeFichier
     do
@@ -285,8 +308,7 @@ GetWorkspaceList()
 	esac
 
 	# Enregistrement : Version,Type,LibelleType,NomObjet
-	printf "$_Version,$_TypeObjet,$_Fichier\n"
+	printf "$_Version,$_TypeObjet,$_Fichier\n" >> .CompletionList
     done
     cd $CurrentDir
 }
-

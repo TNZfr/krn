@@ -17,98 +17,83 @@ then
     exit 1
 fi
 
-ListeDistante=$KRN_TMP/ListeDistante-$$.txt
-ListeVersion=$KRN_TMP/ListeVersion-$$.txt
+RemoteVersion=$KRN_RCDIR/RemoteVersion.csv
+WorkspaceList=$KRN_WORKSPACE/.CompletionList
 
-Debut=$(TopHorloge)
+[ ! -f $RemoteVersion ] && Update.sh
 
-echo   ""
+TempDir=$KRN_TMP/krn-search-$$
+mkdir -p $TempDir
 
-Version=$1
-[ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
-
-# 1. Recherche des sources git.kernel.org
-# ---------------------------------------
-Url=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/refs/
-printf "\033[34mgit.kernel.org\033[m : Getting available versions ... "
-wget -q --no-check-certificate $Url -O $ListeDistante
-echo "done."
-printf "\033[34m--------------\033[m\n"
-
-if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
-then
-    mv $ListeDistante ${ListeDistante}.gz
-    gunzip ${ListeDistante}.gz
-fi
-
-# Récupération de la liste des versions présentes
-grep tar.gz $ListeDistante|tr ['<>'] ['\n\n']|grep ^linux|grep rc|cut -d'-' -f2,3|cut -d. -f1,2|grep $Version > $ListeVersion
-
-if [ $(cat $ListeVersion|wc -l) -gt 0 ]
-then
-    for VersionFound in $(cat $ListeVersion|linux-version sort)
-    do
-	printf "%-10s \033[mKernel source archive (gz)\033[m\n" $VersionFound
-    done
-else
-    echo "No kernel sources available."
-fi
+echo ""
+echo "Availability : "
+echo -e "\t\033[32mUbuntu\033[m .............. : Debian Package from PPA Kernel Ubuntu"
+echo -e "\t\033[32mWorkspace deb package\033[m : Local Debian package"
+echo -e "\t\033[32mWorkspace rpm package\033[m : Local Redhat package"
+echo -e "\t\033[mWorkspace directory\033[m   : Local directory (Arch / Gentoo)"
+echo -e "\tGit / Cdn ........... : Sources from kernel.org for compilation"
+echo -e "\t\033[35mckc-\033[3mVersion-Label\033[m ... : Local custom kernel packages"
+echo -e "\t\033[33mWorkspace build\033[m ..... : Local build directory"
+echo ""
+echo -e "Database update :\033[34m" $(stat $RemoteVersion|grep ^Modify|cut -c9-27) "\033[m(krn Update to refresh database)"
 echo ""
 
-# 2. Recherche des sources cdn.kernel.org
-# ---------------------------------------
-Branch="v$(echo $Version|cut -c1).x"
-Url=https://cdn.kernel.org/pub/linux/kernel/$Branch/
-printf "\033[34mcdn.kernel.org\033[m : Getting available versions ... "
-wget -q --no-check-certificate $Url -O $ListeDistante
-echo "done."
-printf "\033[34m--------------\033[m\n"
-
-if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
-then
-    mv $ListeDistante ${ListeDistante}.gz
-    gunzip ${ListeDistante}.gz
-fi
-
-# Récupération de la liste des versions présentes
-grep tar.xz $ListeDistante|grep linux-$Version|cut -d'"' -f2|rev|cut -d. -f3-|rev|cut -d- -f2|linux-version sort > $ListeVersion
-
-if [ $(cat $ListeVersion|wc -l) -gt 0 ]
-then
-    for VersionFound in $(cat $ListeVersion)
+grep "^$1" $RemoteVersion |\
+    while read Record
     do
-	printf "%-10s \033[mKernel source archive (xz)\033[m\n" $VersionFound
-    done
-else
-    echo "No kernel sources available."
-fi
+	Version=$(echo $Record|cut -d',' -f1)
+	Source=$( echo $Record|cut -d',' -f2)
+	
+	case $Source in
+	    GIT)    echo -e "\033[mGit\033[m" >> $TempDir/$Version ;;
+	    CDN)    echo -e "\033[mCdn\033[m" >> $TempDir/$Version ;;
+	    UBUNTU) echo -e "\033[32mUbuntu\033[m" >> $TempDir/$Version ;;
+	esac
 
-#-------------------------------------------------------------------------------
-# La suite ne concerne que les distribs DEBIAN
-# --------------------------------------------
-if [ $KRN_MODE = DEBIAN ]
-then
-    # 3. Recherche des paquets Ubuntu/Mainline
-    # ----------------------------------------
-    Url=https://kernel.ubuntu.com/~kernel-ppa/mainline/
-    echo ""
-    printf "\033[34mUbuntu/Mainline\033[m : Getting available versions ... "
-    wget -q --no-check-certificate $Url -O $ListeDistante
-    echo "done."
-    printf "\033[34m---------------\033[m\n"
-
-    # Affichage de la liste
-    for VersionFound in $(grep "href=\"v" $ListeDistante|grep v$Version|cut -d'>' -f7|cut -d/ -f1|cut -c2-|linux-version sort)
-    do
-	printf "%-10s \033[32mUbuntu package (deb)\033[m\n" $VersionFound
     done
-fi
+
+CurrentDirectory=$PWD
+cd $TempDir
+for Version in $(linux-version-sort *)
+do
+    [ -f $WorkspaceList ] && \
+	grep "^${Version}," $WorkspaceList |\
+	    while read Record
+	    do
+		case $(echo $Record|cut -d',' -f2) in
+		    ckc) echo -e "[\033[35m$(echo $Record|cut -d',' -f4)\033[m]" >> $TempDir/$Version ;;
+		    deb) echo -e "[\033[32mWorkspace deb package\033[m]"         >> $TempDir/$Version ;;
+		    rpm) echo -e "[\033[32mWorkspace rpm package\033[m]"         >> $TempDir/$Version ;;
+		    arc) echo -e "[\033[mWorkspace directory\033[m]"             >> $TempDir/$Version ;;
+		    dir) echo -e "[\033[33mWorkspace build\033[m]"               >> $TempDir/$Version ;;
+		esac
+	    done
+    
+    Liste="$(cat $Version|tr ['\n'] [' '])"
+    printf "%-12s : $Liste\n" $Version
+done
+NbVersion=$(ls -1|wc -l)
+
+NbSource=$(grep -e Cdn -e Git *|wc -l)
+NbUbuntu=$(grep Ubuntu        *|wc -l)
+NbCKC=$(   grep ckc           *|wc -l)
+NbLocal=$( grep Workspace     *|wc -l)
+
+cd $CurrentDirectory
+
 
 # Menage de fin de traitement
-rm -f $ListeDistante $ListeVersion
+rm -rf $TempDir
 
-echo   ""
-printf "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
-echo   ""
+
+echo ""
+echo "Found $NbVersion kernel version(s) :"
+echo -e "\t$NbSource on kernel.org"
+echo -e "\t$NbUbuntu in PPA Kernel Ubuntu"
+echo -e "\t$NbLocal in local repository"
+echo -e "\t$NbCKC custom in local repository"
+echo ""
+echo -e "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))"
+echo ""
 
 exit 0

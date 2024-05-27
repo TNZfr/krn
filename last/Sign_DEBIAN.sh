@@ -1,12 +1,14 @@
 #!/bin/bash
 
 . $KRN_EXE/_libkernel.sh
+. $KRN_EXE/curses/_libcurses.sh
 
 #-------------------------------------------------------------------------------
 SignOneKernel ()
 {
     Version=$1
-
+    _Step=$2
+    
     # Parsing /controle du parametre
     # ------------------------------
     ModuleDirectory=$(ls -1 /lib/modules|grep ^$Version 2>/dev/null)
@@ -34,6 +36,7 @@ SignOneKernel ()
 
     # Signature de vmlinuz
     # --------------------
+    _CursesStep debut SIG${_Step}a "\033[5;46m Running \033[m"
     printh "Signing kernel $Version ..."
     echo "Memory tips : $KRNSB_PASS"
     $KRN_sudo sbsign             \
@@ -41,11 +44,13 @@ SignOneKernel ()
 	      --cert $KRNSB_PEM  \
 	      ${BootVmlinuz}
     
-    mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
-    
+    $KRN_sudo mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
+    _CursesStep fin SIG${_Step}a "\033[22;32mDone\033[m"
+   
     # Signature des modules installes
     # -------------------------------
     echo ""
+    _CursesStep debut SIG${_Step}b "\033[5;46m Running \033[m"
     printh "Signing kernel modules $Version ..."
     CurrentDir=$PWD
     cd $ModuleDirectory
@@ -63,6 +68,7 @@ SignOneKernel ()
     done
     cd $CurrentDir
     printh "Done."
+    _CursesStep fin SIG${_Step}b "\033[22;32mDone\033[m"
     echo ""
 }
 
@@ -78,22 +84,36 @@ then
     echo ""
     exit 1
 fi
-
-VerifySigningConditions
-
+#----------------------------------------
+_CursesVar KRNC_PID=$$
+#----------------------------------------
 Debut=$(TopHorloge)
+
+_CursesStep debut SIG01 "\033[5;46m Running \033[m"
+VerifySigningConditions
+case $? in
+    1) _CursesStep fin SIG01 "\033[31mParameter not defined\033[m"         ; exit 1;;
+    2) _CursesStep fin SIG01 "\033[31mOne or more missing parameter\033[m" ; exit 1;;
+    3) _CursesStep fin SIG01 "\033[31mMissing file(s)\033[m"               ; exit 1;;
+esac
+_CursesStep fin SIG01 "\033[22;32mFound\033[m"
+
 echo ""
+Param=1
 for KernelVersion in $*
 do
-    SignOneKernel $KernelVersion
+    SignOneKernel $KernelVersion $(printf "%02d" $Param)
+    (( Param += 1))
 done
 
 # Mise a jour de GRUB par securite
 # --------------------------------
+_CursesStep debut SIG04 "\033[5;46m Running \033[m"
 $KRN_sudo update-grub
+_CursesStep fin SIG04 "\033[22;32mDone\033[m"
 
 echo   ""
-printf "\033[44m SignKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m Sign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 
 exit 0

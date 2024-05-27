@@ -58,7 +58,8 @@ CreateConfiguration ()
     Saisie KRNSB_PEM          ""         "Signing kernel : cert file full path (.pem)"
     Saisie KRNSB_DER          ""         "Signing kernel : cert file full path (.der)"
 
-    echo "export KRN_MINTMPFS=5120" >> $KRN_RC
+    echo "export KRN_MINTMPFS=5120"    >> $KRN_RC
+    echo "export KRN_CONFIGUI=nconfig" >> $KRN_RC
 
     printh "$KRN_RC created."
 
@@ -84,10 +85,46 @@ DisplayConfiguration ()
 }
 
 #------------------------------------------------------------------------------------------------
+CheckInstallCompletion ()
+{
+    BashComp=$HOME/.bash_completion
+    LocalCompletion=$KRN_RCDIR/_Completion.sh
+
+    [ ! -f $LocalCompletion ] && \
+	cp $KRN_EXE/_Completion.sh $LocalCompletion && \
+	printh "Bash completion installed"
+
+    CksVersion=$(cat $KRN_EXE/_Completion.sh | cksum)
+    CksLocal=$(  cat $LocalCompletion        | cksum)
+    if [ "$CksVersion" != "$CksLocal" ]
+    then
+	cp $KRN_EXE/_Completion.sh $LocalCompletion
+	echo   ""
+	printh "Bash completion upgraded"
+    fi
+
+    MissingCall=FALSE
+    if [ -f $BashComp ]
+    then
+	grep -q "^source $LocalCompletion" $BashComp
+	[ $? -eq 1 ] && MissingCall=TRUE
+    else
+	MissingCall=TRUE
+    fi
+    
+    if [ $MissingCall = TRUE ]
+    then
+	echo   "source $LocalCompletion" >> $HOME/.bash_completion
+	echo   ""
+	printh "Bash completion deployed / updated"
+    fi
+}
+
+#------------------------------------------------------------------------------------------------
 # main
 #
-KRN_RCDIR=$HOME/.krn
-KRN_RC=$KRN_RCDIR/bashrc
+export KRN_RCDIR=$HOME/.krn
+export KRN_RC=$KRN_RCDIR/bashrc
 
 # En cas de RESET, on resaisie tous les parametres
 # ------------------------------------------------
@@ -107,8 +144,8 @@ case $1 in
 	NbVariable=$(env|grep -e ^KRN_ -e ^KRNSB_|wc -l)
 	if [ $NbVariable -lt 10 ]
 	then
-	Configure.sh RESET
-	. $KRN_RC
+	    Configure.sh RESET
+	    . $KRN_RC
 	fi
 	return
 	;;
@@ -119,6 +156,10 @@ case $1 in
 
     *)
 esac
+
+# Bash Completion
+# ---------------
+CheckInstallCompletion
 
 # Pas de parametres, affichage de la config
 # -----------------------------------------

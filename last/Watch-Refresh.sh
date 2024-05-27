@@ -22,10 +22,10 @@ while [ -d /tmp ]
 do
     $* > $WATCH_TMP 2>&1
     clear
-    printf "\033[37;44m *** $(date +'%Y %m %d - %Hh %Mm %Ss') *** \033[m\n"
+    printf "\033[37;44m *** $(date +'%Y/%m/%d - %Hh %Mm %Ss') *** \033[m\n"
     cat   $WATCH_TMP
     rm -f $WATCH_TMP
-    sleep 10
+    sleep 5
 done
 
 exit 0

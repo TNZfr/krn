@@ -4,21 +4,15 @@
 
 #-------------------------------------------------------------------------------
 # Main
+#
 
-TmpDir=$KRN_TMP/krn-list-$$
-mkdir $TmpDir
-InstalledKernel=$TmpDir/InstalledKernel
-WorkspaceList=$TmpDir/WorkspaceList
+WorkspaceList=$KRN_WORKSPACE/.CompletionList
+ModuleList=$KRN_RCDIR/.ModuleList
 
-GetInstalledKernel > $InstalledKernel
-NbObjet=$(cat $InstalledKernel|wc -l)
-if [ $NbObjet -eq 0 ]
+if [ $# -gt 0 ] && [ "$(echo $1|tr [:upper:] [:lower:])" = "force" ]
 then
-    echo ""
-    echo " *** Modules directories not found."
-    echo ""
-    rm -rf $TmpDir
-    exit 0
+    # Force refresh 
+    rm -f $WorkspaceList $ModuleList
 fi
 
 echo   ""
@@ -26,7 +20,7 @@ printf "Current kernel : \033[34m$(uname -r)\033[m\n"
 
 # 1. Liste des noyaux installes
 # -----------------------------
-ListInstalledKernel
+ListInstalledKernel $*
 
 # 2. Liste des paquets compiles en local
 # --------------------------------------
@@ -34,23 +28,21 @@ if [ ! -d $KRN_WORKSPACE ]
 then
     echo "Local workspace $KRN_WORKSPACE not found."
     echo ""
-    rm -rf $TmpDir
     exit 0
 fi
 
-GetWorkspaceList > $WorkspaceList
+_RefreshWorkspaceList
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
 then
     echo " *** Empty workspace ***"
     echo ""
-    rm -rf $TmpDir
     exit 0
 fi
 
 echo "Local workspace : $KRN_WORKSPACE"
 echo "---------------"
-cat ${WorkspaceList}|linux-version sort|cut -d',' -f1,2,3|uniq|while read Enreg 
+cat ${WorkspaceList}|linux-version-sort|cut -d',' -f1,2,3|uniq|while read Enreg 
 do
     _Version="$(echo $Enreg|cut -d',' -f1)"
     _Type="$(   echo $Enreg|cut -d',' -f2)"
@@ -65,8 +57,8 @@ do
     
     case $_Type in
 	dir)
-	    _DirName=$(echo $_Libelle|cut -d' ' -f3)
-	    _ProcessID=$(basename $_DirName|cut -d- -f2)
+	    _DirName=$(  echo     $_Libelle|cut -d' ' -f3)
+	    _ProcessID=$(basename $_DirName|cut -d'-' -f2)
 								 
 	    if [ -d /proc/$_ProcessID ]
 	    then
@@ -81,10 +73,4 @@ do
 	    printf "$_PatternVersion $_Libelle\n" $_Version
     esac
 done
-
-rm -rf $TmpDir
 echo ""
-[ $# -eq 0 ] && exit 0
-
-# Recherche des noyaux 
-Search.sh $*

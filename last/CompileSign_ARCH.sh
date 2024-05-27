@@ -111,6 +111,7 @@ else
     tar xfz $Archive -C $TmpDir
     Directory=$(tar tfz $Archive|head -1)
 fi
+touch $KRN_WORKSPACE # Force refresh krn List
 
 cd $TmpDir/$Directory
 printh "Compiling $(basename $PWD) ..."
@@ -196,7 +197,7 @@ printf "\033[44m CompileSign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(
 echo ""
 
 echo "Available compiled kernel in $PWD :"
-ls -1 ARCH-linux-* 2>/dev/null|linux-version sort
+ls -1 ARCH-linux-* 2>/dev/null|linux-version-sort
 echo ""
 
 exit 0

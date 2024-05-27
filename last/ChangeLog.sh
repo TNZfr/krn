@@ -30,7 +30,7 @@ fi
 Directory=v$(echo $Version|cut -d. -f1).x
 URL=https://cdn.kernel.org/pub/linux/kernel/$Directory/ChangeLog-$Version
 ChangeLog=$KRN_TMP/changelog-$$
-wget -q $URL -O $ChangeLog 2>/dev/null
+wget -q --no-check-certificate $URL -O $ChangeLog 2>/dev/null
 
 # Comptage des commits
 NbCommit=$(grep ^commit $ChangeLog|wc -l)

@@ -41,7 +41,7 @@ SignOneKernel ()
 	      --cert $KRNSB_PEM  \
 	      ${BootVmlinuz}
     
-    mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
+    $KRN_sudo mv -f ${BootVmlinuz}.signed ${BootVmlinuz}
     
     # Signature des modules installes
     # -------------------------------
@@ -94,7 +94,7 @@ printh "GRUB update ..."
 $KRN_sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 echo   ""
-printf "\033[44m SignKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m Sign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 
 exit 0

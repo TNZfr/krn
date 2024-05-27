@@ -54,7 +54,7 @@ fi
  
 # Signature des noyaux traites
 # ----------------------------
-SignKernel_${KRN_MODE}.sh $*
+Sign_${KRN_MODE}.sh $*
 
 # Menage de fin de traitement
 # ---------------------------
@@ -62,7 +62,7 @@ rm -rf $TempDir
 
 ListInstalledKernel
 echo   ""
-printf "\033[44m InstallSignKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m InstallSign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 
 exit $?

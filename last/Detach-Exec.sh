@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------------------
 # Main
 #
-# Script run by KRN Detach to provide refresh option
+# Script run by KRN Detach 
 #
 
 $*

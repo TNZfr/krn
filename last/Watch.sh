@@ -46,7 +46,7 @@ case $_MainCommand in
 	exit 0
 esac
 
-KRN_Title="Kernel Management / Watch 10s : $_NewCommand"
+KRN_Title="Kernel Management / Watch 5s : $_NewCommand"
 
 #-------------------------------------------------------------------------------
 # KDE Plasma Konsole

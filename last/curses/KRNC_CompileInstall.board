@@ -1,0 +1,87 @@
+#!/bin/bash
+
+source $KRN_EXE/curses/_libcurses.sh
+
+_ParamList=$*
+_Board_Init $0
+
+# en tete
+Type=static_bash; Col=1; Row=1
+P1="\"\"\"\033[30;42m $KRN_MODE Compile Install $KRNC_Parameter \033[m\"\"\""; P2=""; _Board_Write
+
+Type=static;  Col=52; Row=2; P1=Elapsed;                 _Board_Write
+Type=elapsed; Col=60; Row=2; P1=KRNC_debut; P2=KRNC_fin; _Board_Write
+
+# Corps
+CurRow=3
+StepNum=1
+ParamNum=1
+for _CurParam in $_ParamList
+do
+    # CompileInstall
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Package available" $StepNum);  P2="";  _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CCI%02da"         $ParamNum); P2=31;  _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CCI%02da_debut" $ParamNum); P2=$(printf "KRNC_CCI%02da_fin" $ParamNum);  _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Source download" $StepNum ); P2="";   _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CCI%02db"       $ParamNum); P2=31;   _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CCI%02db_debut" $ParamNum); P2=$(printf "KRNC_CCI%02db_fin" $ParamNum); _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+    
+    # Compile
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Tools control" $StepNum ); P2="";   _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02db"      $ParamNum); P2=31;    _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02db_debut" $ParamNum); P2=$(printf "KRNC_CC%02db_fin" $ParamNum); _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+    
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Build directory" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02dc"        $ParamNum); P2=31; _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02dc_debut" $ParamNum); P2=$(printf "KRNC_CC%02dc_fin" $ParamNum); _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+    
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Archive Extract" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02dd"        $ParamNum); P2=31; _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02dd_debut" $ParamNum); P2=$(printf "KRNC_CC%02dd_fin" $ParamNum); _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+    
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Kernel config" $StepNum ); P2="";   _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02de"      $ParamNum); P2=31;   _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02de_debut" $ParamNum); P2=$(printf "KRNC_CC%02de_fin" $ParamNum); _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+   
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Make OldDefConfig" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02df"          $ParamNum); P2=31; _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02df_debut" $ParamNum); P2=$(printf "KRNC_CC%02df_fin" $ParamNum);   _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Make bindeb-pkg" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02dg"        $ParamNum); P2=31; _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02dg_debut" $ParamNum); P2=$(printf "KRNC_CC%02dg_fin" $ParamNum); _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Delivery $_CurParam"  $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02dh"             $ParamNum); P2=31; _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CC%02dh_debut" $ParamNum); P2=$(printf "KRNC_CC%02dh_fin" $ParamNum);      _Board_Write
+    ((CurRow += 1)); ((StepNum += 1))
+
+    # CompileInstall
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Install $_CurParam"  $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CCI%02dc"           $ParamNum); P2=31; _Board_Write
+    Type=elapsed; Col=60; Row=$CurRow
+    P1=$(printf "KRNC_CCI%02dc_debut" $ParamNum); P2=$(printf "KRNC_CCI%02dc_fin" $ParamNum);   _Board_Write
+    ((CurRow += 1)); ((StepNum += 1)); ((ParamNum += 1))
+done
+
+# pied
+Type=cursor; Col=1; Row=$CurRow; P1=""; P2="";                      _Board_Write
+Type=bash;   Col=1; Row=$CurRow; P1=$KRN_EXE/curses/KRNC_catlog.sh; _Board_Write

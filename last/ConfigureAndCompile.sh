@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . $KRN_EXE/_libkernel.sh
+. $KRN_EXE/curses/_libcurses.sh
 
 #-------------------------------------------------------------------------------
 # main
@@ -21,6 +22,11 @@ fi
 
 Version=$1
 KernelConfig=$KRN_WORKSPACE/$2
+
+#----------------------------------------
+_CursesVar KRNC_PID=$$
+#----------------------------------------
+_CursesStep debut KCC01 "\033[5;46m Running \033[m"
 
 # Conversion Archive -> Version (Cf KernelConfig -> GetKernel)
 [ -f $Version ] && Version=$(echo ${Version%.tar.??}|cut -d'-' -f2-)
@@ -61,6 +67,8 @@ ln -s $KernelConfig $KRN_WORKSPACE/CompilConfig
 # Source already downloaded
 [ "$KernelSource" != "" ] && ln -s $KernelSource $KRN_WORKSPACE/$(basename $KernelSource)
 
+_CursesStep fin KCC01 "\033[22;32m$(basename $KRN_WORKSPACE)\033[m"
+
 # Compilation du noyau
 # --------------------
 case $CommandName in
@@ -73,6 +81,9 @@ case $CommandName in
 	echo "Unkonwn krn command : $CommandName"
 	echo ""
 esac
+
+# Cleaning custom workspace
+rm -f $KRN_WORKSPACE/CompilConfig
 
 echo ""
 printf "\033[44m $CommandName elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

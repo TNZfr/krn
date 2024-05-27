@@ -8,7 +8,7 @@
 if [ $# -lt 1 ]
 then
     echo ""
-    echo "Syntax : [krn] Detach KrnCommand Parameters"
+    echo "Syntax : ${KRN_Help_Prefix}Detach KrnCommand Parameters"
     echo ""
     echo "  KrnCommand : krn command"
     echo "  Parameters : standard parameters for the concerned KrnCommand"

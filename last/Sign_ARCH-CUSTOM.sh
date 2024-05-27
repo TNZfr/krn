@@ -89,7 +89,7 @@ do
 done
 
 echo   ""
-printf "\033[44m SignKernel $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
+printf "\033[44m Sign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
 echo   ""
 
 exit 0
