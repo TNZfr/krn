@@ -209,8 +209,8 @@ ConfCompSignInst,static,1,3,1. Create custom directory,
 ConfCompSignInst,status,28,3,Step-KCC01,31
 ConfCompSignInst,elapsed,60,3,KRNC_KCC01_debut,KRNC_KCC01_fin
 ConfCompSignInst,static,1,4,2. Signing files,
-ConfCompSignInst,status,28,4,Step-CCSI01a,31
-ConfCompSignInst,elapsed,60,4,KRNC_CCSI01a_debut,KRNC_CCSI01a_fin
+ConfCompSignInst,status,28,4,Step-CCSI01,31
+ConfCompSignInst,elapsed,60,4,KRNC_CCSI01_debut,KRNC_CCSI01_fin
 ConfCompSignInst,static,1,5,3. Package available,
 ConfCompSignInst,status,28,5,Step-CCSI01b,31
 ConfCompSignInst,elapsed,60,5,KRNC_CCSI01b_debut,KRNC_CCSI01b_fin
@@ -247,5 +247,5 @@ ConfCompSignInst,elapsed,60,15,KRNC_CCS01k_debut,KRNC_CCS01k_fin
 ConfCompSignInst,static,1,16,14. Install,
 ConfCompSignInst,status,28,16,Step-CCSI01d,31
 ConfCompSignInst,elapsed,60,16,KRNC_CCSI01d_debut,KRNC_CCSI01d_fin
-ConfCompSignInst,bash,1,17,$KRN_EXE/curses/KRNC_catlog.sh,
 ConfCompSignInst,cursor,1,17,,
+ConfCompSignInst,bash,1,17,$KRN_EXE/curses/KRNC_catlog.sh,

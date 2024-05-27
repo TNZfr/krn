@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KRN_VERSION=v9.1-rc5
+KRN_VERSION=v9.1
 
 #-------------------------------------------------------------------------------
 function RunCommand
@@ -39,11 +39,11 @@ function Help
     echo   ""
     printf " \033[30;42m KRN $KRN_VERSION \033[m : Kernel management tool\n"
     echo   ""
-    echo   " - Mode DEBIAN      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
-    echo   " - Mode REDHAT      : Redhat based distributions (RHEL, Centos, Fedora ...)"
-    echo   " - Mode ARCH        : Arch-Linux distribution with kernel named version"
-    echo   " - Mode ARCH-CUSTOM : Arch-Linux distribution with fixed kernel name"
-    echo   " - Mode GENTOO      : Gentoo distribution"
+    echo   " - DEBIAN mode      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
+    echo   " - REDHAT mode      : Redhat based distributions (RHEL, Centos, Fedora ...)"
+    echo   " - ARCH mode        : Arch-Linux distribution with kernel named version"
+    echo   " - ARCH-CUSTOM mode : Arch-Linux distribution with fixed kernel name"
+    echo   " - GENTOO mode      : Gentoo distribution"
     echo   ""
     printf "\033[34m Bash auto completion \033[m\n"
     printf "\033[34m----------------------\033[m\n"
@@ -57,6 +57,7 @@ function Help
     echo  "CLI                : Launch KRN command interpreter."
     echo  "Detach         (DT): Detach KRN command in an other terminal or in a log file."
     echo  "Watch          (WA): Detach KRN command in an other terminal refreshed every 5 seconds."
+    echo  "Curses         (CU): Display step list of KRN command giving information and elapsed time."
     echo  ""
     printf "\033[34m Workspace management \033[m\n"
     printf "\033[34m----------------------\033[m\n"

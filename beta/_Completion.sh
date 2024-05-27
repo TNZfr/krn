@@ -25,6 +25,7 @@ _krn_completion ()
 		unset COMP_WORDS[1]
 		COMP_WORDS=(${COMP_WORDS[*]})
 		[ -z "$_Last" ] && COMP_WORDS+=("")
+		_krn_completion
 		;;
 	esac
     fi
