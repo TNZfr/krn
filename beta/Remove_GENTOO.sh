@@ -1,1 +1,0 @@
-Remove_ARCH.sh
