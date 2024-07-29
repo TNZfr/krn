@@ -8,7 +8,7 @@ Kernel management tool for :
 All informations for installation and use are available in wiki.
 
 Just below the main help page : 
-![](https://i.imgur.com/U0QnstX.png)
+![](https://i.imgur.com/Mom4IMb.png)
 
 History & working explanations available here (French forum) :
 
