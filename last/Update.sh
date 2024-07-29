@@ -28,13 +28,13 @@ _DownloadParse_GIT ()
 	do
 	    [ ${Archive:0:6} != "linux-" ] && continue
 	    Version=${Archive%.tar.gz}
-	    Version=${Version:6}
-	    echo "$Version,GIT" >> $TempDir/GIT.csv
+	    ParseLinuxVersion ${Version:6}
+	    echo "$KRN_LVBuild,GIT" >> $TempDir/GIT.csv
 	done
     
     NbVersion="$(printf "%5d" $(cat $TempDir/GIT.csv|wc -l))"
     cat   $TempDir/GIT.csv >> $TMP_RemoteVersion
-    rm -f $TempDir/GIT.csv $ListeDistante
+    rm -f $TempDir/GIT.csv    $ListeDistante
     
     printh "GIT    = $NbVersion version(s) found"
 }
@@ -53,7 +53,7 @@ _Download_Branch ()
 
     if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
     then
-	mv $ListeDistante ${ListeDistante}.gz
+	mv     ${ListeDistante} ${ListeDistante}.gz
 	gunzip ${ListeDistante}.gz
     fi
 }
@@ -70,13 +70,13 @@ _DownloadParse_CDN ()
 
     if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
     then
-	mv $ListeDistante ${ListeDistante}.gz
+	mv     ${ListeDistante} ${ListeDistante}.gz
 	gunzip ${ListeDistante}.gz
     fi
     
     grep ">v..x" $ListeDistante |\
-	cut -d'>' -f2        |\
-	cut -d'/' -f1        |\
+	cut -d'>' -f2           |\
+	cut -d'/' -f1           |\
 	while read Version
 	do
 	    _Download_Branch $Version
@@ -95,8 +95,8 @@ _DownloadParse_CDN ()
 	    do
 		[ ${Archive:0:6} != "linux-" ] && continue
 		Version=${Archive%.tar.xz}
-		Version=${Version:6}
-		echo "$Version,CDN" >> $TempDir/CDN-$Branch.csv
+		ParseLinuxVersion ${Version:6}
+		echo "$KRN_LVBuild,CDN" >> $TempDir/CDN-$Branch.csv
 	    done
 	
 	NbVersion="$(printf "%5d" $(cat $TempDir/CDN-$Branch.csv|wc -l))"
@@ -105,7 +105,7 @@ _DownloadParse_CDN ()
 
     NbVersion="$(printf "%5d" $(cat $TempDir/CDN-*.csv|wc -l))"
     cat   $TempDir/CDN-*.csv >> $TMP_RemoteVersion
-    rm -f $TempDir/CDN-*.csv $TempDir/cdn*
+    rm -f $TempDir/CDN-*.csv    $TempDir/cdn*
 
     printh "CDN    = $NbVersion version(s) found"
 }
@@ -125,7 +125,7 @@ _DownloadParse_Ubuntu ()
 
     if [ "$(file $ListeDistante |cut -d: -f2|cut -d' ' -f2-4)" = "gzip compressed data," ]
     then
-	mv $ListeDistante ${ListeDistante}.gz
+	mv     ${ListeDistante} ${ListeDistante}.gz
 	gunzip ${ListeDistante}.gz
     fi
 
@@ -135,12 +135,13 @@ _DownloadParse_Ubuntu ()
 	grep -v v2.                |\
 	while read Version
 	do
-	    echo "${Version:1},UBUNTU" >> $TempDir/Ubuntu.csv
+	    ParseLinuxVersion ${Version:1}
+	    echo "$KRN_LVBuild,UBUNTU" >> $TempDir/Ubuntu.csv
 	done
     
     NbVersion="$(printf "%5d" $(cat $TempDir/Ubuntu.csv|wc -l))"
     cat   $TempDir/Ubuntu.csv >> $TMP_RemoteVersion
-    rm -f $TempDir/Ubuntu.csv $ListeDistante
+    rm -f $TempDir/Ubuntu.csv    $ListeDistante
     
     printh "Ubuntu = $NbVersion version(s) found"
 }
@@ -173,15 +174,9 @@ printh "$NbVersion kernel vesion(s) found."
 # ---------------------------------
 rm -rf $TempDir/*
 
-LastKernel=$(ls -1tr /lib/modules|tail -1)
-if [ "$(echo $LastKernel|grep rc)" != "" ]
-then
-    LastKernel=$(echo $LastKernel|cut -d'-' -f1,2)
-else
-    LastKernel=$(echo $LastKernel|cut -d'-' -f1)
-fi
+ParseLinuxVersion $(ls -1 /lib/modules|linux-version-sort|tail -1)
 
-Index=$(grep -n "^$LastKernel," $KRN_RemoteVersion|tail -1|cut -d':' -f1)
+Index=$(grep -n "^$KRN_LVBuild," $KRN_RemoteVersion|tail -1|cut -d':' -f1)
 NbRecord=$(cat $KRN_RemoteVersion|wc -l)
 
 if [ $Index -lt $NbRecord ]

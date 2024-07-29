@@ -81,10 +81,14 @@ TmpDir=$PWD/Compil-$$
 KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4); [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
 if [ "$KRN_DEVSHM" -gt $KRN_MINTMPFS ]
 then
-    printh "Build temporary workspace on /dev/shm/Compil-$$ (tmpfs)"
-    mkdir /dev/shm/Compil-$$
-    ln -s /dev/shm/Compil-$$ $TmpDir
+    FinalDir=/dev/shm/Compil-$$
+    
+    printh "Build temporary workspace on $FinalDir (tmpfs)"
+    mkdir $FinalDir
+    ln -s $FinalDir $TmpDir
 else
+    FinalDir=$TmpDir
+    
     printh "Build temporary workspace : $TmpDir"
     mkdir -p $TmpDir
 fi
@@ -127,6 +131,7 @@ make binrpm-pkg -j"$(nproc)" LOCALVERSION=-"$KRN_ARCHITECTURE" > $TmpDir/Make-2-
 CheckStatus
 
 printh "Finalizing ..."
+printh "- Final build directory size(MB) : $(echo $(du -ms $FinalDir)|cut -d' ' -f1)"
 mv -f $(find $HOME/rpmbuild/RPMS -name "kernel*-${KernelVersion}_*.rpm") $RpmDirectory 2>/dev/null
 
 printh "Cleaning ..."

@@ -84,9 +84,6 @@ then
     echo ""
     exit 1
 fi
-#----------------------------------------
-_CursesVar KRNC_PID=$$
-#----------------------------------------
 Debut=$(TopHorloge)
 
 _CursesStep debut SIG01 "\033[5;46m Running \033[m"

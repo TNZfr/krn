@@ -30,23 +30,23 @@ StepNum=4
 ParamNum=1
 for _CurParam in $_ParamList
 do
-    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign kernel  $_CurParam" $StepNum ); P2="";  _Board_Write
-    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIG%02da"               $ParamNum); P2=31;  _Board_Write
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign kernel  $_CurParam" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIG%02da"               $ParamNum); P2=31; _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
-    P1=$(printf "KRNC_SIG%02da_debut" $ParamNum); P2=$(printf "KRNC_SIG%02da_fin" $ParamNum);        _Board_Write
+    P1=$(printf "KRNC_SIG%02da_debut" $ParamNum); P2=$(printf "KRNC_SIG%02da_fin" $ParamNum);       _Board_Write
     ((CurRow += 1)); ((Step += 1))
 
-    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign modules $_CurParam" $StepNum ); P2="";  _Board_Write
-    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIG%02db"               $ParamNum); P2=31;  _Board_Write
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign modules $_CurParam" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIG%02db"               $ParamNum); P2=31; _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
-    P1=$(printf "KRNC_SIG%02db_debut" $ParamNum); P2=$(printf "KRNC_SIG%02db_fin" $ParamNum);         _Board_Write
+    P1=$(printf "KRNC_SIG%02db_debut" $ParamNum); P2=$(printf "KRNC_SIG%02db_fin" $ParamNum);       _Board_Write
     ((CurRow += 1)); ((Step += 1)); ((ParamNum += 1))
 done
 
 # pied
 Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Update GRUB" $StepNum); P2=""; _Board_Write
-Type=status;  Col=28; Row=$CurRow; P1=Step-SIG04;                               _Board_Write
-Type=elapsed; Col=60; Row=$CurRow; P1=KRNC_SIG04_debut; P2=KRNC_SIG04_fin;      _Board_Write; ((CurRow += 1)) 
+Type=status;  Col=28; Row=$CurRow; P1=Step-SIG04;                                  _Board_Write
+Type=elapsed; Col=60; Row=$CurRow; P1=KRNC_SIG04_debut; P2=KRNC_SIG04_fin;         _Board_Write; ((CurRow += 1)) 
 
 Type=cursor; Col=1; Row=$CurRow; P1=""; P2="";                      _Board_Write
 Type=bash;   Col=1; Row=$CurRow; P1=$KRN_EXE/curses/KRNC_catlog.sh; _Board_Write

@@ -14,10 +14,6 @@ then
     exit 1
 fi
 
-#----------------------------------------
-_CursesVar KRNC_PID=$$
-#----------------------------------------
-
 # Controle des elements de signature
 # ----------------------------------
 _CursesStep debut IS01 "\033[5;46m Running \033[m"

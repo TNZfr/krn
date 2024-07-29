@@ -24,10 +24,8 @@ Version=$1
 KernelConfig=$KRN_WORKSPACE/$2
 
 #----------------------------------------
-_CursesVar KRNC_PID=$$
-#----------------------------------------
 _CursesStep debut KCC01 "\033[5;46m Running \033[m"
-
+#----------------------------------------
 # Conversion Archive -> Version (Cf KernelConfig -> GetKernel)
 [ -f $Version ] && Version=$(echo ${Version%.tar.??}|cut -d'-' -f2-)
 
@@ -51,14 +49,10 @@ KernelSource=$(ls -1tr $KRN_WORKSPACE/linux-$Version.tar.?? 2>/dev/null|tail -1)
 
 # Creation du workspace custom
 # ----------------------------
-if [ "$(echo $Version|grep rc)" = "" ]
-then
-    CustomWorkspace=$KRN_WORKSPACE/ckc-$Version-$Libelle
-else
-    CustomWorkspace=$KRN_WORKSPACE/ckc-$(echo $Version|cut -d'-' -f1).0-$(echo $Version|cut -d'-' -f2)-$Libelle
-fi
+ParseLinuxVersion ckc-${Version}-${Libelle}
+CustomWorkspace=$KRN_WORKSPACE/$KRN_LVCkc
 
-mkdir -p $CustomWorkspace
+mkdir -p             $CustomWorkspace
 export KRN_WORKSPACE=$CustomWorkspace
 
 # Setting kernel config file

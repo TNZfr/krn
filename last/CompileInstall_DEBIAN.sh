@@ -14,9 +14,6 @@ then
     exit 1
 fi
 
-#----------------------------------------
-_CursesVar KRNC_PID=$$ 
-#----------------------------------------
 Debut=$(TopHorloge)
 Param=1
 for Version in $*

@@ -1,0 +1,4 @@
+Board Name,Type,,,Script,
+GetSource,generator,,,KRNC_GetSource.board,
+,,,,,
+Board Name,Type,Col,Row,Param1,Param2

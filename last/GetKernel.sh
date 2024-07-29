@@ -5,47 +5,38 @@
 #-------------------------------------------------------------------------------
 GetKernelPackage ()
 {
-    Version=$1
-    [ $(echo $Version|cut -c1) = "v" ] && Version=$(echo $Version|cut -c2-)
-
     # 1.Recherche dans le repertoire de stockage (deb)
     PrevWorkspace=$KRN_WORKSPACE
-    if [ ${Version:0:3} = "ckc" ]
+    if [ $KRN_LVCkc != normal_release ]
     then
-	export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
-	if [ "$(echo $Version|grep rc)" = "" ]
-	then
-	    Version=$(echo $Version|cut -d'-' -f2)
-	else
-	    Version=$(echo $Version|cut -d'-' -f2,3)
-	fi
+	export KRN_WORKSPACE=$KRN_WORKSPACE/$KRN_LVCkc
     fi
 
-    NbFound=$(ls -1 $KRN_WORKSPACE/linux-*$Version*.deb 2>/dev/null|wc -l)
+    NbFound=$(ls -1 $KRN_WORKSPACE/linux-*$KRN_LVBuild*.deb 2>/dev/null|wc -l)
     if [ $NbFound -ge 3 ]
     then
-	echo "Version $Version : $NbFound packages available from $KRN_WORKSPACE"
-	cp $KRN_WORKSPACE/linux-*$Version*.deb $PWD
+	echo "Version $KRN_LVBuild : $NbFound packages available from $KRN_WORKSPACE"
+	cp    $KRN_WORKSPACE/linux-*$KRN_LVBuild*.deb $PWD
 	export KRN_WORKSPACE=$PrevWorkspace
 	return 0
     fi
 
     # 2.Recherche sur Ubuntu/Mainline
-    if [ ${Version:0:3} != "ckc" ]
+    if [ $KRN_LVCkc = normal_release ]
     then
-	GetKernelPackage_UbuntuMainline $Version
+	GetKernelPackage_UbuntuMainline $KRN_LVArch
 	NbFound=$?
 	[ $NbFound -ge 4 ] && return 0
 
 	if [ $NbFound -gt 0 ]
 	then
 	    echo "Not enough packages, file(s) removed."
-	    rm -f linux-*$Version*.deb
+	    rm -f linux-*$KRN_LVArch*.deb
 	fi
     fi
 
     echo ""
-    echo "Linux version $Version not found."
+    echo "Linux version $KRN_LVArch (or $KRN_LVBuild) not found."
 }
 
 #-------------------------------------------------------------------------------
@@ -126,87 +117,52 @@ do
 	do
 	    printf "\t\033[35m$(basename $CustomKernel)\033[m\n"
 	done
+	echo ""
 	exit 1		    
     fi
+
+    # Parsing linux version for archive and build format : KRN_LVBuild, KRN_LVArch
+    ParseLinuxVersion $Version
     
     case $(echo $KRN_MODE|cut -d- -f1) in
 	ARCH)
-	    if [ -L $Version ]
+	    if [ -L $KRN_LVBuild ]
 	    then
-		echo "* link already exists for ARCH-linux-$Version"
+		echo "* link already exists for ARCH-linux-$KRN_LVBuild"
 		continue
 	    fi
 	    
-	    if [ ${Version:0:3} = "ckc" ]
+	    if [ -d $KRN_WORKSPACE/ARCH-linux-$KRN_LVBuild ]
 	    then
-		export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
-		
-		if [ "$(echo $Version|grep rc)" = "" ]
-		then
-		    Version=$(echo $Version|cut -d'-' -f2)
-		else
-		    Version=$(echo $Version|cut -d'-' -f2,3)
-		fi
-	    fi
-	    
-	    if [ -d $KRN_WORKSPACE/ARCH-linux-$Version ]
-	    then
-		echo "* ARCH-linux-$Version found in workspace, link $Version created"
-		ln -s $KRN_WORKSPACE/ARCH-linux-${Version} $Version
+		echo "* ARCH-linux-$KRN_LVBuild found in workspace, link $KRN_LVBuild created"
+		ln -s $KRN_WORKSPACE/ARCH-linux-${KRN_LVBuild} $KRN_LVBuild
 	    else
 		exit 1
 	    fi
 	    ;;
 
 	GENTOO)
-	    if [ -L $Version ]
+	    if [ -L $KRN_LVBuild ]
 	    then
-		echo "* link already exists for ${KRN_MODE}-$Version"
+		echo "* link already exists for ${KRN_MODE}-$KRN_LVBuild"
 		continue
 	    fi
 	    
-	    if [ ${Version:0:3} = "ckc" ]
+	    if [ -d $KRN_WORKSPACE/${KRN_MODE}-$KRN_LVBuild ]
 	    then
-		export KRN_WORKSPACE=$KRN_WORKSPACE/$Version
-		
-		if [ "$(echo $Version|grep rc)" = "" ]
-		then
-		    Version=$(echo $Version|cut -d'-' -f2)
-		else
-		    Version=$(echo $Version|cut -d'-' -f2,3)
-		fi
-	    fi
-	    
-	    if [ -d $KRN_WORKSPACE/${KRN_MODE}-$Version ]
-	    then
-		echo "* ${KRN_MODE}-$Version found in workspace, link $Version created"
-		ln -s $KRN_WORKSPACE/${KRN_MODE}-${Version} $Version
+		echo "* ${KRN_MODE}-$KRN_LVBuild found in workspace, link $KRN_LVBuild created"
+		ln -s $KRN_WORKSPACE/${KRN_MODE}-${KRN_LVBuild} $KRN_LVBuild
 	    else
 		exit 1
 	    fi
 	    ;;
 
 	REDHAT)
-	    # Recherche dans le repertoire de stockage (rpm)
-	    PackageVersion=$Version
-	    [ "$(echo $PackageVersion|cut -d. -f3)" = "" ] && PackageVersion=${PackageVersion}.0
-	    
-	    if [ ${PackageVersion:0:3} = "ckc" ]
-	    then
-		export KRN_WORKSPACE=$KRN_WORKSPACE/$PackageVersion
-		if [ "$(echo $Version|grep rc)" = "" ]
-		then
-		    PackageVersion=$(echo $PackageVersion|cut -d'-' -f2)
-		else
-		    PackageVersion=$(echo $PackageVersion|cut -d'-' -f2,3)
-		fi
-	    fi
-	    
-	    NbFound=$(ls -1 $KRN_WORKSPACE/kernel*-${PackageVersion}_*.rpm 2>/dev/null|wc -l)
+	    NbFound=$(ls -1 $KRN_WORKSPACE/kernel*-${KRN_LVBuild}_*.rpm 2>/dev/null|wc -l)
 	    if [ $NbFound -ge 2 ]
 	    then
-		echo "Version $PackageVersion : $NbFound packages available from $KRN_WORKSPACE"
-		cp $KRN_WORKSPACE/kernel*-${PackageVersion}_*.rpm $PWD
+		echo "Version $KRN_LVBuild : $NbFound packages available from $KRN_WORKSPACE"
+		cp $KRN_WORKSPACE/kernel*-${KRN_LVBuild}_*.rpm $PWD
 	    else
 		exit 1
 	    fi
@@ -214,7 +170,7 @@ do
 
 	*)
 	    # Paquets Debian / Ubuntu ... 
-	    GetKernelPackage $Version 
+	    GetKernelPackage $KRN_LVBuild 
     esac
 done
 

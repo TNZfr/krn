@@ -151,7 +151,7 @@ case $1 in
 	;;
 
     EDIT|edit)
-	[ "$(env|grep ^EDITOR)" != "" ] && $EDITOR $KRN_RC || emacs $KRN_RC
+	[ "$(env|grep ^EDITOR)" != "" ] && $EDITOR $KRN_RC || vi $KRN_RC
 	;;
 
     *)

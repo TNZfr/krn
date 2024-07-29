@@ -31,33 +31,16 @@ mkdir -p $TempDir
 
 # 1. Derniere version disponible
 # ------------------------------
-LastKernel=$(ls -1tr /lib/modules|tail -1)
-if [ "$(echo $LastKernel|grep rc)" != "" ]
-then
-    LastKernel=$(echo $LastKernel|cut -d'-' -f1,2)
-else
-    LastKernel=$(echo $LastKernel|cut -d'-' -f1)
-fi
-
-#
-# LastRecord    : x.y,   x.y.z, x.y-rc  (in BDD)
-# LastAvailable : x.y.0, x.y.z, x.y.0-rc
-#
+ParseLinuxVersion $(ls -1tr /lib/modules|linux-version-sort|tail -1)
+LastKernel=$KRN_LVBuild
 
 [ ! -f $KRN_RemoteVersion ] && Update.sh
 
 if [ $InstallRC = TRUE ]
 then
-    LastRecord=$(grep "rc" $KRN_RemoteVersion|tail -1|cut -d',' -f1)
-    LastAvailable="$(echo $LastRecord|cut -d'-' -f1).0-$(echo $LastRecord|cut -d'-' -f2)"
+    LastAvailable=$(grep    "rc"   $KRN_RemoteVersion|tail -1|cut -d',' -f1)
 else
-    LastRecord=$(grep -v "\-rc" $KRN_RemoteVersion|tail -1|cut -d',' -f1)
-    if [ "$(echo $LastRecord|cut -d. -f3)" = "" ]
-    then
-	LastAvailable=${LastRecord}.0
-    else
-	LastAvailable=${LastRecord}
-    fi	
+    LastAvailable=$(grep -v "\-rc" $KRN_RemoteVersion|tail -1|cut -d',' -f1)
 fi
 
 Sorted=$(echo -e "${LastKernel}_2\n${LastAvailable}_1"|sort|tail -1)
@@ -73,11 +56,12 @@ fi
 WorkspaceList=$KRN_WORKSPACE/.CompletionList
 WorkspaceVersion=$(grep ^${LastAvailable} $WorkspaceList 2>/dev/null)
 
-Index=$(grep -n ^${LastRecord} $KRN_RemoteVersion|head -1|cut -d':' -f1)
+Index=$(grep -n "^${LastAvailable}," $KRN_RemoteVersion|head -1|cut -d':' -f1)
 NbRecord=$(cat $KRN_RemoteVersion|wc -l)
     
 (( NbLine = NbRecord - Index + 1 ))
 echo ""
+
 tail -$NbLine $KRN_RemoteVersion |\
     while read Record
     do
@@ -109,13 +93,13 @@ cat $TempDir/LastAvailable.source|\
     do
 	case $(echo $Record|cut -d',' -f1) in
 	    SRC)
-		echo "  - ${ChoiceNumber}. Download / Compile source (krn CompileInstall ${LastRecord})"
-		echo "CompileInstall_${KRN_MODE}.sh ${LastRecord}" > $TempDir/Choice-${ChoiceNumber}
+		echo "  - ${ChoiceNumber}. Download / Compile source (krn CompileInstall ${LastAvailable})"
+		echo "CompileInstall_${KRN_MODE}.sh ${LastAvailable}" > $TempDir/Choice-${ChoiceNumber}
 		;;
 	    
 	    UBUNTU)
-		echo "  - ${ChoiceNumber}. Download / Install from Ubuntu Kernel Team (krn Install ${LastRecord})"
-		echo "Install_${KRN_MODE}.sh ${LastRecord}" > $TempDir/Choice-${ChoiceNumber}
+		echo "  - ${ChoiceNumber}. Download / Install from Ubuntu Kernel Team (krn Install ${LastAvailable})"
+		echo "Install_${KRN_MODE}.sh ${LastAvailable}" > $TempDir/Choice-${ChoiceNumber}
 		;;
 	    
 	    WKS)

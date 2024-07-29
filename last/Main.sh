@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KRN_VERSION=v9.1
+KRN_VERSION=v9.2
 
 #-------------------------------------------------------------------------------
 function RunCommand
@@ -103,8 +103,8 @@ function Help
     echo ""
     printf "\033[34m Advanced usage \033[m\n"
     printf "\033[34m----------------\033[m\n"
-    echo "Update            : Update cache of available versions (cdn, git ...)"
-    echo "Upgrade           : Upgrade kernels set installed on the system"
+    echo "Update       (UPD): Update cache of available versions (cdn, git ...)"
+    echo "Upgrade      (UPG): Upgrade kernels set installed on the system"
     echo "AutoRemove    (AR): Auto remove old kernels and keep the 2 last versions"
     echo "AutoClean     (AC): Auto purge old kernels in then workspace directory"
     echo ""
@@ -226,10 +226,10 @@ case $Commande in
     "savelog"           |"sl")    SaveLog.sh ;;
 
     # Advanced usages
-    "update"         ) RunCommand Update.sh     ;;
-    "upgrade"        ) RunCommand Upgrade.sh    ;;
-    "autoremove"|"ar") RunCommand AutoRemove.sh ;;
-    "autoclean" |"ac") RunCommand AutoClean.sh  ;;
+    "update"    |"upd") RunCommand Update.sh     ;;
+    "upgrade"   |"upg") RunCommand Upgrade.sh    ;;
+    "autoremove"|"ar")  RunCommand AutoRemove.sh ;;
+    "autoclean" |"ac")  RunCommand AutoClean.sh  ;;
 
     # Internal commands
     "_updatecompletion") _RefreshWorkspaceList    ;;

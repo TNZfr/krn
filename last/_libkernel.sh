@@ -4,7 +4,6 @@ function printh
     printf "$(date +%d/%m/%Y-%Hh%Mm%Ss) : $*\n"
 }
 
-
 #------------------------------------------------------------------------------------------------
 TopHorloge ()
 {
@@ -34,6 +33,12 @@ AfficheDuree ()
     [ $Heure  -gt 0 ] && printf "${Heure}h ${Minute}m ${Seconde}s.$Milli\n" && return
     [ $Minute -gt 0 ] && printf "${Minute}m ${Seconde}s.$Milli\n" && return
     echo "${Seconde}s.$Milli"
+}
+
+#------------------------------------------------------------------------------------------------
+ParseLinuxVersion ()
+{
+    $(linux-version-archbuild $1)
 }
 
 #------------------------------------------------------------------------------------------------
@@ -161,16 +166,11 @@ _RefreshInstalledKernel ()
     > $_ModuleList
     for _ModuleVersion in $(ls -1 $_ModuleDir)
     do
-	if [ "$(echo $_ModuleVersion|grep rc)" = "" ]
-	then
-	    _Version=$(echo $_ModuleVersion|cut -d- -f1)
-	else
-	    _Version=$(echo $_ModuleVersion|cut -d- -f1,2)
-	fi
+	ParseLinuxVersion $_ModuleVersion
 	
 	# Format : Version;NomModule;FullPath;Directory Size
 	_Size=$(echo $(du -hs $_ModuleDir/$_ModuleVersion|tr ['\t'] [' ']|cut -d' ' -f1))
-	echo "$_Version,$_ModuleVersion,$_ModuleDir/$_ModuleVersion,$_Size" >> $_ModuleList
+	echo "$KRN_LVBuild,$_ModuleVersion,$_ModuleDir/$_ModuleVersion,$_Size" >> $_ModuleList
     done
 }
 
@@ -308,7 +308,8 @@ _RefreshWorkspaceList()
 	esac
 
 	# Enregistrement : Version,Type,LibelleType,NomObjet
-	printf "$_Version,$_TypeObjet,$_Fichier\n" >> .CompletionList
+	ParseLinuxVersion $_Version
+	printf "$KRN_LVBuild,$_TypeObjet,$_Fichier\n" >> .CompletionList
     done
     cd $CurrentDir
 }
