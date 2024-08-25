@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 VerifyOneKernel ()
@@ -33,17 +33,44 @@ VerifyOneKernel ()
 
     # Verification du noyau
     # ---------------------
-    echo ""
-    printf "\033[44m Kernel signature for $Version \033[m\n"
-    if [ $KRN_MODE = ARCH-CUSTOM ]
-    then
-	sbverify -l /boot/vmlinuz-linux-custom
-    else
-	sbverify -l /boot/vmlinuz-$(basename $ModuleDirectory)
-    fi
+    case $KRN_MODE in
+	ARCH)
+	    for LinuxBinary in /boot/vmlinuz-*
+	    do
+		vmVersion=$(file $LinuxBinary              |\
+				sed 's/version /version=/g'|\
+				tr [' '] ['\n']            |\
+				grep ^version              |\
+				cut -d= -f2                  )		
+		echo ""
+		printf "\033[44m Kernel signature for $(basename $LinuxBinary) $vmVersion \033[m\n"
+		sbverify -l $LinuxBinary
+	    done
+	    ;;
+
+	*)
+	    echo ""
+	    printf "\033[44m Kernel signature for $Version \033[m\n"
+	    sbverify -l /boot/vmlinuz-$(basename $ModuleDirectory)
+	    ;;
+    esac
+
     echo ""
     printf "\033[44m Module signature for $Version \033[m\n"
-    modinfo $ModuleDirectory/kernel/sound/soundcore.ko
+    Module=$ModuleDirectory/kernel/sound/soundcore.ko
+    if [ -f ${Module}.xz ]
+    then
+	# Found in REDHAT distro
+	xzcat ${Module}.xz > $KRN_TMP/${Version}-soundcore.ko
+	Module=$KRN_TMP/${Version}-soundcore.ko
+
+    elif [ -f ${Module}.zst ]
+    then
+	# Found in ARCH distro
+	zstdcat ${Module}.zst > $KRN_TMP/${Version}-soundcore.ko
+	Module=$KRN_TMP/${Version}-soundcore.ko
+    fi    
+    modinfo $Module
     echo ""
 }
 

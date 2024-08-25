@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 PurgeWorkspace ()
@@ -76,7 +76,7 @@ PurgeWorkspace ()
 		rm -f $KRN_WORKSPACE/$_Fichier
 		;;
 
-	    deb|rpm|arc)
+	    deb|rpm|pkg)
 		if [ "$IsInstalled" != "" ]
 		then
 		    printf "\033[31mVersion %-10s\033[m : \033[31mINSTALLED\033[m, no purge for $_Fichier\n" $KRN_LVBuild

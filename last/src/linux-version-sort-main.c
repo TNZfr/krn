@@ -4,59 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-typedef struct
-{
-  short Major;
-  short Minor;
-  short NotRC;  // RC=0, Normal=1
-  short Release;
-
-  char *String;
-} LNXVER;
-
-#define FALSE 0
-#define TRUE  1
-
-//------------------------------------------------------------------------------
-void LV_Parse (LNXVER *LV, char *String)
-{
-  char *Suivant, *Tiret;
-  char *Virgule = strchr(String,',');
-
-  memset (LV, 0, sizeof(LNXVER));
-  LV->String = String;
-
-  if (Virgule) *Virgule='\0';
-
-  if (LV->String[0] != 0 && strcmp(LV->String,"Unknown") != 0)
-  {
-    LV->Major = (short)atoi(String);
-    Suivant = strchr (String, '.');
-    Suivant ++;
-
-    LV->Minor = (short)atoi(Suivant);
-
-    Tiret = strstr (Suivant,"-rc");
-    if (Tiret)
-      {
-	LV->NotRC   = FALSE;
-	LV->Release = (short)atoi(&Tiret[3]);
-      }
-    else
-      {
-	LV->NotRC   = TRUE;
-	LV->Release = 0;
-
-	Suivant = strchr (Suivant, '.');
-	if (Suivant)
-	  {
-	    Suivant ++;
-	    LV->Release = (short)atoi(Suivant);
-	  }
-      }
-  }
-  if (Virgule) *Virgule=',';
-}
+#include "linux-version-lib.h"
 
 //------------------------------------------------------------------------------
 int LV_SortCompare (const void *V1, const void *V2)

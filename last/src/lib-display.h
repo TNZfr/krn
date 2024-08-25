@@ -63,5 +63,5 @@ void DSP_FullRefresh (DISP *Display);
 
 void DSP_Elapsed (CELL_ELAPSED *Cell);
 void DSP_Status  (CELL_STATUS *Status);
-void DSP_Bash    (int Row, int Col, char *Commande);
+void DSP_Bash    (int Row, int Col, char *Commande, char *Parametre);
 #endif

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 # Main
@@ -19,6 +19,6 @@ then
 fi
 
 (( NbToRemove = NbKernel - 2 ))
-Remove_${KRN_MODE}.sh $(cat $ModuleList|linux-version-sort|head -$NbToRemove |cut -d',' -f2)
+Remove.sh $(cat $ModuleList|linux-version-sort|head -$NbToRemove |cut -d',' -f2)
 
 exit 0

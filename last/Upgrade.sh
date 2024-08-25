@@ -1,13 +1,13 @@
 #!/bin/bash
 
-source $KRN_EXE/_libkernel.sh
+source $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 ExitUpgrade ()
 {
     # Menage de fin de traitement
-    rm -rf $TempDir
-
+    _RemoveTempDirectory $TempDir
+    
     echo   ""
     printf "\033[44m Upgrade Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"
     echo   ""
@@ -18,7 +18,7 @@ ExitUpgrade ()
 #-------------------------------------------------------------------------------
 # Main
 #
-#set -x
+
 Debut=$(TopHorloge)
 
 [ $# -gt 0 ] && [ $(echo $1|tr [:upper:] [:lower:]) = "rc" ] && InstallRC=TRUE || InstallRC=FALSE
@@ -94,18 +94,18 @@ cat $TempDir/LastAvailable.source|\
 	case $(echo $Record|cut -d',' -f1) in
 	    SRC)
 		echo "  - ${ChoiceNumber}. Download / Compile source (krn CompileInstall ${LastAvailable})"
-		echo "CompileInstall_${KRN_MODE}.sh ${LastAvailable}" > $TempDir/Choice-${ChoiceNumber}
+		echo "CompileInstall.sh ${LastAvailable}" > $TempDir/Choice-${ChoiceNumber}
 		;;
 	    
 	    UBUNTU)
 		echo "  - ${ChoiceNumber}. Download / Install from Ubuntu Kernel Team (krn Install ${LastAvailable})"
-		echo "Install_${KRN_MODE}.sh ${LastAvailable}" > $TempDir/Choice-${ChoiceNumber}
+		echo "Install.sh ${LastAvailable}"        > $TempDir/Choice-${ChoiceNumber}
 		;;
 	    
 	    WKS)
 		wks_version=$(echo $Record|cut -d',' -f2)
 		echo "  - ${ChoiceNumber}. Install from local workspace (krn Install ${wks_version})"
-		echo "Install_${KRN_MODE}.sh ${wks_version}" > $TempDir/Choice-${ChoiceNumber}
+		echo "Install.sh ${wks_version}"          > $TempDir/Choice-${ChoiceNumber}
 		;;
 	esac
 	(( ChoiceNumber += 1 ))

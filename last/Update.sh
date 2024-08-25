@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $KRN_EXE/_libkernel.sh
+source $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 _DownloadParse_GIT ()
@@ -172,7 +172,7 @@ printh "$NbVersion kernel vesion(s) found."
 
 # 2. Compare with installed Kernels
 # ---------------------------------
-rm -rf $TempDir/*
+_CleanTempDirectory $TempDir
 
 ParseLinuxVersion $(ls -1 /lib/modules|linux-version-sort|tail -1)
 
@@ -182,7 +182,7 @@ NbRecord=$(cat $KRN_RemoteVersion|wc -l)
 if [ $Index -lt $NbRecord ]
 then
     WorkspaceList=$KRN_WORKSPACE/.CompletionList
-    
+
     (( NbLine = NbRecord - Index ))
     echo ""
     echo "New kernel version(s) available :"
@@ -194,13 +194,13 @@ then
 	    Source=$( echo $Record|cut -d',' -f2)
 	    
 	    case $Source in
-		GIT)    echo -e "\033[mGit\033[m" >> $TempDir/$Version ;;
-		CDN)    echo -e "\033[mCdn\033[m" >> $TempDir/$Version ;;
+		GIT)    echo -e "\033[mGit\033[m"      >> $TempDir/$Version ;;
+		CDN)    echo -e "\033[mCdn\033[m"      >> $TempDir/$Version ;;
 		UBUNTU) echo -e "\033[32mUbuntu\033[m" >> $TempDir/$Version ;;
 	    esac
 
 	done
-    
+
     CurrentDirectory=$PWD
     cd $TempDir
     for Version in $(linux-version-sort *)
@@ -213,7 +213,7 @@ then
 			ckc) echo -e "[\033[35m$(echo $Record|cut -d',' -f4)\033[m]" >> $TempDir/$Version ;;
 			deb) echo -e "[\033[32mWorkspace deb package\033[m]"         >> $TempDir/$Version ;;
 			rpm) echo -e "[\033[32mWorkspace rpm package\033[m]"         >> $TempDir/$Version ;;
-			arc) echo -e "[\033[mWorkspace compil directory\033[m]"      >> $TempDir/$Version ;;
+			pkg) echo -e "[\033[36mWorkspace KRN/Arch package\033[m]"    >> $TempDir/$Version ;;
 		    esac
 		done
 	
@@ -224,7 +224,7 @@ then
 fi
 
 # Menage de fin de traitement
-rm -rf $TempDir
+_RemoveTempDirectory $TempDir
 
 echo   ""
 printf "\033[44m Elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

@@ -1,1 +1,0 @@
-Compile_ARCH.sh

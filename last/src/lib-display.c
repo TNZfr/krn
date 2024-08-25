@@ -30,7 +30,7 @@ void DSP_FullRefresh (DISP *Display)
     
   Prev = (Display->Current + 1) % 2;
   
-  printf ("%c[2J%c[H",27,27);
+  printf ("%c[2J%c[H%c[25l",27,27,27);
   for (i=0; i<Display->NbCell; i++)
   {
     switch (Display->Cell[i].Type)
@@ -41,26 +41,25 @@ void DSP_FullRefresh (DISP *Display)
       case ELAPSED:
 	DSP_Elapsed (&Display->Cell[i].Union.Elapsed);
 	printf ("%c[%d;%dH%s%c[m",
-		27, Display->Cell[i].Row, Display->Cell[i].Col,
-		Display->Cell[i].Union.Elapsed.Buffer, 27);
+		27,
+		Display->Cell[i].Row, Display->Cell[i].Col,
+		Display->Cell[i].Union.Elapsed.Buffer,
+		27);
       
 	Display->Cell[i].Union.Elapsed.Buffer = Display->Cell[i].Union.Elapsed.String[Prev];
 	break;
       
       case STATIC:
 	printf ("%c[%d;%dH%s",
-		27, Display->Cell[i].Row, Display->Cell[i].Col,
-		Display->Cell[i].Union.Static.Buffer);
+		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Static.Buffer);
 	break;
       
       case STATUS:
 	DSP_Status (&Display->Cell[i].Union.Status);
 	printf ("%c[%d;%dH%*s",
-		27, Display->Cell[i].Row, Display->Cell[i].Col,
-		Display->Cell[i].Union.Status.Size," ");
+		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Status.Size," ");
 	printf ("%c[%d;%dH%s%c[m",
-		27, Display->Cell[i].Row, Display->Cell[i].Col,
-		Display->Cell[i].Union.Status.Buffer, 27);
+		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Status.Buffer, 27);
 	break;
       
       case CURSOR:
@@ -70,7 +69,7 @@ void DSP_FullRefresh (DISP *Display)
       case BASH:
 	DSP_Bash (Display->Cell[i].Row,
 		  Display->Cell[i].Col,
-		  Display->Cell[i].Union.Bash.Buffer);
+		  Display->Cell[i].Union.Bash.Buffer, "Refresh");
 	break;
       
       case STATIC_BASH:
@@ -79,7 +78,14 @@ void DSP_FullRefresh (DISP *Display)
 	  char Commande[256];
 	  char Resultat[256];
 	
-	  sprintf (Commande,"echo %s",Display->Cell[i].Union.Bash.Buffer);
+	  if (strcmp(getenv("KRN_MODE"),"DEBIAN") == 0)
+	    {
+	      sprintf (Commande,"echo %s",Display->Cell[i].Union.Bash.Buffer);
+	    }
+	  else
+	    {
+	      sprintf (Commande,"echo -e %s",Display->Cell[i].Union.Bash.Buffer);
+	    }
        
 	  desc = popen (Commande,"r");
 	  fgets  (Resultat, sizeof(Resultat), desc);
@@ -88,6 +94,7 @@ void DSP_FullRefresh (DISP *Display)
 	}
       }
   }
+  printf ("%c[25h",27);
   fflush (stdout);
 
   Display->Current = Prev;
@@ -99,6 +106,9 @@ void DSP_Refresh (DISP *Display)
   register int i,Prev;
   
   Prev = (Display->Current + 1) % 2;
+
+  // Cursor OFF
+  printf ("%c[25l",27);
   
   for (i=0; i<Display->NbCell; i++)
   {
@@ -115,8 +125,10 @@ void DSP_Refresh (DISP *Display)
 		   Display->Cell[i].Union.Elapsed.String[1]) != 0)
 	  {
 	    printf ("%c[%d;%dH%s%c[m",
-		    27, Display->Cell[i].Row, Display->Cell[i].Col,
-		    Display->Cell[i].Union.Elapsed.Buffer, 27);
+		    27,
+		    Display->Cell[i].Row, Display->Cell[i].Col,
+		    Display->Cell[i].Union.Elapsed.Buffer,
+		    27);
 	  }
 	Display->Cell[i].Union.Elapsed.Buffer = Display->Cell[i].Union.Elapsed.String[Prev];
 	break;
@@ -138,16 +150,18 @@ void DSP_Refresh (DISP *Display)
 	break;
       
       case CURSOR:
-	printf ("%c[%d;%dH%c[0J", 27, Display->Cell[i].Row, Display->Cell[i].Col,27);
+	printf ("%c[%d;%dH", 27, Display->Cell[i].Row, Display->Cell[i].Col);
 	break;
       
       case BASH:
 	DSP_Bash (Display->Cell[i].Row,
 		  Display->Cell[i].Col,
-		  Display->Cell[i].Union.Bash.Buffer);
+		  Display->Cell[i].Union.Bash.Buffer, "");
 	break;
       }
   }
+  // Cursor ON
+  printf ("%c[25h",27);
   fflush (stdout);
   Display->Current = Prev;
 }
@@ -212,15 +226,19 @@ void DSP_Status (CELL_STATUS *Status)
 }
 
 //------------------------------------------------------------------------------
-void DSP_Bash (int Row, int Col, char *Commande)
+void DSP_Bash (int Row, int Col, char *Commande, char *Parametre)
 {
   char  Buffer[128];
   int   NbCar;
   FILE *Desc;
+
+  char CommandePipe[512];
   
   printf ("%c[%d;%dH", 27, Row, Col);
 
-  Desc = popen(Commande,"r");
+  sprintf (CommandePipe,"%s %d %d %s", Commande, Row, Col, Parametre);
+
+  Desc = popen(CommandePipe,"r");
   while (!feof(Desc))
   {
     if (!fgets(Buffer,sizeof(Buffer),Desc)) continue;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 # Main
@@ -36,6 +36,20 @@ fi
 printh "${Filename}.der copy/convertion to ${Filename}.pem"
 openssl x509 -inform der -in ${Filename}.der -out ${Filename}.pem
 
+# Remove PRIV key password
+# ------------------------
+echo ""
+printf "Do you want to remove private key password (y/N) : "; read Reponse
+echo ""
+Reponse=$(echo $Reponse|tr [:upper:] [:lower:])
+if [ "$Reponse" = "y" ]
+then
+    openssl rsa -in ${Filename}.priv  -out ${Filename}.priv-nopwd
+    mv -f           ${Filename}.priv-nopwd ${Filename}.priv
+fi
+
+# Enroll key in UEFI dbx
+# ----------------------
 echo ""
 printf "Do you want to enroll ${Filename}.der in UEFI/Secure Boot(y/N) : "; read Reponse
 echo ""

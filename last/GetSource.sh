@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 . $KRN_EXE/curses/_libcurses.sh
 
 #-------------------------------------------------------------------------------

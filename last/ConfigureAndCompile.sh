@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 . $KRN_EXE/curses/_libcurses.sh
 
 #-------------------------------------------------------------------------------
@@ -45,11 +45,14 @@ Debut=$(TopHorloge)
 
 # Configuration noyau
 # -------------------
-KernelSource=$(ls -1tr $KRN_WORKSPACE/linux-$Version.tar.?? 2>/dev/null|tail -1)
+ParseLinuxVersion $Version
+KernelSource=$(ls -1tr $KRN_WORKSPACE/linux-${KRN_LVArch}.tar.?? 2>/dev/null|tail -1)
 
 # Creation du workspace custom
 # ----------------------------
-ParseLinuxVersion ckc-${Version}-${Libelle}
+export KRN_CustomBuild=TRUE
+
+ParseLinuxVersion ckc-${KRN_LVBuild}-${Libelle}
 CustomWorkspace=$KRN_WORKSPACE/$KRN_LVCkc
 
 mkdir -p             $CustomWorkspace
@@ -66,10 +69,10 @@ _CursesStep fin KCC01 "\033[22;32m$(basename $KRN_WORKSPACE)\033[m"
 # Compilation du noyau
 # --------------------
 case $CommandName in
-    ConfComp)         Compile_${KRN_MODE}.sh            $Version ;;
-    ConfCompSign)     CompileSign_${KRN_MODE}.sh        $Version ;;
-    ConfCompInstall)  CompileInstall_${KRN_MODE}.sh     $Version ;;
-    ConfCompSignInst) CompileSignInstall_${KRN_MODE}.sh $Version ;;
+    ConfComp)         Compile.sh            $Version ;;
+    ConfCompSign)     CompileSign.sh        $Version ;;
+    ConfCompInstall)  CompileInstall.sh     $Version ;;
+    ConfCompSignInst) CompileSignInstall.sh $Version ;;
     *)
 	echo ""
 	echo "Unkonwn krn command : $CommandName"

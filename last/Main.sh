@@ -1,13 +1,13 @@
 #!/bin/bash
 
-KRN_VERSION=v9.2
+KRN_VERSION=v10.0
 
 #-------------------------------------------------------------------------------
 function RunCommand
 {
     RunCommand_Name=$*
-    AcctFile_Commande=$(for Name in $*; do echo ${Name%.sh};done)
-    AcctFile_Commande=$(echo $AcctFile_Commande|sed 's/ //g')
+    AcctFile_Command=$(for Name in $*; do echo ${Name%.sh};done)
+    AcctFile_Command=$(echo $AcctFile_Command|sed 's/ //g')
 
     # --------------------------------
     # Gestion de la LOG de la commande
@@ -15,18 +15,18 @@ function RunCommand
     KRN_FICACC="/dev/null"
     if [ -n "$KRN_ACCOUNTING" ] && [ -d $KRN_ACCOUNTING ]
     then
-	KRN_FICACC=$KRN_ACCOUNTING/$(date +%Y%m%d-%Hh%Mm%Ss)-$AcctFile_Commande.log
-	printf "\n\033[33;44m Command \033[m : krn $Commande $Parametre\n" > $KRN_FICACC
+	KRN_FICACC=$KRN_ACCOUNTING/$(date +%Y%m%d-%Hh%Mm%Ss)-$AcctFile_Command.log
+	printf "\n\033[33;44m Command \033[m : krn $Command $Parameter\n" > $KRN_FICACC
 	chmod a+rw $KRN_FICACC
     fi
 
     if [ $KRN_FICACC = "/dev/null" ]
     then
-	${RunCommand_Name} $Parametre
+	${RunCommand_Name} $Parameter
 	Status=$?
     else
 	StatusFile=$KRN_TMP/status-$$
-	(${RunCommand_Name} $Parametre;echo $? > $StatusFile) | tee -a $KRN_FICACC
+	(${RunCommand_Name} $Parameter;echo $? > $StatusFile) | tee -a $KRN_FICACC
 	Status=$(cat $StatusFile; rm -f $StatusFile)
     fi
 
@@ -40,10 +40,9 @@ function Help
     printf " \033[30;42m KRN $KRN_VERSION \033[m : Kernel management tool\n"
     echo   ""
     echo   " - DEBIAN mode      : Debian based distributions (Debian, *Ubuntu, KDE Neon ...)"
-    echo   " - REDHAT mode      : Redhat based distributions (RHEL, Centos, Fedora ...)"
-    echo   " - ARCH mode        : Arch-Linux distribution with kernel named version"
-    echo   " - ARCH-CUSTOM mode : Arch-Linux distribution with fixed kernel name"
-    echo   " - GENTOO mode      : Gentoo distribution"
+    echo   " - REDHAT mode      : Redhat based distributions (RHEL, AlmaLinux, Fedora ...)"
+    echo   " - ARCH mode        : Arch-Linux distribution (linux-upstream)"
+    echo   " - ARCH-CUSTOM mode : Arch-Linux distribution (linux-x.y.z[-rc?])"
     echo   ""
     printf "\033[34m Bash auto completion \033[m\n"
     printf "\033[34m----------------------\033[m\n"
@@ -67,16 +66,16 @@ function Help
     echo  ""
     printf "\033[34m Kernel from Local or Ubuntu/Mainline \033[m\n"
     printf "\033[34m--------------------------------------\033[m\n"
-    echo  "Search         (SE): Search available kernels from Kernel.org (and Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Search         (SE): Search available kernels from Kernel.org (including Ubuntu/Mainline in DEBIAN mode)"
     echo  ""
-    echo  "Get                : Get Debian packages from local (and Ubuntu/Mainline in DEBIAN mode)"
-    echo  "Install            : Install selected kernel from local (and Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Get                : Get Debian packages from local (including Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Install            : Install selected kernel from local (including Ubuntu/Mainline in DEBIAN mode)"
     echo  "Remove             : Remove selected installed kernel"
     echo  ""
     echo  "CreateSign         : Create signature certificate and enroll in UEFI/SecureBoot (or not)"
-    echo  "Sign           (SK): Sign installed kernel (DEBIAN stable, beta for other mode)"
+    echo  "Sign           (SK): Sign installed kernel"
     echo  "VerifyKernel   (VK): Verify installed kernel and module signatures"
-    echo  "InstallSign    (IS): Install and sign selected kernel (DEBIAN stable, beta for other mode)"
+    echo  "InstallSign    (IS): Install and sign selected kernel"
     echo  ""
     printf "\033[34m Sources from kernel.org \033[m\n"
     printf "\033[34m-------------------------\033[m\n"
@@ -87,8 +86,8 @@ function Help
     echo  "SetConfig            (SC): Display and set default config file for kernel compilation"
     echo  "Compile              (CC): Get sources and compile kernel"
     echo  "CompileInstall      (CCI): Get sources, compile and install kernel"
-    echo  "CompileSign         (CCS): Compile and sign kernel (DEBIAN, beta for ARCH and GENTOO)"
-    echo  "CompileSignInstall (CCSI): Get sources, compile, sign and install kernel (DEBIAN stable, beta for other mode)"
+    echo  "CompileSign         (CCS): Compile and sign kernel"
+    echo  "CompileSignInstall (CCSI): Get sources, compile, sign and install kernel"
     echo  ""
     printf "\033[32mCustom compilation \033[m\n"
     echo  "KernelConfig         (KC): Generate a custom kernel config file (Can be used with krn SetConfig)"
@@ -166,55 +165,62 @@ then
     exit 0
 fi
 
-# Chargement des variables
-# ------------------------
+# Environment variables init
+# --------------------------
 . $KRN_EXE/Configure.sh LOAD
 export KRN_MODE=$(        echo $KRN_MODE        |tr [:lower:] [:upper:])
 export KRN_ARCHITECTURE=$(echo $KRN_ARCHITECTURE|tr [:upper:] [:lower:])
+export KRN_LIB=$KRN_EXE/lib/$KRN_MODE
 
-[ "$KRN_CLI" = "" ] && export KRN_Help_Prefix="krn " || export KRN_Help_Prefix=""
-[ $LOGNAME = root ] && export KRN_sudo=""            || export KRN_sudo="sudo"
+[ "$KRN_CLI" = "" ]              && export KRN_Help_Prefix="krn " || export KRN_Help_Prefix=""
+[ $LOGNAME = root ]              && export KRN_sudo=""            || export KRN_sudo="sudo"
+[ $(_GetDevShmFreeMB) -gt 1024 ] && export KRN_TMP=/dev/shm       || export KRN_TMP=/tmp
 
-export KRN_TMP=/tmp
-KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4);
-[ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
-[ $KRN_DEVSHM -gt 1024 ] && export KRN_TMP=/dev/shm 
+# Blocking olf beta KRN_MODE
+# --------------------------
+if [ $KRN_MODE = GENTOO ]
+then
+    echo ""
+    echo "GENTOO mode is more supported."
+    echo "Please use previous version (krn9.2) for beta testing"
+    echo ""
+    exit 1
+fi
 
-# ---------------------
-# Parsing des commandes
-# ---------------------
-Parametre=""
-Commande=$(echo $1|tr [:upper:] [:lower:])
-[ $# -gt 1 ] && Parametre="$(echo $*|cut -f2- -d' ')"
+# Coammnds parsing
+# ----------------
+Parameter=""
+Command=$(echo $1|tr [:upper:] [:lower:])
+[ $# -gt 1 ] && Parameter="$(echo $*|cut -f2- -d' ')"
 
-case $Commande in
+case $Command in
 
-    "help"              |"h" )    Help                              ;;
-    "cli"                    )    DirectCommand                     ;;
-    "curses"            |"cu")    Curses.sh $Parametre              ;;
-    "detach"            |"dt")    Detach.sh $Parametre              ;;
-    "watch"             |"wa")    Watch.sh  $Parametre              ;;
+    "help"              |"h" )    Help                       ;;
+    "cli"                    )    DirectCommand              ;;
+    "curses"            |"cu")    Curses.sh $Parameter       ;;
+    "detach"            |"dt")    Detach.sh $Parameter       ;;
+    "watch"             |"wa")    Watch.sh  $Parameter       ;;
 
-    "configure"         |"cf")    RunCommand Configure.sh           ;;
-    "purge"                  )    RunCommand Purge.sh               ;;
-    "list"              |"ls")    RunCommand List.sh                ;;
-    "search"            |"se")    RunCommand Search.sh              ;;
-    "get"               |"gk")    RunCommand GetKernel.sh           ;;
-    "install"                )    RunCommand Install_${KRN_MODE}.sh ;;
-    "remove"                 )    RunCommand Remove_${KRN_MODE}.sh  ;;
+    "configure"         |"cf")    RunCommand Configure.sh    ;;
+    "purge"                  )    RunCommand Purge.sh        ;;
+    "list"              |"ls")    RunCommand List.sh         ;;
+    "search"            |"se")    RunCommand Search.sh       ;;
+    "get"               |"gk")    RunCommand GetKernel.sh    ;;
+    "install"                )    RunCommand Install.sh      ;;
+    "remove"                 )    RunCommand Remove.sh       ;;
     
-    "createsign"             )    RunCommand CreateSign.sh              ;;
-    "sign"              |"sk")    RunCommand Sign_${KRN_MODE}.sh        ;;
-    "installsign"       |"is")    RunCommand InstallSign_${KRN_MODE}.sh ;;
-    "verifykernel"      |"vk")    RunCommand VerifyKernel.sh            ;;
+    "createsign"             )    RunCommand CreateSign.sh   ;;
+    "sign"              |"sk")    RunCommand Sign.sh         ;;
+    "installsign"       |"is")    RunCommand InstallSign.sh  ;;
+    "verifykernel"      |"vk")    RunCommand VerifyKernel.sh ;;
     
-    "changelog"         |"cl")    RunCommand ChangeLog.sh ;;
-    "getsource"         |"gs")    RunCommand GetSource.sh ;;
+    "changelog"         |"cl")    RunCommand ChangeLog.sh    ;;
+    "getsource"         |"gs")    RunCommand GetSource.sh    ;;
 
-    "compile"           |"cc")    RunCommand Compile_${KRN_MODE}.sh            ;;
-    "compileinstall"    |"cci")   RunCommand CompileInstall_${KRN_MODE}.sh     ;;
-    "compilesign"       |"ccs")   RunCommand CompileSign_${KRN_MODE}.sh        ;;
-    "compilesigninstall"|"ccsi")  RunCommand CompileSignInstall_${KRN_MODE}.sh ;;
+    "compile"           |"cc")    RunCommand Compile.sh            ;;
+    "compileinstall"    |"cci")   RunCommand CompileInstall.sh     ;;
+    "compilesign"       |"ccs")   RunCommand CompileSign.sh        ;;
+    "compilesigninstall"|"ccsi")  RunCommand CompileSignInstall.sh ;;
 
     "setconfig"         |"sc")    RunCommand SetConfig.sh        ;;
     "kernelconfig"      |"kc")    RunCommand KernelConfig.sh     ;;
@@ -233,7 +239,7 @@ case $Commande in
 
     # Internal commands
     "_updatecompletion") _RefreshWorkspaceList    ;;
-    "_getvar")           eval echo \$${Parametre} ;;
+    "_getvar")           eval echo \$${Parameter} ;;
     
     *)
 	echo "Kernel management : 'krn $1' unknown command."

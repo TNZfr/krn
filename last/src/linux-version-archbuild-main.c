@@ -1,11 +1,12 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int main (int NbArg, char **Arg)
 {
   char *Digit1, *Digit2, *Digit3, *RC, *Label, *EndString;
-  char LV_Arch[32], LV_Build[32], LV_Ckc[256];
+  char LV_Arch[32], LV_Build[32], LV_Package[32], LV_Ckc[256];
   
   if (NbArg < 2)
     {
@@ -77,10 +78,19 @@ int main (int NbArg, char **Arg)
   else if (!Digit3[0] &&  RC) sprintf (LV_Build,"%s.%s.0-%s",  Digit1, Digit2, RC        );  
   else                        sprintf (LV_Build,"%s.%s.0",     Digit1, Digit2            );
 
+  if (!strcmp(getenv("KRN_MODE"),"REDHAT") || !strcmp(getenv("KRN_MODE"),"ARCH"))
+    {
+      if      ( Digit3[0] &&  RC) sprintf (LV_Package,"%s.%s.%s_%s", Digit1, Digit2, Digit3, RC);
+      else if ( Digit3[0] && !RC) sprintf (LV_Package,"%s.%s.%s",    Digit1, Digit2, Digit3    );
+      else if (!Digit3[0] &&  RC) sprintf (LV_Package,"%s.%s.0_%s",  Digit1, Digit2, RC        );  
+      else                        sprintf (LV_Package,"%s.%s.0",     Digit1, Digit2            );
+    }
+  else strcpy (LV_Package, LV_Build);
+
   if (Label)
        sprintf (LV_Ckc,"ckc-%s-%s", LV_Build, Label);
   else strcpy  (LV_Ckc,"normal_release");
   
-  printf ("export KRN_LVArch=%s \nexport KRN_LVBuild=%s\nexport KRN_LVCkc=%s\n",
-	  LV_Arch, LV_Build, LV_Ckc);
+  printf ("export KRN_LVArch=%s \nexport KRN_LVBuild=%s\nexport KRN_LVPackage=%s\nexport KRN_LVCkc=%s\n",
+	  LV_Arch, LV_Build, LV_Package, LV_Ckc);
 }

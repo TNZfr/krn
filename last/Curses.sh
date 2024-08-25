@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 . $KRN_EXE/curses/_libcurses.sh
 
 #-------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ export KRNC_Parameter=$(echo $*|cut -d' ' -f2-)
 
 # Board Availability for current mode
 # -----------------------------------
-export KRNC_BDD=$KRN_EXE/curses/boards_${KRN_MODE}.csv
+export KRNC_BDD=$KRN_EXE/curses/boards.csv
 if [ ! -f $KRNC_BDD ]
 then
     echo ""

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 #-------------------------------------------------------------------------------
 # main
@@ -20,6 +20,9 @@ then
     echo ""
     exit 1
 fi
+
+
+Debut=$(TopHorloge)
 
 Param=$1
 if [ ! -f $Param ]
@@ -62,18 +65,7 @@ Uninstalled=$(dpkg -l $ToolsList|grep -v -e "^S" -e "^|" -e "^+++" -e "^ii")
 
 # Creation / controle espace de compilation
 # -----------------------------------------
-Debut=$(TopHorloge)
-TmpDir=$PWD/Compil-$$
-KRN_DEVSHM=$(echo $(df -m /dev/shm|grep /dev/shm)|cut -d' ' -f4); [ "$KRN_DEVSHM" = "" ] && KRN_DEVSHM=0
-if [ "$KRN_DEVSHM" -gt $KRN_MINTMPFS ]
-then
-    printh "Build temporary workspace on /dev/shm/Compil-$$ (tmpfs)"
-    mkdir /dev/shm/Compil-$$
-    ln -s /dev/shm/Compil-$$ $TmpDir
-else
-    printh "Build temporary workspace : $TmpDir"
-    mkdir -p $TmpDir
-fi
+_CreateCompileDirectory
 
 # Restauration archive
 # --------------------
@@ -112,7 +104,7 @@ printh "$FinalConfig created."
 
 printh "Cleaning ..."
 cd $DebDirectory
-rm -rf $TmpDir /dev/shm/Compil-$$
+_RemoveTempDirectory $TmpDir
 
 echo ""
 printf "\033[44m KernelConfig elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

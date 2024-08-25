@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 Debut=$(TopHorloge)
 
@@ -27,13 +27,13 @@ mkdir -p $TempDir
 
 echo ""
 echo "Availability : "
-echo -e "\t\033[32mUbuntu\033[m .............. : Debian Package from PPA Kernel Ubuntu"
-echo -e "\t\033[32mWorkspace deb package\033[m : Local Debian package"
-echo -e "\t\033[32mWorkspace rpm package\033[m : Local Redhat package"
-echo -e "\t\033[mWorkspace directory\033[m   : Local directory (Arch / Gentoo)"
-echo -e "\tGit / Cdn ........... : Sources from kernel.org for compilation"
-echo -e "\t\033[35mckc-\033[3mVersion-Label\033[m ... : Local custom kernel packages"
-echo -e "\t\033[33mWorkspace build\033[m ..... : Local build directory"
+echo -e "\t\033[32mUbuntu\033[m ................... : Debian Package from PPA Kernel Ubuntu"
+echo -e "\t\033[32mWorkspace deb package\033[m .... : Local Debian package"
+echo -e "\t\033[32mWorkspace rpm package\033[m .... : Local Redhat package"
+echo -e "\t\033[36mWorkspace KRN/Arch package\033[m : Local KRN/Arch package"
+echo -e "\t\033[mWorkspace directory\033[m ...... : Local directory (Arch / Gentoo)"
+echo -e "\tGit / Cdn ................ : Sources from kernel.org for compilation"
+echo -e "\t\033[35mckc-\033[3mVersion-Label\033[m ........ : Local custom kernel packages"
 echo ""
 echo -e "Database update :\033[34m" $(stat $RemoteVersion|grep ^Modify|cut -c9-27) "\033[m(krn Update to refresh database)"
 echo ""
@@ -64,6 +64,7 @@ do
 		    ckc) echo -e "[\033[35m$(echo $Record|cut -d',' -f4)\033[m]" >> $TempDir/$Version ;;
 		    deb) echo -e "[\033[32mWorkspace deb package\033[m]"         >> $TempDir/$Version ;;
 		    rpm) echo -e "[\033[32mWorkspace rpm package\033[m]"         >> $TempDir/$Version ;;
+		    pkg) echo -e "[\033[36mWorkspace KRN/Archpackage\033[m]"     >> $TempDir/$Version ;;
 		    arc) echo -e "[\033[mWorkspace directory\033[m]"             >> $TempDir/$Version ;;
 		    dir) echo -e "[\033[33mWorkspace build\033[m]"               >> $TempDir/$Version ;;
 		esac
@@ -79,12 +80,9 @@ NbUbuntu=$(grep Ubuntu        *|wc -l)
 NbCKC=$(   grep ckc           *|wc -l)
 NbLocal=$( grep Workspace     *|wc -l)
 
+# Cleaning
 cd $CurrentDirectory
-
-
-# Menage de fin de traitement
-rm -rf $TempDir
-
+_RemoveTempDirectory $TempDir
 
 echo ""
 echo "Found $NbVersion kernel version(s) :"

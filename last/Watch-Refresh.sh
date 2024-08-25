@@ -20,11 +20,17 @@ WATCH_TMP=$KRN_TMP/krn-watch-$$
 # Main loop
 while [ -d /tmp ]
 do
-    $* > $WATCH_TMP 2>&1
-    clear
-    printf "\033[37;44m *** $(date +'%Y/%m/%d - %Hh %Mm %Ss') *** \033[m\n"
-    cat   $WATCH_TMP
-    rm -f $WATCH_TMP
+    # cursor OFF, cursor home, erase full screen, refresh date time
+    echo -e "\033[25l\033[H\033[2J\033[37;44m *** $(date +'%Y/%m/%d - %Hh %Mm %Ss') *** \033[m\n" > $WATCH_TMP
+
+    # exec command
+    $* >> $WATCH_TMP 2>&1
+
+    # cursor ON
+    echo -e "\033[25h" >> $WATCH_TMP
+
+    # Refresh screen
+    cat $WATCH_TMP
     sleep 5
 done
 

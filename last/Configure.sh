@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/_libkernel.sh
+. $KRN_EXE/lib/kernel.sh
 
 #------------------------------------------------------------------------------------------------
 Saisie ()
@@ -58,7 +58,7 @@ CreateConfiguration ()
     Saisie KRNSB_PEM          ""         "Signing kernel : cert file full path (.pem)"
     Saisie KRNSB_DER          ""         "Signing kernel : cert file full path (.der)"
 
-    echo "export KRN_MINTMPFS=5120"    >> $KRN_RC
+    echo "export KRN_MINTMPFS=Unset"   >> $KRN_RC
     echo "export KRN_CONFIGUI=nconfig" >> $KRN_RC
 
     printh "$KRN_RC created."
@@ -160,6 +160,11 @@ esac
 # Bash Completion
 # ---------------
 CheckInstallCompletion
+
+# Prerequisites
+# -------------
+LoadModule
+_VerifyTools
 
 # Pas de parametres, affichage de la config
 # -----------------------------------------

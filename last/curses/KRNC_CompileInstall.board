@@ -56,14 +56,14 @@ do
     P1=$(printf "KRNC_CC%02de_debut" $ParamNum); P2=$(printf "KRNC_CC%02de_fin" $ParamNum);   _Board_Write
     ((CurRow += 1)); ((StepNum += 1))
    
-    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Make OldDefConfig" $StepNum ); P2=""; _Board_Write
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Make olddefconfig" $StepNum ); P2=""; _Board_Write
     Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02df"          $ParamNum); P2=31; _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
     P1=$(printf "KRNC_CC%02df_debut" $ParamNum); P2=$(printf "KRNC_CC%02df_fin" $ParamNum);   _Board_Write
     ((CurRow += 1)); ((StepNum += 1))
 
-    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Make bindeb-pkg" $StepNum ); P2="";   _Board_Write
-    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02dg"        $ParamNum); P2=31;   _Board_Write
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Make package" $StepNum ); P2="";      _Board_Write
+    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-CC%02dg"     $ParamNum); P2=31;      _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
     P1=$(printf "KRNC_CC%02dg_debut" $ParamNum); P2=$(printf "KRNC_CC%02dg_fin" $ParamNum);   _Board_Write
     ((CurRow += 1)); ((StepNum += 1))

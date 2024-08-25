@@ -25,14 +25,14 @@ do
     Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign kernel  $_CurParam" $StepNum ); P2=""; _Board_Write
     Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIG%02da"               $ParamNum); P2=31; _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
-    P1=$(printf "KRNC_SIG%02da_debut" $StepNum); P2=$(printf "KRNC_SIG%02da_fin" $ParamNum);        _Board_Write
+    P1=$(printf "KRNC_SIG%02da_debut" $ParamNum); P2=$(printf "KRNC_SIG%02da_fin" $ParamNum);        _Board_Write
 
     ((CurRow += 1)); ((StepNum += 1))
 
     Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign modules $_CurParam" $StepNum ); P2=""; _Board_Write
     Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIG%02db"               $ParamNum); P2=31; _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
-    P1=$(printf "KRNC_SIG%02db_debut" $StepNum); P2=$(printf "KRNC_SIG%02db_fin" $ParamNum);        _Board_Write
+    P1=$(printf "KRNC_SIG%02db_debut" $ParamNum); P2=$(printf "KRNC_SIG%02db_fin" $ParamNum);       _Board_Write
    
     ((CurRow += 1)); ((StepNum += 1)); ((ParamNum += 1))
 done
