@@ -162,7 +162,7 @@ do
 		echo "Version $KRN_LVBuild : $NbFound packages available from $KRN_WORKSPACE"
 		cp    $KRN_WORKSPACE/linux-*$KRN_LVBuild*.deb $PWD
 		export KRN_WORKSPACE=$PrevWorkspace
-		return 0
+		continue
 	    fi
 
 	    # 2.Recherche sur Ubuntu/Mainline
@@ -170,7 +170,7 @@ do
 	    then
 		GetKernelPackage_UbuntuMainline $KRN_LVArch
 		NbFound=$?
-		[ $NbFound -ge 4 ] && return 0
+		[ $NbFound -ge 4 ] && continue
 
 		if [ $NbFound -gt 0 ]
 		then
