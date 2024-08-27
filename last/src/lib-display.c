@@ -30,7 +30,7 @@ void DSP_FullRefresh (DISP *Display)
     
   Prev = (Display->Current + 1) % 2;
   
-  printf ("%c[2J%c[H%c[25l",27,27,27);
+  printf ("%c[2J%c[H",27,27);
   for (i=0; i<Display->NbCell; i++)
   {
     switch (Display->Cell[i].Type)
@@ -55,17 +55,12 @@ void DSP_FullRefresh (DISP *Display)
 	break;
       
       case STATUS:
-	DSP_Status (&Display->Cell[i].Union.Status);
 	printf ("%c[%d;%dH%*s",
 		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Status.Size," ");
 	printf ("%c[%d;%dH%s%c[m",
 		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Status.Buffer, 27);
 	break;
       
-      case CURSOR:
-	printf ("%c[%d;%dH%c[0J", 27, Display->Cell[i].Row, Display->Cell[i].Col,27);
-	break;
-
       case BASH:
 	DSP_Bash (Display->Cell[i].Row,
 		  Display->Cell[i].Col,
@@ -94,10 +89,62 @@ void DSP_FullRefresh (DISP *Display)
 	}
       }
   }
-  printf ("%c[25h",27);
   fflush (stdout);
 
   Display->Current = Prev;
+}
+
+//------------------------------------------------------------------------------
+void DSP_RefreshCell (CELL *Cell, int Prev)
+{
+  switch (Cell->Type)
+    {
+    case UNDEFINED:
+    case STATIC_BASH:
+    case STATIC:
+      break;
+      
+    case ELAPSED:
+      DSP_Elapsed (&Cell->Union.Elapsed);
+      if (strcmp(Cell->Union.Elapsed.String[0],
+		 Cell->Union.Elapsed.String[1]) != 0)
+	{
+	  printf ("%c[%d;%dH%s%c[m",
+		  27,
+		  Cell->Row, Cell->Col,
+		  Cell->Union.Elapsed.Buffer,
+		  27);
+
+	  strcpy (Cell->Union.Elapsed.String[Prev],
+		  Cell->Union.Elapsed.Buffer       );
+	}
+      Cell->Union.Elapsed.Buffer = Cell->Union.Elapsed.String[Prev];
+      break;
+      
+    case STATUS:
+      if (strcmp(Cell->Union.Status.String[0],
+		 Cell->Union.Status.String[1]) != 0)
+	{
+	  printf ("%c[%d;%dH%*s",
+		  27, Cell->Row, Cell->Col,
+		  Cell->Union.Status.Size," ");
+	    
+	  printf ("%c[%d;%dH%s%c[m",
+		  27, Cell->Row, Cell->Col,
+		  Cell->Union.Status.Buffer, 27);
+
+	  strcpy (Cell->Union.Status.String[Prev],
+		  Cell->Union.Status.Buffer       );
+	}
+      Cell->Union.Status.Buffer = Cell->Union.Status.String[Prev];
+      break;
+      
+    case BASH:
+      DSP_Bash (Cell->Row,
+		Cell->Col,
+		Cell->Union.Bash.Buffer, "");
+      break;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -107,61 +154,18 @@ void DSP_Refresh (DISP *Display)
   
   Prev = (Display->Current + 1) % 2;
 
-  // Cursor OFF
-  printf ("%c[25l",27);
-  
   for (i=0; i<Display->NbCell; i++)
   {
     switch (Display->Cell[i].Type)
       {
-      case UNDEFINED:
-      case STATIC_BASH:
-      case STATIC:
-	break;
-      
-      case ELAPSED:
-	DSP_Elapsed (&Display->Cell[i].Union.Elapsed);
-	if (strcmp(Display->Cell[i].Union.Elapsed.String[0],
-		   Display->Cell[i].Union.Elapsed.String[1]) != 0)
-	  {
-	    printf ("%c[%d;%dH%s%c[m",
-		    27,
-		    Display->Cell[i].Row, Display->Cell[i].Col,
-		    Display->Cell[i].Union.Elapsed.Buffer,
-		    27);
-	  }
-	Display->Cell[i].Union.Elapsed.Buffer = Display->Cell[i].Union.Elapsed.String[Prev];
-	break;
-      
       case STATUS:
-	DSP_Status (&Display->Cell[i].Union.Status);
-	if (strcmp(Display->Cell[i].Union.Status.String[0],
-		   Display->Cell[i].Union.Status.String[1]) != 0)
-	  {
-	    printf ("%c[%d;%dH%*s",
-		    27, Display->Cell[i].Row, Display->Cell[i].Col,
-		    Display->Cell[i].Union.Status.Size," ");
-	    
-	    printf ("%c[%d;%dH%s%c[m",
-		    27, Display->Cell[i].Row, Display->Cell[i].Col,
-		    Display->Cell[i].Union.Status.Buffer, 27);
-	  }
-	Display->Cell[i].Union.Status.Buffer = Display->Cell[i].Union.Status.String[Prev];
+	// Refresh fait dans GetUpdate
 	break;
-      
-      case CURSOR:
-	printf ("%c[%d;%dH", 27, Display->Cell[i].Row, Display->Cell[i].Col);
-	break;
-      
-      case BASH:
-	DSP_Bash (Display->Cell[i].Row,
-		  Display->Cell[i].Col,
-		  Display->Cell[i].Union.Bash.Buffer, "");
-	break;
+
+      default:
+	DSP_RefreshCell (&Display->Cell[i], Prev);
       }
   }
-  // Cursor ON
-  printf ("%c[25h",27);
   fflush (stdout);
   Display->Current = Prev;
 }
@@ -170,19 +174,24 @@ void DSP_Refresh (DISP *Display)
 void DSP_Elapsed (CELL_ELAPSED *Cell)
 {
   double ValDebut, ValFin, Delta;
-  char *Debut = getenv (Cell->Debut);
-  char *Fin   = getenv (Cell->Fin);
+  char  *Debut, *Fin;
 
   int  NbJour,NbHeure,NbMinute,NbSeconde,NbMilli;
   char Buffer[32];
 
+  // Terminated ?
+  if (Cell->Completed) return;
+
   // rien a faire
+  Debut = getenv (Cell->Debut);
+  Fin   = getenv (Cell->Fin);
   if (!Debut) return;
 
   ValDebut = atof(Debut);
   if (Fin)
   {
     ValFin = atof(Fin);
+    Cell->Completed = 1;
   }
   else
   {
@@ -193,6 +202,7 @@ void DSP_Elapsed (CELL_ELAPSED *Cell)
   }
 
   Delta = ValFin - ValDebut;
+  if (Delta < 0.0) Delta = 0.0;
   NbSeconde = (int) Delta;
   NbMilli   = (int) ((Delta - (double) NbSeconde) * 1000.0);
   NbMinute  = NbSeconde / 60; NbSeconde %= 60;
@@ -206,23 +216,6 @@ void DSP_Elapsed (CELL_ELAPSED *Cell)
   
   if (Fin) strcpy  (Cell->Buffer, Buffer);
   else     sprintf (Cell->Buffer,"%c[22;34m%s%c[m",27,Buffer,27);
-}
-
-//------------------------------------------------------------------------------
-void DSP_Status (CELL_STATUS *Status)
-{
-  char  Filename[128];
-  FILE *Desc;
-
-  Status->Buffer[0] = '\0';
-
-  sprintf (Filename,"%s/%s",getenv("KRNC_TMP"), Status->File);
-  Desc = fopen (Filename,"r");
-  if (Desc)
-  {
-    fgets  (Status->Buffer, sizeof(Status->String[0]), Desc);
-    fclose (Desc);
-  }
 }
 
 //------------------------------------------------------------------------------

@@ -51,7 +51,8 @@ done
 # pied
 Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Update GRUB" $StepNum); P2=""; _Board_Write
 Type=status;  Col=28; Row=$CurRow; P1=Step-SIG04;                                  _Board_Write
-Type=elapsed; Col=60; Row=$CurRow; P1=KRNC_SIG04_debut; P2=KRNC_SIG04_fin;         _Board_Write; ((CurRow += 1)) 
+Type=elapsed; Col=60; Row=$CurRow; P1=KRNC_SIG04_debut; P2=KRNC_SIG04_fin;         _Board_Write;
 
-Type=cursor; Col=1; Row=$CurRow; P1=""; P2="";                      _Board_Write
+((CurRow += 1)) 
+
 Type=bash;   Col=1; Row=$CurRow; P1=$KRN_EXE/curses/KRNC_catlog.sh; _Board_Write

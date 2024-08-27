@@ -30,5 +30,4 @@ do
 done
 
 # pied
-Type=cursor; Col=1; Row=$CurRow; P1=""; P2="";                      _Board_Write; ((CurRow += 1))
 Type=bash;   Col=1; Row=$CurRow; P1=$KRN_EXE/curses/KRNC_catlog.sh; _Board_Write

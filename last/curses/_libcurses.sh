@@ -6,11 +6,12 @@ _InitCurses ()
     [ "$KRNC_TMP" != "" ] && return
 
     export KRNC_TMP=$KRN_TMP/curses-$$
-    export KRNC_VAR=$KRNC_TMP/var
+    export KRNC_FIFO=$KRNC_TMP/fifo
     export KRNC_ErrorLog=$KRNC_TMP/ErrorLog
     export KRNC_BOARD=$KRNC_TMP/Board.csv
 
     mkdir -p $KRNC_TMP
+    mkfifo   $KRNC_FIFO
     _CursesVar KRNC_debut=$(TopHorloge)
 }
 
@@ -30,15 +31,9 @@ _CursesVar ()
 	if [ "${_var:0:9}" != "KRNC_PID=" ] \
 	       || [ "$(grep ^KRNC_PID $KRNC_VAR)" = "" ]
 	then
-	    echo $_var >> $KRNC_VAR
+	    echo $_var >> $KRNC_FIFO &
 	fi
     done
-}
-
-#-------------------------------------------------------------------------------
-_GetVar ()
-{
-    [ -f $KRNC_VAR ] && . $KRNC_VAR
 }
 
 #-------------------------------------------------------------------------------
@@ -47,30 +42,7 @@ _CursesStep ()
     [ "$KRNC_TMP" = "" ] && return
     
     _CursesVar KRNC_$2_$1=$(TopHorloge)
-    echo -e "$(echo $*|cut -d' ' -f3-)" > $KRNC_TMP/Step-$2
-}
-
-#-------------------------------------------------------------------------------
-_GetStep ()
-{
-    [ ! -f $KRNC_TMP/Step-$1 ] && echo "" && return
-    cat $KRNC_TMP/Step-$1
-}
-
-#-------------------------------------------------------------------------------
-_GetDuration ()
-{
-    _debut=$1
-    _fin=$2
-
-    [ "$_debut" = "" ] && echo "" && return
-
-    if [ "$_fin" != "" ]
-    then
-	echo -ne "\033[22;34m$(AfficheDuree $_debut $_fin)\033[m"
-    else
-	AfficheDuree $_debut $(TopHorloge)
-    fi
+    echo -e "Step-$2;$(echo $*|cut -d' ' -f3-)" > $KRNC_FIFO &
 }
 
 #-------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ Refresh=$3
 (( Row += 22 ))
 
 echo -e "----------------------------------------------------------------------"
-echo -e "\033[36m$(date +"%d/%m/%Y %Hh%Mm%Ss")\033[m  "
+echo -e "\033[30;46m $(date +"%d/%m/%Y %Hh%Mm%Ss") \033[m  "
 
 # Force refresh 
 [ "$Refresh" != "" ] && rm -f $KRNC_TMP/RefreshLog

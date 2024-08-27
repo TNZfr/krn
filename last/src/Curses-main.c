@@ -50,10 +50,11 @@ void LoadCell (DISP *Display, CSVFILE *CSV)
     }
     else if (!strcmp(Record->Field[FIELD_TYPE], "elapsed"))
     {
-      Cell->Type                 = ELAPSED;
-      Cell->Union.Elapsed.Buffer = Cell->Union.Elapsed.String[0];
-      Cell->Union.Elapsed.Debut  = Record->Field[FIELD_PARAM1];
-      Cell->Union.Elapsed.Fin    = Record->Field[FIELD_PARAM2];
+      Cell->Type                    = ELAPSED;
+      Cell->Union.Elapsed.Buffer    = Cell->Union.Elapsed.String[0];
+      Cell->Union.Elapsed.Debut     = Record->Field[FIELD_PARAM1];
+      Cell->Union.Elapsed.Fin       = Record->Field[FIELD_PARAM2];
+      Cell->Union.Elapsed.Completed = 0;
       Display->NbCell ++;
     }
     else if (!strcmp(Record->Field[FIELD_TYPE], "bash"))
@@ -70,34 +71,7 @@ void LoadCell (DISP *Display, CSVFILE *CSV)
       Cell->Union.Status.Buffer = Cell->Union.Status.String[0];
       Display->NbCell ++;
     }
-    else if (!strcmp(Record->Field[FIELD_TYPE], "cursor"))
-    {
-      Cell->Type = CURSOR;
-      Display->NbCell ++;
-    }
   }
-}
-
-//------------------------------------------------------------------------------
-void LoadVarFile ()
-{
-  char Record[32];
-  FILE *Desc = fopen (getenv("KRNC_VAR"),"r");
-
-  while (!feof(Desc))
-  {
-    char *Separateur;
-
-    if (!fgets(Record,sizeof(Record),Desc)) continue;
-
-    Separateur = strchr (Record,'=');
-    if (!Separateur) continue;
-    *Separateur='\0';
-    Separateur++;
-
-    setenv (Record, Separateur, 1);
-  }
-  fclose(Desc);
 }
 
 //------------------------------------------------------------------------------
@@ -120,30 +94,111 @@ int GetCurrentColRow ()
 }
 
 //------------------------------------------------------------------------------
+int GetUpdate (DISP *Display, FILE *Fifo)
+{
+  char Record[512];
+  char debug[1024];
+
+  register int i;
+  char *Separateur;
+
+  if (!fgets(Record,sizeof(Record),Fifo)) return 0;
+
+  // Top horloge
+  if (strncmp(Record,"Refresh",7) == 0) return 1;
+
+  //sprintf (debug,"echo -n \"%s : %s\" >> /dev/shm/tnz.log",getenv("KRNC_FIFO"), Record);pclose(popen(debug,"w"));
+
+  // Status message
+  if (strncmp(Record,"Step-",5) == 0)
+    {
+      char *Step, *Status;
+	
+      Step = Record;
+      Separateur = strchr(Record,';');
+      Separateur[0] = '\0';
+      Separateur ++;
+
+      Status = Separateur;
+	
+      for (i=0; i<Display->NbCell; i++)
+	{
+	  CELL *Cell = &Display->Cell[i];
+	  int   Prev = (Display->Current + 1) % 2;
+
+	  if (Cell->Type != STATUS) continue;
+	  if (strcmp(Cell->Union.Status.File, Step) != 0) continue;
+
+	  strcpy (Cell->Union.Status.Buffer, Status);
+	  
+	  // Refresh 
+	  DSP_RefreshCell (Cell, Prev);
+	  fflush (stdout);
+	  break;
+	}
+      return 0;
+    }
+    
+  // Refresh des Elapsed
+  if (strncmp(Record,"KRNC_",5) == 0)
+    {
+      CELL *Cell;
+      int   Prev = (Display->Current + 1) % 2;
+
+      Separateur = strchr (Record,'=');
+      if (!Separateur) return 0;
+      *Separateur='\0';
+      Separateur++;
+	
+      setenv (Record, Separateur, 0);
+
+      // Refresh 
+      for (i=0; i<Display->NbCell; i++)
+	{
+	  Cell = &Display->Cell[i];
+	  
+	  if (Cell->Type != ELAPSED) continue;
+	  if (strcmp(Record, Cell->Union.Elapsed.Debut) &&
+	      strcmp(Record, Cell->Union.Elapsed.Fin  )    ) continue;
+
+	  DSP_RefreshCell (Cell, Prev);
+	  break;
+	}
+      fflush (stdout);
+
+      return 0;
+    }
+}
+
+//------------------------------------------------------------------------------
 int main (int NbArg, char **Arg)
 {
   DISP    Display;
   CSVFILE CSV;
+  FILE   *Fifo;
 
   int TermSize;
   int CurrentSize;
 
-    
+  // Ouverture de la FIFO
+  Fifo = popen("tail -f $KRNC_FIFO","r");
+
   // Chargement des donnees
   CSV_ParseFile (&CSV, Arg[1], ',');
   LoadCell      (&Display, &CSV);
-  LoadVarFile   ();
 
   // 1er affichage
+  printf ("%c[25l",27);
   DSP_FullRefresh (&Display);
   TermSize = GetCurrentColRow ();
 
   // Boucle principale
-  while (!getenv("KRNC_fin"))
+  while (!feof(Fifo))
   {
-    LoadVarFile ();
+    int ToRefresh = GetUpdate (&Display, Fifo);
+    
     CurrentSize = GetCurrentColRow ();
-    if (CurrentSize == TermSize)
+    if (CurrentSize == TermSize && ToRefresh)
     {
       DSP_Refresh (&Display);
     }
@@ -152,14 +207,20 @@ int main (int NbArg, char **Arg)
       TermSize = CurrentSize;
       DSP_FullRefresh (&Display);
     }
-    sleep       (1);
+
+    if (getenv("KRNC_fin")) break;
   }
-  LoadVarFile ();
+  GetUpdate   (&Display, Fifo);
   DSP_Refresh (&Display);
   printf ("%c[m",27); // reset graphic attributes
 
   // Menage & sortie
   DSP_Free     (&Display);
   CSV_FreeFile (&CSV);
-  return 0;
+  fclose       (Fifo);
+
+  // Cursor ON
+  printf ("%c[25h",27);
+  fflush (stdout);
+return 0;
 }

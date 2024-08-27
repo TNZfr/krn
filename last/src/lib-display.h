@@ -8,8 +8,7 @@ typedef enum
   STATIC,
   ELAPSED,
   BASH,
-  STATUS,
-  CURSOR
+  STATUS
 } CELLTYPE;
 
 typedef struct
@@ -29,6 +28,7 @@ typedef struct
 {
   char *Debut, *Fin;
   char *Buffer;
+  char  Completed;
   char  String[2][64];
 } CELL_ELAPSED;
 
@@ -61,7 +61,7 @@ void DSP_Free        (DISP *Display);
 void DSP_Refresh     (DISP *Display);
 void DSP_FullRefresh (DISP *Display);
 
-void DSP_Elapsed (CELL_ELAPSED *Cell);
-void DSP_Status  (CELL_STATUS *Status);
-void DSP_Bash    (int Row, int Col, char *Commande, char *Parametre);
+void DSP_RefreshCell (CELL *Cell, int Prev);
+void DSP_Elapsed     (CELL_ELAPSED *Cell);
+void DSP_Bash        (int Row, int Col, char *Commande, char *Parametre);
 #endif

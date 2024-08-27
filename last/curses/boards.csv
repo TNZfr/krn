@@ -35,7 +35,6 @@ Compile,elapsed,60,9,KRNC_CC07_debut,KRNC_CC07_fin
 Compile,static,1,10,8. Delivery,
 Compile,status,28,10,Step-CC08,31
 Compile,elapsed,60,10,KRNC_CC08_debut,KRNC_CC08_fin
-Compile,cursor,1,11,,
 Compile,bash,1,11,$KRN_EXE/curses/KRNC_catlog.sh,
 ,,,,,
 CompileSign,static_bash,1,1,"""\033[30;42m $KRN_MODE Compile Sign $KRNC_Parameter \033[m""",
@@ -74,7 +73,6 @@ CompileSign,elapsed,60,12,KRNC_CCS10_debut,KRNC_CCS10_fin
 CompileSign,static,1,13,11. Package delivery ,
 CompileSign,status,28,13,Step-CCS11,31
 CompileSign,elapsed,60,13,KRNC_CCS11_debut,KRNC_CCS11_fin
-CompileSign,cursor,1,14,,
 CompileSign,bash,1,14,$KRN_EXE/curses/KRNC_catlog.sh,
 ,,,,,
 ConfComp,static_bash,1,1,"""\033[30;42m $KRN_MODE Compile Custom $KRNC_Parameter \033[m""",
@@ -107,7 +105,6 @@ ConfComp,elapsed,60,10,KRNC_CC07_debut,KRNC_CC07_fin
 ConfComp,static,1,11,9. Delivery,
 ConfComp,status,28,11,Step-CC08,31
 ConfComp,elapsed,60,11,KRNC_CC08_debut,KRNC_CC08_fin
-ConfComp,cursor,1,12,,
 ConfComp,bash,1,12,$KRN_EXE/curses/KRNC_catlog.sh,
 ,,,,,
 ConfCompInstall,static_bash,1,1,"""\033[30;42m $KRN_MODE Compile Install Custom $KRNC_Parameter \033[m""",
@@ -146,7 +143,6 @@ ConfCompInstall,elapsed,60,12,KRNC_CC01h_debut,KRNC_CC01h_fin
 ConfCompInstall,static,1,13,11. Install,
 ConfCompInstall,status,28,13,Step-CCI01c,31
 ConfCompInstall,elapsed,60,13,KRNC_CCI01c_debut,KRNC_CCI01c_fin
-ConfCompInstall,cursor,1,14,,
 ConfCompInstall,bash,1,14,$KRN_EXE/curses/KRNC_catlog.sh,
 ,,,,,
 ConfCompSign,static_bash,1,1,"""\033[30;42m $KRN_MODE Compile Sign Custom $KRNC_Parameter \033[m""",
@@ -188,7 +184,6 @@ ConfCompSign,elapsed,60,13,KRNC_CCS10_debut,KRNC_CCS10_fin
 ConfCompSign,static,1,14,12. Package delivery,
 ConfCompSign,status,28,14,Step-CCS11,31
 ConfCompSign,elapsed,60,14,KRNC_CCS11_debut,KRNC_CCS11_fin
-ConfCompSign,cursor,1,15,,
 ConfCompSign,bash,1,15,$KRN_EXE/curses/KRNC_catlog.sh,
 ,,,,,
 ConfCompSignInst,static_bash,1,1,"""\033[30;42m $KRN_MODE Compile Sign Install Custom $KRNC_Parameter \033[m""",
@@ -236,5 +231,4 @@ ConfCompSignInst,elapsed,60,15,KRNC_CCS01k_debut,KRNC_CCS01k_fin
 ConfCompSignInst,static,1,16,14. Install,
 ConfCompSignInst,status,28,16,Step-CCSI01d,31
 ConfCompSignInst,elapsed,60,16,KRNC_CCSI01d_debut,KRNC_CCSI01d_fin
-ConfCompSignInst,cursor,1,17,,
 ConfCompSignInst,bash,1,17,$KRN_EXE/curses/KRNC_catlog.sh,
