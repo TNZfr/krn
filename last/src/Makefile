@@ -2,8 +2,11 @@ CC=gcc
 
 all: linux-version-sort curses linux-version-archbuild linux-version-num
 
-curses : lib-display.* CSV_*.* Curses*.*
-	$(CC) lib-display.c CSV_ParseFile.c Curses-*.c -o ../curses/KRN_Curses
+curses : CSV_*.* Curses*.*
+	$(CC) CSV_ParseFile.c Curses-*.c                -o ../curses/KRN_Curses
+
+timer : Timer*.*
+	$(CC) Timer*.c                                  -o ../curses/KRNC_Timer
 
 linux-version-archbuild: linux-version-archbuild*.*
 	$(CC) linux-version-archbuild*.c 		-o ../linux-version-archbuild

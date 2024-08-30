@@ -1,5 +1,8 @@
-#ifndef _LIB_Display_H
-#define _LIB_Display_H
+#ifndef _KRN_CURSES_H
+#define _KRN_CURSES_H
+
+#define TRUE  1
+#define FALSE 0
 
 typedef enum
 {
@@ -8,8 +11,14 @@ typedef enum
   STATIC,
   ELAPSED,
   BASH,
-  STATUS
+  STATUS,
+  TAILLOG
 } CELLTYPE;
+
+typedef struct
+{
+  int TailSize;
+} CELL_LOG;
 
 typedef struct
 {
@@ -38,6 +47,7 @@ typedef struct
   int      Row,Col;
   union
   {
+    CELL_LOG     Log;
     CELL_STATIC  Static;
     CELL_STATIC  StaticBash;
     CELL_STATIC  Bash;
@@ -64,4 +74,5 @@ void DSP_FullRefresh (DISP *Display);
 void DSP_RefreshCell (CELL *Cell, int Prev);
 void DSP_Elapsed     (CELL_ELAPSED *Cell);
 void DSP_Bash        (int Row, int Col, char *Commande, char *Parametre);
+void DSP_TailLog     (int Row, int Col, int   TailSize, int   ForceRefresh);
 #endif

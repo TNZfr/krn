@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "lib-display.h"
+#include "Curses.h"
 
 //------------------------------------------------------------------------------
 void DSP_Init (DISP *Display, int NbCell)
@@ -59,6 +59,13 @@ void DSP_FullRefresh (DISP *Display)
 		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Status.Size," ");
 	printf ("%c[%d;%dH%s%c[m",
 		27, Display->Cell[i].Row, Display->Cell[i].Col, Display->Cell[i].Union.Status.Buffer, 27);
+	break;
+      
+      case TAILLOG:
+	DSP_TailLog (Display->Cell[i].Row,
+		     Display->Cell[i].Col,
+		     Display->Cell[i].Union.Log.TailSize,
+		     TRUE);
 	break;
       
       case BASH:
@@ -139,6 +146,10 @@ void DSP_RefreshCell (CELL *Cell, int Prev)
       Cell->Union.Status.Buffer = Cell->Union.Status.String[Prev];
       break;
       
+    case TAILLOG:
+      DSP_TailLog (Cell->Row, Cell->Col, Cell->Union.Log.TailSize, FALSE);
+      break;
+      
     case BASH:
       DSP_Bash (Cell->Row,
 		Cell->Col,
@@ -159,7 +170,7 @@ void DSP_Refresh (DISP *Display)
     switch (Display->Cell[i].Type)
       {
       case STATUS:
-	// Refresh fait dans GetUpdate
+	// Refresh done in GetUpdate
 	break;
 
       default:
@@ -169,74 +180,3 @@ void DSP_Refresh (DISP *Display)
   fflush (stdout);
   Display->Current = Prev;
 }
-
-//------------------------------------------------------------------------------
-void DSP_Elapsed (CELL_ELAPSED *Cell)
-{
-  double ValDebut, ValFin, Delta;
-  char  *Debut, *Fin;
-
-  int  NbJour,NbHeure,NbMinute,NbSeconde,NbMilli;
-  char Buffer[32];
-
-  // Terminated ?
-  if (Cell->Completed) return;
-
-  // rien a faire
-  Debut = getenv (Cell->Debut);
-  Fin   = getenv (Cell->Fin);
-  if (!Debut) return;
-
-  ValDebut = atof(Debut);
-  if (Fin)
-  {
-    ValFin = atof(Fin);
-    Cell->Completed = 1;
-  }
-  else
-  {
-    struct timeval Now; //Now.tv_sec et Now.tv_usec
-
-    gettimeofday (&Now, NULL);
-    ValFin = (double) (Now.tv_sec + Now.tv_usec / 1000000);    
-  }
-
-  Delta = ValFin - ValDebut;
-  if (Delta < 0.0) Delta = 0.0;
-  NbSeconde = (int) Delta;
-  NbMilli   = (int) ((Delta - (double) NbSeconde) * 1000.0);
-  NbMinute  = NbSeconde / 60; NbSeconde %= 60;
-  NbHeure   = NbMinute  / 60; NbMinute  %= 60;
-  NbJour    = NbHeure   / 24; NbHeure   %= 24;
-
-  if      (NbJour)   sprintf (Buffer,"%dd %dh %dm %ds.%03d ", NbJour,NbHeure,NbMinute,NbSeconde,NbMilli);
-  else if (NbHeure)  sprintf (Buffer,"%dh %dm %ds.%03d ", NbHeure,NbMinute,NbSeconde,NbMilli);
-  else if (NbMinute) sprintf (Buffer,"%dm %ds.%03d ", NbMinute,NbSeconde,NbMilli);
-  else               sprintf (Buffer,"%ds.%03d ", NbSeconde,NbMilli);
-  
-  if (Fin) strcpy  (Cell->Buffer, Buffer);
-  else     sprintf (Cell->Buffer,"%c[22;34m%s%c[m",27,Buffer,27);
-}
-
-//------------------------------------------------------------------------------
-void DSP_Bash (int Row, int Col, char *Commande, char *Parametre)
-{
-  char  Buffer[128];
-  int   NbCar;
-  FILE *Desc;
-
-  char CommandePipe[512];
-  
-  printf ("%c[%d;%dH", 27, Row, Col);
-
-  sprintf (CommandePipe,"%s %d %d %s", Commande, Row, Col, Parametre);
-
-  Desc = popen(CommandePipe,"r");
-  while (!feof(Desc))
-  {
-    if (!fgets(Buffer,sizeof(Buffer),Desc)) continue;
-    printf ("%s",Buffer);
-  }
-  pclose(Desc);
-}
-

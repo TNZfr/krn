@@ -62,9 +62,14 @@ then
 
     _InitCurses
     _InitBoard  $KRNC_BDD $_CursesBoard $_KrnParameter
-    ($KRN_EXE/Main.sh $_KrnParameter > $KRNC_TMP/exec.log 2>&1; _CursesVar KRNC_fin=$(TopHorloge))&
-    $KRN_EXE/curses/KRNC_timer.sh $KRNC_FIFO &
-    $KRN_EXE/curses/KRN_Curses    $KRNC_BOARD
+    
+    (
+	$KRN_EXE/Main.sh $_KrnParameter > $KRNC_TMP/exec.log 2>&1
+	_CursesVar KRNC_fin=$(TopHorloge)
+    ) &
+
+    $KRN_EXE/curses/KRNC_Timer $KRNC_FIFO  1 &
+    $KRN_EXE/curses/KRN_Curses $KRNC_BOARD
     _CloseCurses
 else
     if [ "$_MainCommand" != "" ]

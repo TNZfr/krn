@@ -83,4 +83,4 @@ do
 done
 
 # pied
-Type=bash;   Col=1; Row=$CurRow; P1=$KRN_EXE/curses/KRNC_catlog.sh; _Board_Write
+Type=taillog; Col=1; Row=$CurRow; P1=20; P2=""; _Board_Write

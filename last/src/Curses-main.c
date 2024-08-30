@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "lib-display.h"
+#include "Curses.h"
 #include "CSV_ParseFile.h"
 
 //------------------------------------------------------------------------------
@@ -71,6 +71,12 @@ void LoadCell (DISP *Display, CSVFILE *CSV)
       Cell->Union.Status.Buffer = Cell->Union.Status.String[0];
       Display->NbCell ++;
     }
+    else if (!strcmp(Record->Field[FIELD_TYPE], "taillog"))
+    {
+      Cell->Type               = TAILLOG;
+      Cell->Union.Log.TailSize = atoi(Record->Field[FIELD_PARAM1]);
+      Display->NbCell ++;
+    }
   }
 }
 
@@ -106,8 +112,6 @@ int GetUpdate (DISP *Display, FILE *Fifo)
 
   // Top horloge
   if (strncmp(Record,"Refresh",7) == 0) return 1;
-
-  //sprintf (debug,"echo -n \"%s : %s\" >> /dev/shm/tnz.log",getenv("KRNC_FIFO"), Record);pclose(popen(debug,"w"));
 
   // Status message
   if (strncmp(Record,"Step-",5) == 0)
