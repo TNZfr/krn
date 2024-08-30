@@ -13,8 +13,8 @@ char *CurrentDateTime (char *Buffer)
   struct tm *DateTime = localtime(&NbSec);
 
   sprintf (Buffer,"%d/%02d/%d %dh%02dm%02ds",
-	   DateTime->tm_mday, DateTime->tm_mon, DateTime->tm_year + 1900,
-	   DateTime->tm_hour, DateTime->tm_min, DateTime->tm_sec);
+	   DateTime->tm_mday, DateTime->tm_mon + 1, DateTime->tm_year + 1900,
+	   DateTime->tm_hour, DateTime->tm_min,     DateTime->tm_sec         );
   
   return Buffer;
 }
