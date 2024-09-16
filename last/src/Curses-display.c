@@ -20,7 +20,11 @@ void DSP_Init (DISP *Display, int NbCell)
 //------------------------------------------------------------------------------
 void DSP_Free (DISP *Display)
 {
-  free (Display->Cell);
+  if (Display->Cell)
+    {
+      free (Display->Cell);
+      Display->Cell = NULL;
+    }
 }
 
 //------------------------------------------------------------------------------

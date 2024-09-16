@@ -44,34 +44,14 @@ case $(echo $_MainCommand|tr [:upper:] [:lower:]) in
     "install"                )    _CursesBoard=Install            ; NeedSudo=TRUE ;;
     "remove"                 )    _CursesBoard=Remove             ; NeedSudo=TRUE ;;
     "sign"              |"sk")    _CursesBoard=Sign               ; NeedSudo=TRUE ;;
+    "signmodule"        |"sm")    _CursesBoard=SignLodule         ; NeedSudo=TRUE ;;
     "installsign"       |"is")    _CursesBoard=InstallSign        ; NeedSudo=TRUE ;;
 
-    *)
-	_CursesBoard=None
+    *)  _CursesBoard=None
 esac
 
-if [ $_CursesBoard != None ]
+if [ $_CursesBoard = None ]
 then
-    # Install and sudo management
-    if [ $NeedSudo = TRUE ]
-    then
-	echo ""
-	echo "Administrator rights needed"
-	sudo clear
-    fi
-
-    _InitCurses
-    _InitBoard  $KRNC_BDD $_CursesBoard $_KrnParameter
-    
-    (
-	$KRN_EXE/Main.sh $_KrnParameter > $KRNC_TMP/exec.log 2>&1
-	_CursesVar KRNC_fin=$(TopHorloge)
-    ) &
-
-    $KRN_EXE/curses/KRNC_Timer $KRNC_FIFO  1 &
-    $KRN_EXE/curses/KRN_Curses $KRNC_BOARD
-    _CloseCurses
-else
     if [ "$_MainCommand" != "" ]
     then
 	echo ""
@@ -85,7 +65,32 @@ else
 	[ "$Board" = "main" ] && continue
 	echo "- $Board"
     done
+    echo ""
+    exit 0
 fi
+
+# Install and sudo management
+if [ $NeedSudo = TRUE ]
+then
+    echo ""
+	echo "Administrator rights needed"
+	sudo clear
+fi
+
+_InitCurses
+_InitBoard  $KRNC_BDD $_CursesBoard $_KrnParameter
+
+(
+    echo "" > $KRNC_TMP/exec.log
+    $KRN_EXE/Main.sh $_KrnParameter >> $KRNC_TMP/exec.log 2>&1
+    _CursesVar KRNC_fin=$(TopHorloge)
+) &
+
+export KRNC_RefreshTimer=1
+
+$KRN_EXE/curses/KRNC_Timer $KRNC_FIFO  $KRNC_RefreshTimer 2>/dev/null &
+$KRN_EXE/curses/KRN_Curses $KRNC_BOARD
+_CloseCurses
 
 echo   ""
 exit 0

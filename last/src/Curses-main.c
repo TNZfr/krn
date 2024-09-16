@@ -137,9 +137,9 @@ int GetUpdate (DISP *Display, FILE *Fifo)
 	  
 	  // Refresh 
 	  DSP_RefreshCell (Cell, Prev);
-	  fflush (stdout);
 	  break;
 	}
+      fflush (stdout);
       return 0;
     }
     
@@ -169,7 +169,6 @@ int GetUpdate (DISP *Display, FILE *Fifo)
 	  break;
 	}
       fflush (stdout);
-
       return 0;
     }
 }
@@ -177,36 +176,37 @@ int GetUpdate (DISP *Display, FILE *Fifo)
 //------------------------------------------------------------------------------
 int main (int NbArg, char **Arg)
 {
+  static CSVFILE CSV;
+
   DISP    Display;
-  CSVFILE CSV;
   FILE   *Fifo;
 
   int TermSize;
   int CurrentSize;
 
-  // Ouverture de la FIFO
+  // Named pipe reading
   Fifo = popen("tail -f $KRNC_FIFO","r");
 
-  // Chargement des donnees
+  // Loading board
   CSV_ParseFile (&CSV, Arg[1], ',');
   LoadCell      (&Display, &CSV);
 
-  // 1er affichage
+  // 1st refresh
   printf ("%c[25l",27);
   DSP_FullRefresh (&Display);
   TermSize = GetCurrentColRow ();
 
-  // Boucle principale
+  // Main loop
   while (!feof(Fifo))
   {
-    int ToRefresh = GetUpdate (&Display, Fifo);
-    
-    CurrentSize = GetCurrentColRow ();
+    int ToRefresh   = GetUpdate (&Display, Fifo);
+    int CurrentSize = GetCurrentColRow ();
+
     if (CurrentSize == TermSize && ToRefresh)
     {
       DSP_Refresh (&Display);
     }
-    else
+    else if (CurrentSize != TermSize) 
     {
       TermSize = CurrentSize;
       DSP_FullRefresh (&Display);
@@ -214,17 +214,17 @@ int main (int NbArg, char **Arg)
 
     if (getenv("KRNC_fin")) break;
   }
-  GetUpdate   (&Display, Fifo);
-  DSP_Refresh (&Display);
-  printf ("%c[m",27); // reset graphic attributes
 
-  // Menage & sortie
+  // Final refresh
+  GetUpdate       (&Display, Fifo);
+  DSP_FullRefresh (&Display);
+  printf ("%c[m%c[25h",27,27); // reset graphic attributes & Cursor ON
+  fflush (stdout);
+
+  // Cleaning & exit
   DSP_Free     (&Display);
   CSV_FreeFile (&CSV);
   fclose       (Fifo);
 
-  // Cursor ON
-  printf ("%c[25h",27);
-  fflush (stdout);
-return 0;
+  return 0;
 }

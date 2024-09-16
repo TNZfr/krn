@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KRN_VERSION=v10.2
+KRN_VERSION=v10.3
 
 #-------------------------------------------------------------------------------
 function RunCommand
@@ -74,6 +74,7 @@ function Help
     echo  ""
     echo  "CreateSign         : Create signature certificate and enroll in UEFI/SecureBoot (or not)"
     echo  "Sign           (SK): Sign installed kernel"
+    echo  "SignModule     (SM): Sign module file(s)"
     echo  "VerifyKernel   (VK): Verify installed kernel and module signatures"
     echo  "InstallSign    (IS): Install and sign selected kernel"
     echo  ""
@@ -211,6 +212,7 @@ case $Command in
     
     "createsign"             )    RunCommand CreateSign.sh   ;;
     "sign"              |"sk")    RunCommand Sign.sh         ;;
+    "signmodule"        |"sm")    RunCommand SignModule.sh   ;;
     "installsign"       |"is")    RunCommand InstallSign.sh  ;;
     "verifykernel"      |"vk")    RunCommand VerifyKernel.sh ;;
     

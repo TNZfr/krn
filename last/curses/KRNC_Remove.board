@@ -7,9 +7,7 @@ _Board_Init $0
 
 # en tete
 Type=static_bash; Col=1; Row=1
-P1="\"\"\"\033[30;42m $KRN_MODE Remove $KRNC_Parameter \033[m\"\"\""
-P2=""
-_Board_Write
+P1="\"\"\"\033[30;42m $KRN_MODE Remove $KRNC_Parameter \033[m\"\"\""; P2=""; _Board_Write
 
 Type=static;  Col=52; Row=2; P1=Elapsed;                 _Board_Write
 Type=elapsed; Col=60; Row=2; P1=KRNC_debut; P2=KRNC_fin; _Board_Write

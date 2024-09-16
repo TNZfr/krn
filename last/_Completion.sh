@@ -44,6 +44,20 @@ _krn_completion ()
 		    _kernel_versions;
 		    ;;
 
+		# Param = Installed Kernels and module file(s)
+		signmodule|sm)
+		    if [ ${#COMP_WORDS[@]} -eq 3 ]
+		    then
+			cur=${COMP_WORDS[${#COMP_WORDS[@]} - 1]}
+			_kernel_versions;
+		    else
+			#echo [_modules ${COMP_WORDS[2]} ... ${COMP_WORDS[${#COMP_WORDS[@]} - 1]}]
+			
+			cur=${COMP_WORDS[${#COMP_WORDS[@]} - 1]}
+			_modules ${COMP_WORDS[2]}
+		    fi
+		    ;;
+
 		# Param = Config file in workspace
 		setconfig|sc)
 		    if [ ${#COMP_WORDS[@]} -eq 3 ]

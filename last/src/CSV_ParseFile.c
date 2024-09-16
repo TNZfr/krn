@@ -192,10 +192,23 @@ void CSV_FreeFile  (CSVFILE *CSV_File)
   for (Index = 0; Index < CSV_File->NbRecord; Index ++)
     {
       if (CSV_File->Record[Index].Field)
-	free (CSV_File->Record[Index].Field);
+	{
+	  free (CSV_File->Record[Index].Field);
+	  CSV_File->Record[Index].Field = NULL;
+	}
     }
 
-  if (CSV_File->Record) free (CSV_File->Record);
-  if (CSV_File->Data)   free (CSV_File->Data);
+  if (CSV_File->Record)
+    {
+      free (CSV_File->Record);
+      CSV_File->Record = NULL;
+    }
+  
+  if (CSV_File->Data)
+    {
+      free (CSV_File->Data);
+      CSV_File->Data = NULL;
+    }
+  
   memset (CSV_File, 0, sizeof(CSVFILE));
 }

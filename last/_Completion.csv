@@ -51,6 +51,8 @@ sc,SetConfig
 setconfig,SetConfig
 sign,Sign
 sk,Sign
+signmodule,SignModule
+sm,SignModule
 update,Update
 upgrade,Upgrade
 verifykernel,VerifyKernel

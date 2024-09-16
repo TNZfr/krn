@@ -26,6 +26,8 @@ _CloseCurses ()
 _CursesVar ()
 {
     [ "$KRNC_TMP" = "" ] && return
+    [ ! -p $KRNC_FIFO ]  && return
+    
     for _var in $*
     do
 	if [ "${_var:0:9}" != "KRNC_PID=" ] \

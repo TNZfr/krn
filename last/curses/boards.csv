@@ -5,6 +5,7 @@ GetSource,generator,,,KRNC_GetSource.board,
 InstallSign,generator,,,KRNC_InstallSign.board,
 Remove,generator,,,KRNC_Remove.board,
 Sign,generator,,,KRNC_Sign.board,
+SignModule,generator,,,KRNC_SignModule.board,
 Install,generator,,,KRNC_Install.board,
 ,,,,,
 Board Name,Type,Col,Row,Param1,Param2
