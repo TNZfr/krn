@@ -58,13 +58,37 @@ SignOneKernel ()
     export KBUILD_SIGN_PIN=$KRNSB_PASS
     [ "$LOGNAME" != "root" ] && KRN_sudo="sudo --preserve-env=KBUILD_SIGN_PIN"
 
-    for ModuleBinary in $(find . -name "*.ko")
+    for ModuleBinary in $(find . -name "*.ko*")
     do
+	# uncompress if needed
+	ModuleFile=$(basename $ModuleBinary)
+	if [ ${ModuleFile%.ko.zst} != $ModuleFile ]
+	then
+	    unzstd ${Module}
+	    rm     ${Module}
+	    Module=${Module%.ko.zst}
+	    
+	elif [ ${ModuleFile%.ko.xz} != $ModuleFile ]
+	then
+	    unxz ${Module}
+	fi
+	
 	$KRN_sudo build/scripts/sign-file \
 		  sha256                  \
 		  $KRNSB_PRIV             \
 		  $KRNSB_DER              \
 		  $ModuleBinary
+	
+	# Recompress if needed
+	if [ ${ModuleFile%.ko.zst} != $ModuleFile ]
+	then
+	    zstd ${Module}
+	    rm   ${Module}
+	    
+	elif [ ${ModuleFile%.ko.xz} != $ModuleFile ]
+	then
+	    xz ${Module}
+	fi
     done
     cd $CurrentDir
     printh "Done."

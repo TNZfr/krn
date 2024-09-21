@@ -10,18 +10,26 @@ SignOneModule ()
     Module=$2
     _Step=$3
     
-    if [ ! -f $Module ]
-    then
-        echo "$Module not found."
-        return
-    fi
-
     # Signature du module
     # -------------------
-    echo ""
     _CursesStep debut SIM${_Step} "\033[5;46m Running \033[m"
     printh "Signing kernel module $Module ..."
-    CurrentDir=$PWD
+
+    # If module name instead of module file
+    [ ! -f $ModuleDirectory/$Module ] && Module=$(find $ModuleDirectory -name "${Module}.ko*")
+
+    # uncompress if needed
+    ModuleFile=$(basename $Module)
+    if [ ${ModuleFile%.ko.zst} != $ModuleFile ]
+    then
+	unzstd ${Module}
+	rm     ${Module}
+	Module=${Module%.ko.zst}
+	
+    elif [ ${ModuleFile%.ko.xz} != $ModuleFile ]
+    then
+	unxz ${Module}
+    fi
 
     export KBUILD_SIGN_PIN=$KRNSB_PASS
     [ "$LOGNAME" != "root" ] && KRN_sudo="sudo --preserve-env=KBUILD_SIGN_PIN"
@@ -29,7 +37,17 @@ SignOneModule ()
     $KRN_sudo $ModuleDirectory/build/scripts/sign-file \
 		  sha256 $KRNSB_PRIV $KRNSB_DER $Module
 
-    cd $CurrentDir
+    # Recompress if needed
+    if [ ${ModuleFile%.ko.zst} != $ModuleFile ]
+    then
+	zstd ${Module}
+	rm   ${Module}
+	
+    elif [ ${ModuleFile%.ko.xz} != $ModuleFile ]
+    then
+	xz ${Module}
+    fi
+    
     printh "Done."
     _CursesStep fin SIM${_Step} "\033[22;32mDone\033[m"
     echo ""
@@ -51,7 +69,7 @@ fi
 Debut=$(TopHorloge)
 
 KernelVersion=$1
-ModuleList=$(readlink -f $(echo $*|cut -d' ' -f2-))
+ModuleList=$(echo $*|cut -d' ' -f2-)
 
 # Parsing /controle du parametre
 # ------------------------------

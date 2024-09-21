@@ -12,9 +12,9 @@ P1="\"\"\"\033[30;42m $KRN_MODE SignModule $KRNC_Parameter \033[m\"\"\""; P2="";
 Type=static;  Col=52; Row=2; P1=Elapsed;                 _Board_Write
 Type=elapsed; Col=60; Row=2; P1=KRNC_debut; P2=KRNC_fin; _Board_Write
 
-Type=static;  Col=1;  Row=3; P1="1. Signing files"; P2="";           _Board_Write
-Type=status;  Col=28; Row=3; P1=Step-SIM01;                          _Board_Write
-Type=elapsed; Col=60; Row=3; P1=KRNC_SIM01_debut; P2=KRNC_SIM01_fin; _Board_Write
+Type=static;  Col=1;  Row=3; P1="1. Signing files"; P2="";             _Board_Write
+Type=status;  Col=28; Row=3; P1=Step-SIM01;         P2=31;             _Board_Write
+Type=elapsed; Col=60; Row=3; P1=KRNC_SIM01_debut;   P2=KRNC_SIM01_fin; _Board_Write
 
 # Corps
 CurRow=4
@@ -24,10 +24,10 @@ for _CurParam in $_ParamList
 do
     _CurParam=$(basename $_CurParam)
 
-    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign module $(basename $_CurParam)" $StepNum ); P2=""; _Board_Write
-    Type=status;  Col=28; Row=$CurRow; P1=$(printf "Step-SIM%02d"                           $ParamNum); P2=31; _Board_Write
+    Type=static;  Col=1;  Row=$CurRow; P1=$(printf "%d. Sign $(basename $_CurParam)" $StepNum ); P2=""; _Board_Write
+    Type=status;  Col=38; Row=$CurRow; P1=$(printf "Step-SIM%02d"                    $ParamNum); P2=21; _Board_Write
     Type=elapsed; Col=60; Row=$CurRow
-    P1=$(printf "KRNC_SIM%02d_debut" $ParamNum); P2=$(printf "KRNC_SIM%02d_fin" $ParamNum);                    _Board_Write
+    P1=$(printf "KRNC_SIM%02d_debut" $ParamNum); P2=$(printf "KRNC_SIM%02d_fin" $ParamNum);             _Board_Write
    
     ((CurRow += 1)); ((StepNum += 1)); ((ParamNum += 1))
 done

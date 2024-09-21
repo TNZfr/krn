@@ -27,49 +27,62 @@ fi
 
 # Find KRNCurses boards
 # ---------------------
+NeedSudo=FALSE
 case $(echo $_MainCommand|tr [:upper:] [:lower:]) in
 
-    "getsource"         |"gs")    _CursesBoard=GetSource          ; NeedSudo=FALSE;;
+    "getsource"         |"gs")    _CursesBoard=GetSource          ;;
 
-    "compile"           |"cc" )   _CursesBoard=Compile            ; NeedSudo=FALSE;;
+    "compile"           |"cc" )   _CursesBoard=Compile            ;;
     "compileinstall"    |"cci")   _CursesBoard=CompileInstall     ; NeedSudo=TRUE ;;
-    "compilesign"       |"ccs")   _CursesBoard=CompileSign        ; NeedSudo=FALSE;;
+    "compilesign"       |"ccs")   _CursesBoard=CompileSign        ;;
     "compilesigninstall"|"ccsi")  _CursesBoard=CompileSignInstall ; NeedSudo=TRUE ;;
     
-    "confcomp"          |"kcc")   _CursesBoard=ConfComp           ; NeedSudo=FALSE;;
+    "confcomp"          |"kcc")   _CursesBoard=ConfComp           ;;
     "confcompinstall"   |"kcci")  _CursesBoard=ConfCompInstall    ; NeedSudo=TRUE ;;
-    "confcompsign"      |"kccs")  _CursesBoard=ConfCompSign       ; NeedSudo=FALSE;;
+    "confcompsign"      |"kccs")  _CursesBoard=ConfCompSign       ;;
     "confcompsigninst"  |"kccsi") _CursesBoard=ConfCompSignInst   ; NeedSudo=TRUE ;;
 
     "install"                )    _CursesBoard=Install            ; NeedSudo=TRUE ;;
     "remove"                 )    _CursesBoard=Remove             ; NeedSudo=TRUE ;;
     "sign"              |"sk")    _CursesBoard=Sign               ; NeedSudo=TRUE ;;
-    "signmodule"        |"sm")    _CursesBoard=SignLodule         ; NeedSudo=TRUE ;;
+    "signmodule"        |"sm")    _CursesBoard=SignModule         ; NeedSudo=TRUE ;;
     "installsign"       |"is")    _CursesBoard=InstallSign        ; NeedSudo=TRUE ;;
 
-    *)  _CursesBoard=None
+    *)
+	if [ "$_MainCommand" != "" ]
+	then
+	    echo ""
+	    echo "No curses board found for $_MainCommand."
+	fi
+	echo ""
+	echo "Available KRN command boards :"
+	for Board in $(cat $KRNC_BDD|cut -d',' -f1|grep -v "Board Name"|sort|uniq)
+	do
+	    Board=$(echo $Board|tr ['_'] [' '])
+	    [ "$Board" = "main" ] && continue
+	    echo "- $Board"
+	done
+	echo ""
+    exit 0
 esac
 
-if [ $_CursesBoard = None ]
+# -------------------------------------
+# Signing kernel thru board
+# is not possible (interactive capture)
+# -------------------------------------
+if [  $_CursesBoard != SignModule ] && \
+       [ "$KRNSB_PASS" != "" ]      && \
+       [ "$(echo $_CursesBoard|grep Sign)" != "" ]
 then
-    if [ "$_MainCommand" != "" ]
-    then
-	echo ""
-	echo "No curses board found for $_MainCommand."
-    fi
     echo ""
-    echo "Available KRN command boards :"
-    for Board in $(cat $KRNC_BDD|cut -d',' -f1|grep -v "Board Name"|sort|uniq)
-    do
-	Board=$(echo $Board|tr ['_'] [' '])
-	[ "$Board" = "main" ] && continue
-	echo "- $Board"
-    done
+    echo "Signing kernel thru board using a password"
+    echo "is not possible (interactive capture)."
     echo ""
     exit 0
 fi
 
 # Install and sudo management
+# ---------------------------
 if [ $NeedSudo = TRUE ]
 then
     echo ""
@@ -77,6 +90,8 @@ then
 	sudo clear
 fi
 
+# Run board
+# ---------
 _InitCurses
 _InitBoard  $KRNC_BDD $_CursesBoard $_KrnParameter
 

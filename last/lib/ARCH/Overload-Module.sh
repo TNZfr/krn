@@ -1,9 +1,22 @@
 
 #-------------------------------------------------------------------------------
+_TestAccount()
+{
+    [ $LOGNAME != root ] && return
+
+    echo ""
+    echo "root account is not allowed to run make pacman-pkg command."
+    echo "Please use a regular account instead."
+    echo ""
+    exit 1
+}
+
+#-------------------------------------------------------------------------------
 # Compile
 #-------------------------------------------------------------------------------
 _MakePkg()
 {
+    _TestAccount
     printh "- Make pacman-pkg ..."
     make pacman-pkg -j"$(nproc)" LOCALVERSION=-"$KRN_ARCHITECTURE" > $1 2>&1
 }
@@ -26,6 +39,7 @@ _ListAvailable()
 #-------------------------------------------------------------------------------
 _MakePkgSign1 ()
 {
+    _TestAccount
     printh "- Make all (main compil) ..."
     make all -j"$(nproc)" LOCALVERSION=-"$KRN_ARCHITECTURE" > $1 2>&1
 }
