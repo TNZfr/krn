@@ -90,12 +90,18 @@ case $? in
 esac
 _CursesStep fin SIM01 "\033[22;32mFound\033[m"
 
+# Installation des prerequis
+# --------------------------
+_CursesStep  debut SIM02 "\033[5;46m Running \033[m"
+_VerifyTools COMPIL
+_CursesStep  fin   SIM02 "\033[22;32mInstalled\033[m"
+
 echo ""
-Param=2
+StepNum=3
 for Module in $ModuleList
 do
-    SignOneModule $ModuleDirectory $Module $(printf "%02d" $Param)
-    (( Param += 1))
+    SignOneModule $ModuleDirectory $Module $(printf "%02d" $StepNum)
+    (( StepNum += 1))
 done
 
 echo   ""

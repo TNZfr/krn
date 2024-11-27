@@ -4,9 +4,21 @@
 #-------------------------------------------------------------------------------
 _VerifyTools ()
 {
-    ToolsList="debhelper build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr libelf-dev flex bison libncurses-dev rsync git curl dwarves zstd sbsigntool"
+    ToolsList="bc"
+    case $1 in
+	COMPIL)
+	    ToolsList="$ToolsList debhelper build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr"
+	    ToolsList="$ToolsList libelf-dev flex bison libncurses-dev rsync git curl dwarves zstd"
+	    ;&
+	SIGN)
+	    ToolsList="$ToolsList sbsigntool"
+	    ;&
+	*)
+    esac
     
     printh "Verifying tools installation ..."
+    [ ! -z "$KRN_INTERNAL" ] && echo "Control list = $ToolsList"
+    
     Uninstalled=$(dpkg -l $ToolsList|grep -v -e "^S" -e "^|" -e "^+++" -e "^ii")
     [ "$Uninstalled" != "" ] && $KRN_sudo apt install -y $ToolsList
 }
@@ -97,7 +109,7 @@ _RemovePackage ()
 	$KRN_sudo apt-get remove --purge $PackageList -y
 	return $?
     fi
-    return 1
+    return 0
 }
 
 #-------------------------------------------------------------------------------

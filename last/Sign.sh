@@ -119,12 +119,18 @@ case $? in
 esac
 _CursesStep fin SIG01 "\033[22;32mFound\033[m"
 
+# Installation des prerequis
+# --------------------------
+_CursesStep  debut SIG02 "\033[5;46m Running \033[m"
+_VerifyTools COMPIL
+_CursesStep  fin   SIG02 "\033[22;32mInstalled\033[m"
+
 echo ""
-Param=1
+StepNum=3
 for KernelVersion in $*
 do
-    SignOneKernel $KernelVersion $(printf "%02d" $Param)
-    (( Param += 1))
+    SignOneKernel $KernelVersion $(printf "%02d" $StepNum)
+    (( StepNum += 1))
 done
 
 # Mise a jour de GRUB par securite

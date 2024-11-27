@@ -23,7 +23,7 @@ _OverloadModule ()
     #
     # Calling parameter : Kernel Version (KRN_PVBuild)
     #
-    Dummy=0
+    return 0
 }
 
 #------------------------------------------------------------------------------------------------

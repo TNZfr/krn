@@ -15,17 +15,26 @@ _CheckTool ()
 _VerifyTools ()
 {
     echo ""
-    _CheckTool bc
-    _CheckTool gcc
-    _CheckTool make
-    _CheckTool flex
-    _CheckTool zstd
-    _CheckTool cpio
-    _CheckTool dkms
-    _CheckTool bison
-    _CheckTool rsync
-    _CheckTool pahole
-    _CheckTool sbsigntools
+    case $1 in
+	COMPIL)
+	    _CheckTool gcc
+	    _CheckTool make
+	    _CheckTool flex
+	    _CheckTool zstd
+	    _CheckTool cpio
+	    _CheckTool dkms
+	    _CheckTool bison
+	    _CheckTool rsync
+	    _CheckTool pahole
+	    ;&
+	
+	SIGN)
+	    _CheckTool sbsigntools
+	    ;&
+	
+	*)
+	    _CheckTool bc
+    esac
     echo ""
 }
 
@@ -165,6 +174,6 @@ _UpdateGrub ()
 #-------------------------------------------------------------------------------
 _RemovePackage ()
 {
-    Dummy=0
+    return 0
 }
 

@@ -101,9 +101,9 @@ Archive=$(basename $Archive)
 
 # Installation des prerequis
 # --------------------------
-_CursesStep debut $CC02 "\033[5;46m Running \033[m"
-_VerifyTools
-_CursesStep fin   $CC02 "\033[22;32mInstalled\033[m"
+_CursesStep  debut $CC02 "\033[5;46m Running \033[m"
+_VerifyTools COMPIL
+_CursesStep  fin   $CC02 "\033[22;32mInstalled\033[m"
 
 # Creation / controle espace de compilation
 # -----------------------------------------

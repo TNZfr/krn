@@ -7,8 +7,20 @@ _VerifyTools ()
     InstalledPackage=$KRN_TMP/InstalledPackage-$$
     printh "Verifying tools installation ..."
     rpm -qa > $InstalledPackage
-    ToolsList="           gcc     flex          bison     dwarves     elfutils-libelf-devel perl"
-    ToolsList="$ToolsList openssl openssl-devel rpm-build zstd        sbsigntools           ncurses-devel"
+
+    ToolsList="bc"
+    case $1 in
+	COMPIL)
+	    ToolsList="$ToolsList gcc     flex          bison     dwarves     elfutils-libelf-devel perl"
+	    ToolsList="$ToolsList openssl openssl-devel rpm-build zstd        ncurses-devel"
+	    ;&
+	SIGN)
+	    ToolsList="$ToolsList sbsigntools"
+	    ;&
+	*)
+    esac
+    [ ! -z "$KRN_INTERNAL" ] && echo "Control list = $ToolsList"
+    
     for Tool in $ToolsList
     do
 	grep -q ^$Tool $InstalledPackage
@@ -24,7 +36,7 @@ _VerifyTools ()
 #-------------------------------------------------------------------------------
 _SetCurrentConfig ()
 {
-    dummy=0
+    return 0
 }
 
 #-------------------------------------------------------------------------------
@@ -103,7 +115,7 @@ _RemovePackage ()
 	$KRN_sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 	return $Status
     fi
-    return 1
+    return 0
 }
 
 #-------------------------------------------------------------------------------

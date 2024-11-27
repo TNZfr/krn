@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KRN_VERSION=v10.5
+KRN_VERSION=v10.6
 
 #-------------------------------------------------------------------------------
 function RunCommand
@@ -242,7 +242,11 @@ case $Command in
     # Internal commands
     "_updatecompletion") _RefreshWorkspaceList    ;;
     "_getvar")           eval echo \$${Parameter} ;;
-    
+
+    "_internal")         source $KRN_EXE/lib/kernel.sh && LoadModule
+			 KRN_INTERNAL=TRUE
+			 ${Parameter}
+			 ;;
     *)
 	echo "Kernel management : 'krn $1' unknown command."
 	Status=1

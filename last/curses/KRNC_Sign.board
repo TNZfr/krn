@@ -16,9 +16,13 @@ Type=static;  Col=1;  Row=3; P1="1. Signing files"; P2="";           _Board_Writ
 Type=status;  Col=28; Row=3; P1=Step-SIG01;                          _Board_Write
 Type=elapsed; Col=60; Row=3; P1=KRNC_SIG01_debut; P2=KRNC_SIG01_fin; _Board_Write
 
+Type=static;  Col=1;  Row=4; P1="2. Tools control"; P2="";           _Board_Write
+Type=status;  Col=28; Row=4; P1=Step-SIG02;                          _Board_Write
+Type=elapsed; Col=60; Row=4; P1=KRNC_SIG02_debut; P2=KRNC_SIG02_fin; _Board_Write
+
 # Corps
 CurRow=4
-StepNum=2
+StepNum=3
 ParamNum=1
 for _CurParam in $_ParamList
 do
