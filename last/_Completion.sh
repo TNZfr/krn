@@ -75,16 +75,21 @@ _krn_completion ()
 		    ;;
 		
 		upgrade)
-		    if [ ${#COMP_WORDS[@]} -eq 3 ]
-		    then
-			COMPREPLY+=("RC")
-		    fi
+		    [ ${#COMP_WORDS[@]} -eq 3 ] && COMPREPLY=($(compgen -W "RC Refresh" "${COMP_WORDS[2]}"))
+		    [ ${#COMP_WORDS[@]} -eq 4 ] && COMPREPLY=($(compgen -W "RC Refresh" "${COMP_WORDS[3]}"))
 		    ;;
 		
 		configure|cf)
 		    if [ ${#COMP_WORDS[@]} -eq 3 ]
 		    then
 			COMPREPLY=($(compgen -W "edit RESET" "${COMP_WORDS[2]}"))
+		    fi
+		    ;;
+		
+		infos|in)
+		    if [ ${#COMP_WORDS[@]} -eq 4 ]
+		    then
+			COMPREPLY+=("INSTALL")
 		    fi
 		    ;;
 		

@@ -136,15 +136,6 @@ InstalledKernel=$KRN_RCDIR/.ModuleList
 _RefreshWorkspaceList
 WorkspaceList=$KRN_WORKSPACE/.CompletionList
 
-NbObjet=$(cat $WorkspaceList|wc -l)
-if [ $NbObjet -eq 0 ]
-then
-    echo ""
-    echo " *** Empty workspace, nothing to purge"
-    echo ""
-    exit 0
-fi
-
 echo ""
 SizeBefore=$(du -hs $KRN_WORKSPACE|tr ['\t'] [' ']|cut -d' ' -f1)
 for Version in $*

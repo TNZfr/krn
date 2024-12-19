@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KRN_EXE/lib/kernel.sh
+. $KRN_EXE/lib/kernel.sh && LoadModule
 
 #-------------------------------------------------------------------------------
 # main
@@ -53,15 +53,12 @@ then
 fi
 
 cd $(dirname $Archive)
-DebDirectory=$PWD
+CurrentDirectory=$PWD
 Archive=$(basename $Archive)
 
 # Installation des prerequis
 # --------------------------
-ToolsList="build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr libelf-dev flex bison libncurses-dev rsync git curl dwarves zstd"
-printh "Verifying tools installation ..."
-Uninstalled=$(dpkg -l $ToolsList|grep -v -e "^S" -e "^|" -e "^+++" -e "^ii")
-[ "$Uninstalled" != "" ] && $KRN_sudo apt install -y $ToolsList
+_VerifyTools COMPIL
 
 # Creation / controle espace de compilation
 # -----------------------------------------
@@ -103,7 +100,7 @@ cp .config $FinalConfig
 printh "$FinalConfig created."
 
 printh "Cleaning ..."
-cd $DebDirectory
+cd $CurrentDirectory
 _RemoveTempDirectory $TmpDir
 
 echo ""

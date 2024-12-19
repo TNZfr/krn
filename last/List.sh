@@ -31,6 +31,9 @@ then
     exit 0
 fi
 
+echo "Local workspace : $KRN_WORKSPACE"
+echo "---------------"
+
 _RefreshWorkspaceList
 NbObjet=$(cat $WorkspaceList|wc -l)
 if [ $NbObjet -eq 0 ]
@@ -40,8 +43,6 @@ then
     exit 0
 fi
 
-echo "Local workspace : $KRN_WORKSPACE"
-echo "---------------"
 cat ${WorkspaceList}|linux-version-sort|cut -d',' -f1,2,3|uniq|while read Enreg 
 do
     _Version="$(echo $Enreg|cut -d',' -f1)"

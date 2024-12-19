@@ -57,20 +57,7 @@ VerifyOneKernel ()
 
     echo ""
     printf "\033[44m Module signature for $Version \033[m\n"
-    Module=$ModuleDirectory/kernel/sound/soundcore.ko
-    if [ -f ${Module}.xz ]
-    then
-	# Found in REDHAT distro
-	xzcat ${Module}.xz > $KRN_TMP/${Version}-soundcore.ko
-	Module=$KRN_TMP/${Version}-soundcore.ko
-
-    elif [ -f ${Module}.zst ]
-    then
-	# Found in ARCH distro
-	zstdcat ${Module}.zst > $KRN_TMP/${Version}-soundcore.ko
-	Module=$KRN_TMP/${Version}-soundcore.ko
-    fi    
-    modinfo $Module
+    modinfo $ModuleDirectory/kernel/sound/soundcore.ko*
     echo ""
 }
 

@@ -18,35 +18,14 @@ SignOneModule ()
     # If module name instead of module file
     [ ! -f $ModuleDirectory/$Module ] && Module=$(find $ModuleDirectory -name "${Module}.ko*")
 
-    # uncompress if needed
-    ModuleFile=$(basename $Module)
-    if [ ${ModuleFile%.ko.zst} != $ModuleFile ]
-    then
-	unzstd ${Module}
-	rm     ${Module}
-	Module=${Module%.ko.zst}
-	
-    elif [ ${ModuleFile%.ko.xz} != $ModuleFile ]
-    then
-	unxz ${Module}
-    fi
-
     export KBUILD_SIGN_PIN=$KRNSB_PASS
     [ "$LOGNAME" != "root" ] && KRN_sudo="sudo --preserve-env=KBUILD_SIGN_PIN"
 
     $KRN_sudo $ModuleDirectory/build/scripts/sign-file \
-		  sha256 $KRNSB_PRIV $KRNSB_DER $Module
-
-    # Recompress if needed
-    if [ ${ModuleFile%.ko.zst} != $ModuleFile ]
-    then
-	zstd ${Module}
-	rm   ${Module}
-	
-    elif [ ${ModuleFile%.ko.xz} != $ModuleFile ]
-    then
-	xz ${Module}
-    fi
+	      sha256      \
+	      $KRNSB_PRIV \
+	      $KRNSB_DER  \
+	      $Module
     
     printh "Done."
     _CursesStep fin SIM${_Step} "\033[22;32mDone\033[m"

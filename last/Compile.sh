@@ -109,7 +109,7 @@ _CursesStep  fin   $CC02 "\033[22;32mInstalled\033[m"
 # -----------------------------------------
 _CursesStep debut $CC03 "\033[5;46m Running \033[m"
 _CreateCompileDirectory
-_CursesStep fin $CC03 "\033[22;32m$(basename $TmpDir)\033[m"
+_CursesStep fin   $CC03 "\033[22;32m$(basename $TmpDir)\033[m"
 
 # Restauration archive
 #----------------------------------------
@@ -163,14 +163,14 @@ _CursesStep debut $CC06 "\033[5;46m Running \033[m"
 make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 CheckStatus $CC06
 
-_CursesStep fin $CC06 "\033[22;32mDone\033[m"
+_CursesStep fin   $CC06 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 _CursesStep debut $CC07 "\033[5;46m Running \033[m"
 
 _MakePkg $TmpDir/Make-2-pkg.log
 CheckStatus $CC07
 
-_CursesStep fin $CC07 "\033[22;32mDone\033[m"
+_CursesStep fin   $CC07 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 _CursesStep debut $CC08 "\033[5;46m Running \033[m"
 
@@ -186,7 +186,7 @@ _Finalize
 printh "Cleaning ..."
 _CleanBuildDirectories
 
-_CursesStep fin $CC08 "\033[22;32mDone\033[m"
+_CursesStep fin   $CC08 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 echo ""
 printf "\033[44m Compile $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

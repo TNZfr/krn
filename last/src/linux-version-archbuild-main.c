@@ -8,12 +8,15 @@ int main (int NbArg, char **Arg)
   char *Digit1, *Digit2, *Digit3, *RC, *Label, *EndString;
   char LV_Arch[32], LV_Build[32], LV_Package[32], LV_Ckc[256];
   
-  if (NbArg < 2)
+  if (NbArg < 2 || !getenv("KRN_MODE"))
     {
       printf ("\n");
       printf ("Syntax : %s Version\n",Arg[0]);
       printf ("\n");
       printf ("\tVersion : Linux version to be parsed\n");
+      printf ("\n");
+      printf ("*** KRN_MODE bash variable must be set ***\n");
+      printf ("\n");
       printf ("\n");
       return 1;
     }

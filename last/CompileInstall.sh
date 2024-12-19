@@ -17,7 +17,7 @@ fi
 Debut=$(TopHorloge)
 
 CurrentDirectory=$PWD
-export    TmpDir=$KRN_TMP/GetKernel-$$
+export    TmpDir=$KRN_TMP/CompilInstall-$$
 mkdir -p $TmpDir
 cd       $TmpDir
 
@@ -63,7 +63,11 @@ do
     _CursesStep fin CCI${Step}b "\033[22;32m$(basename $KRN_WORKSPACE/linux-${KRN_LVArch}.tar.??)\033[m"
 
     Compile.sh $KRN_WORKSPACE/linux-${KRN_LVArch}.tar.??
-    [ $? -ne 0 ] && exit 1
+    if [ $? -ne 0 ]
+    then
+	_RemoveTempDirectory $TmpDir
+	exit 1
+    fi
     
     # Installation des paquets
     # ------------------------

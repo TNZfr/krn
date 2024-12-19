@@ -78,10 +78,10 @@ void DSP_Elapsed (CELL_ELAPSED *Cell)
   NbHeure   = NbMinute  / 60; NbMinute  %= 60;
   NbJour    = NbHeure   / 24; NbHeure   %= 24;
 
-  if      (NbJour)   sprintf (Buffer,"%dd %dh %dm %ds.%03d", NbJour,NbHeure,NbMinute,NbSeconde,NbMilli);
-  else if (NbHeure)  sprintf (Buffer,    "%dh %dm %ds.%03d",        NbHeure,NbMinute,NbSeconde,NbMilli);
-  else if (NbMinute) sprintf (Buffer,        "%dm %ds.%03d",                NbMinute,NbSeconde,NbMilli);
-  else               sprintf (Buffer,            "%ds.%03d",                         NbSeconde,NbMilli);
+  if      (NbJour)   sprintf (Buffer,"%dd %2dh %2dm %2ds.%03d", NbJour,NbHeure,NbMinute,NbSeconde,NbMilli);
+  else if (NbHeure)  sprintf (Buffer,    "%2dh %2dm %2ds.%03d", NbHeure,NbMinute,NbSeconde,NbMilli);
+  else if (NbMinute) sprintf (Buffer,     "    %2dm %2ds.%03d", NbMinute,NbSeconde,NbMilli);
+  else               sprintf (Buffer,      "        %2ds.%03d", NbSeconde,NbMilli);
   
   if (Fin) strcpy  (Cell->Buffer, Buffer);
   else     sprintf (Cell->Buffer, "%c[22;1;34m%s", 27,Buffer);

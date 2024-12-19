@@ -37,7 +37,11 @@ cd       $TempDir
 # --------------------------
 _CursesStep debut IS02 "\033[5;46m Running \033[m"
 GetKernel.sh $VersionList
-[ $? -ne 0 ] && exit 1
+if [ $? -ne 0 ]
+then
+    _RemoveTempDirectory $TempDir
+    exit 1
+fi
 echo ""
 _CursesStep fin IS02 "\033[22;32mDone\033[m"
 

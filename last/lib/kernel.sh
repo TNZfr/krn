@@ -27,6 +27,12 @@ _OverloadModule ()
 }
 
 #------------------------------------------------------------------------------------------------
+ParseLinuxVersion ()
+{
+    $(linux-version-archbuild $1)
+}
+
+#------------------------------------------------------------------------------------------------
 printh ()
 {
     printf "$(date +%d/%m/%Y-%Hh%Mm%Ss) : $*\n"
@@ -58,15 +64,9 @@ AfficheDuree ()
     (( Minute = $Seconde /    60 )) ; (( Seconde = $Seconde %    60 ))
 
     [ $Jour   -gt 0 ] && printf "${Jour}j ${Heure}h ${Minute}m ${Seconde}s.$Milli\n" && return
-    [ $Heure  -gt 0 ] && printf "${Heure}h ${Minute}m ${Seconde}s.$Milli\n" && return
-    [ $Minute -gt 0 ] && printf "${Minute}m ${Seconde}s.$Milli\n" && return
+    [ $Heure  -gt 0 ] && printf "${Heure}h ${Minute}m ${Seconde}s.$Milli\n"          && return
+    [ $Minute -gt 0 ] && printf "${Minute}m ${Seconde}s.$Milli\n"                    && return
     echo "${Seconde}s.$Milli"
-}
-
-#------------------------------------------------------------------------------------------------
-ParseLinuxVersion ()
-{
-    $(linux-version-archbuild $1)
 }
 
 #------------------------------------------------------------------------------------------------
@@ -104,6 +104,7 @@ VerifySigningConditions ()
 	echo ""
 	return 3
     fi
+    return 0
 }
 
 #-------------------------------------------------------------------------------
@@ -112,8 +113,8 @@ _RefreshInstalledKernel ()
     _ModuleList=$KRN_RCDIR/.ModuleList
     _ModuleDir=""
     [ -d /usr/lib/modules ] && _ModuleDir=/usr/lib/modules
-    [ -d /lib/modules ]     && _ModuleDir=/lib/modules
-    [ "$_ModuleDir" = "" ] && return
+    [ -d /lib/modules     ] && _ModuleDir=/lib/modules
+    [ "$_ModuleDir" = ""  ] && return
 
     if   [ ! -f $_ModuleList ]
     then
@@ -160,12 +161,13 @@ ListInstalledKernel ()
 #-------------------------------------------------------------------------------
 _RefreshWorkspaceList()
 {
+    # List generation only if modified
+    [ ! -d $KRN_WORKSPACE ] && return
+    [ "$(ls -1atr $KRN_WORKSPACE|tail -1)" = "$KRN_WORKSPACE/.CompletionList" ] && return
+
     CurrentDir=$PWD
     cd $KRN_WORKSPACE
     
-    # List generation only if modified
-    [ "$(ls -1atr|tail -1)" = ".CompletionList" ] && return
-
     > .CompletionList
 
     _ListeFichier=$(ls -1|grep -v "Compil-"; find -name "Compil-*")

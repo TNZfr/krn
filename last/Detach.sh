@@ -42,9 +42,9 @@ then
 # -------------------------
 elif [ "$(which xterm)" != "" ]
 then
-    xterm                   \
-	-title "$KRN_Title" \
-	-e "$KRN_Command"   &
+    xterm                     \
+	-title "$KRN_Title"   \
+	-e     "$KRN_Command" &
     
 #-------------------------------------------------------------------------------
 # No Desktop Environment

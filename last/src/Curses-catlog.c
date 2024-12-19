@@ -50,7 +50,7 @@ void DSP_TailLog (int Row, int Col, int TailSize, int ForceRefresh)
   
   // Header
   if (ForceRefresh)
-    printf ("%c[%d;%dH----------------------------------------------------------------------\n",
+    printf ("%c[%d;%dH------------------------------------------------------------------------------\n",
 	    27,Row,Col);
   
   // Cursor positionning

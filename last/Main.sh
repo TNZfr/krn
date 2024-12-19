@@ -1,11 +1,33 @@
 #!/bin/bash
 
-KRN_VERSION=v10.6
+KRN_VERSION=v10.7
 
 #-------------------------------------------------------------------------------
 function RunCommand
 {
     RunCommand_Name=$*
+
+    [ ! -d $KRN_WORKSPACE ] && \
+	case $RunCommand_Name in
+	    List.sh|Configure.sh|Search.sh|Update.sh|Infos.sh)
+		# KRN_WORKSPACE not used
+		Dummy=0;
+		;;
+	    *)
+		VarFound=$(grep KRN_WORKSPACE $KRN_EXE/$RunCommand_Name 2>/dev/null)
+		if [ ! -z "$VarFound" ]
+		then
+		    echo ""
+		    printf " \033[37;41m %-60s \033[m\n" " "
+		    printf " \033[5;37;41m %-60s \033[m\n" "    !!! Workspace directory not found !!!"
+		    printf " \033[37;41m %-60s \033[m\n" " "
+		    printf " \033[37;41m %-60s \033[m\n" "Verify and/or create $KRN_WORKSPACE directory"
+		    printf " \033[37;41m %-60s \033[m\n" " "
+		    echo ""
+		    exit 1
+		fi
+	esac
+
     AcctFile_Command=$(for Name in $*; do echo ${Name%.sh};done)
     AcctFile_Command=$(echo $AcctFile_Command|sed 's/ //g')
 
@@ -67,6 +89,7 @@ function Help
     printf "\033[34m Kernel from Local or Ubuntu/Mainline \033[m\n"
     printf "\033[34m--------------------------------------\033[m\n"
     echo  "Search         (SE): Search available kernels from Kernel.org (including Ubuntu/Mainline in DEBIAN mode)"
+    echo  "Infos          (IN): Gives informations about selected kernel version"
     echo  ""
     echo  "Get                : Get Debian packages from local (including Ubuntu/Mainline in DEBIAN mode)"
     echo  "Install            : Install selected kernel from local (including Ubuntu/Mainline in DEBIAN mode)"
@@ -206,6 +229,7 @@ case $Command in
     "purge"                  )    RunCommand Purge.sh        ;;
     "list"              |"ls")    RunCommand List.sh         ;;
     "search"            |"se")    RunCommand Search.sh       ;;
+    "infos"             |"in")    RunCommand Infos.sh        ;;
     "get"               |"gk")    RunCommand GetKernel.sh    ;;
     "install"                )    RunCommand Install.sh      ;;
     "remove"                 )    RunCommand Remove.sh       ;;

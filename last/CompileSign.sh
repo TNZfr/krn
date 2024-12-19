@@ -89,7 +89,7 @@ case $? in
     2) _CursesStep fin $CCS01 "\033[31mOne or more missing parameter\033[m" ; exit 1;;
     3) _CursesStep fin $CCS01 "\033[31mMissing file(s)\033[m"               ; exit 1;;
 esac
-_CursesStep fin $CCS01 "\033[22;32mFound\033[m"
+_CursesStep fin   $CCS01 "\033[22;32mFound\033[m"
 
 # Source Archive
 # --------------
@@ -108,7 +108,7 @@ then
 else
     Archive=$Param
 fi
-_CursesStep fin $CCS02 "\033[22;32m$(basename $Archive)\033[m"
+_CursesStep fin   $CCS02 "\033[22;32m$(basename $Archive)\033[m"
 
 
 # Compilation / signature
@@ -127,7 +127,7 @@ _CursesStep  fin   $CCS03 "\033[22;32mInstalled\033[m"
 # ------------------------------------------
 _CursesStep debut $CCS04 "\033[5;46m Running \033[m"
 _CreateCompileDirectory
-_CursesStep fin $CCS04 "\033[22;32m$(basename $TmpDir)\033[m"
+_CursesStep fin   $CCS04 "\033[22;32m$(basename $TmpDir)\033[m"
 
 # Restauration archive
 # --------------------
@@ -145,7 +145,7 @@ else
 fi
 touch $KRN_WORKSPACE # Force refresh krn List
 
-_CursesStep fin $CCS05 "\033[22;32mExtracted\033[m"
+_CursesStep fin   $CCS05 "\033[22;32mExtracted\033[m"
 #----------------------------------------
 
 cd $TmpDir/$Directory
@@ -181,7 +181,7 @@ _CursesStep debut $CCS07 "\033[5;46m Running \033[m"
 make olddefconfig > $TmpDir/Make-1-olddefconfig.log 2>&1
 CheckStatus $CCS07
 
-_CursesStep fin $CCS07 "\033[22;32mDone\033[m"
+_CursesStep fin   $CCS07 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 # Compilation principale
 #
@@ -190,7 +190,7 @@ _CursesStep debut $CCS08 "\033[5;46m Running \033[m"
 _MakePkgSign1 $TmpDir/Make-2-pkg.log
 CheckStatus $CCS08
 
-_CursesStep fin $CCS08 "\033[22;32mDone\033[m"
+_CursesStep fin   $CCS08 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 # Import fichiers signature et signature noyau
 #
@@ -204,7 +204,6 @@ cat $KRNSB_PRIV $KRNSB_PEM > certs/signing_key.pem
 # Signature du noyau 
 # ------------------
 printh "Signing kernel $Version ..."
-_CursesStep debut $CCS10 "\033[5;46m Running \033[m"
 
 echo "Memory tips : $KRNSB_PASS"
 Vmlinuz=$(make image_name)
@@ -216,7 +215,7 @@ sbsign                           \
 mv -f ${Vmlinuz}.signed ${Vmlinuz}
 echo ""
 
-_CursesStep fin $CCS09 "\033[22;32mDone\033[m"
+_CursesStep fin   $CCS09 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 # Rebuild package
 #
@@ -228,9 +227,9 @@ cat arch/x86/Makefile.original|sed 's/bzImage: vmlinux/bzImage: $(KBUILD_IMAGE)/
 
 # Fabrication des paquets finaux 
 _MakePkgSign2 $TmpDir/Make-3-pkg.log
-CheckStatus $CCS10
+CheckStatus   $CCS10
 
-_CursesStep fin $CCS10 "\033[22;32mDone\033[m"
+_CursesStep fin   $CCS10 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 _CursesStep debut $CCS11 "\033[5;46m Running \033[m"
 
@@ -246,7 +245,7 @@ _Finalize
 printh "Cleaning ..."
 _CleanBuildDirectories
 
-_CursesStep fin $CCS11 "\033[22;32mDone\033[m"
+_CursesStep fin   $CCS11 "\033[22;32mDone\033[m"
 #-------------------------------------------------------------------------------
 echo ""
 printf "\033[44m CompileSign $KRN_MODE elapsed \033[m : $(AfficheDuree $Debut $(TopHorloge))\n"

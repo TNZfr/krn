@@ -28,7 +28,7 @@ esac
 _CursesStep fin CCSI01 "\033[22;32mFound\033[m"
 
 CurrentDirectory=$PWD;
-export    TmpDir=$KRN_TMP/GetKernel-$$;
+export    TmpDir=$KRN_TMP/CompilSignInstall-$$;
 mkdir -p $TmpDir
 cd       $TmpDir
 
@@ -56,13 +56,13 @@ do
 
 	_CursesStep debut CCSI${Step}d "\033[34m$Version\033[m \033[5;46m Running \033[m"
 	_InstallPackage
-	_CursesStep fin CCSI${Step}d "\033[34m$Version\033[m \033[22;32mInstalled\033[m"
+	_CursesStep fin   CCSI${Step}d "\033[34m$Version\033[m \033[22;32mInstalled\033[m"
 	
-	cd $CurrentDirectory; _CleanTempDirectory $TmpDir
+	_CleanTempDirectory $TmpDir
 
 	continue
     fi
-    cd $CurrentDirectory; _CleanTempDirectory $TmpDir
+    _CleanTempDirectory $TmpDir
     
     _CursesStep fin CCSI${Step}b "\033[34m$Version\033[m \033[22;32mNo package available\033[m"
      
@@ -76,7 +76,11 @@ do
     _CursesStep fin CCSI${Step}c "\033[22;32m$(basename $KRN_WORKSPACE/linux-${KRN_LVArch}.tar.??)\033[m"
 
     CompileSign.sh $KRN_WORKSPACE/linux-${KRN_LVArch}.tar.??
-    [ $? -ne 0 ] && return 1
+    if [ $? -ne 0 ]
+    then
+	_RemoveTempDirectory $TmpDir
+	exit 1
+    fi
     
     # Installation des paquets
     # ------------------------
@@ -95,7 +99,6 @@ do
 	ls -1 $TmpDir
     fi
 
-    cd $CurrentDirectory
     _CleanTempDirectory $TmpDir
 done
 
