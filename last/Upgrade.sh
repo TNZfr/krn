@@ -46,7 +46,7 @@ LastKernel=$KRN_LVBuild
 if [ ! -f $KRN_RemoteVersion ]
 then
     printh "Kernel version database update ..."
-    Update.sh >/dev/null 2>&1
+    KRN_UPGRADE=TRUE Update.sh >/dev/null 2>&1
     printh "Done"
 fi
 
@@ -57,7 +57,7 @@ else
     LastAvailable=$(grep -v "\-rc" $KRN_RemoteVersion|tail -1|cut -d',' -f1)
 fi
 
-Sorted=$(echo -e "${LastKernel}_2\n${LastAvailable}_1"|sort|tail -1)
+Sorted=$(echo -e "${LastKernel}_2\n${LastAvailable}_1"|linux-version-sort|tail -1)
 if [ $Sorted = ${LastKernel}_2 ]
 then
     echo ""

@@ -170,6 +170,12 @@ linux-version-sort $(cat $TMP_RemoteVersion) > $KRN_RemoteVersion
 NbVersion=$(cat $TempDir/RemoteVersion.csv|wc -l)
 printh "$NbVersion kernel vesion(s) found."
 
+if [ "$KRN_UPGRADE" = "TRUE" ]
+then
+    _RemoveTempDirectory $TempDir
+    exit 0
+fi
+
 # 2. Compare with installed Kernels
 # ---------------------------------
 _CleanTempDirectory $TempDir

@@ -37,8 +37,10 @@ then
     echo ""
     exit 1
 fi
+
 KernelConfig=$(readlink -f $KernelConfig)
-[ "$(basename $KernelConfig|grep rc)" = "" ] && LabelField=3 || LabelField=4
+Field3=$(basename $KernelConfig|cut -d- -f3)
+[ "${Field3:0:2}" = "rc" ] && LabelField=4 || LabelField=3
 Libelle=$(basename $KernelConfig|cut -d'-' -f$LabelField)
 
 Debut=$(TopHorloge)

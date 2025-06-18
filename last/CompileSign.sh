@@ -9,27 +9,22 @@ CheckStatus ()
     Status=$?
     [ $Status -eq 0 ] && return
 
-    (
-	echo   ""
-	echo   "ERROR : Return code $Status"
-	echo   "        Temporary workspace $TmpDir is left as is for analysis"
-	echo   ""
-	echo   "        Available log files :"
-	for LogFile in $TmpDir/Make-?-*.log
-	do
-	    echo   "          $LogFile"
-	done
-	echo   ""
-	echo   "        Don't forget to remove it because :"
-	printf "        ";du -hs $TmpDir 
-	echo   ""
-    ) > $TmpDir/Error.log
+    _CursesStep fin $1 "\033[31mFAILED\033[m"
 
-    if [ "$KRNC_TMP" != "" ]
-    then
-	cp $TmpDir/Error.log $KRNC_ErrorLog
-	_CursesStep fin $1 "\033[31mFAILED\033[m"
-    fi
+    echo   ""
+    echo   "ERROR : Return code $Status"
+    echo   "        Temporary workspace $TmpDir is left as is for analysis"
+    echo   ""
+    echo   "        Available log files :"
+    for LogFile in $TmpDir/Make-?-*.log
+    do
+	echo   "          $LogFile"
+    done
+    echo   ""
+    echo   "        Don't forget to remove it because :"
+    printf "        ";du -hs $TmpDir 
+    echo   ""
+
     exit 1
 }
 

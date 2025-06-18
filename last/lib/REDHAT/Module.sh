@@ -11,8 +11,8 @@ _VerifyTools ()
     ToolsList="bc"
     case $1 in
 	COMPIL)
-	    ToolsList="$ToolsList gcc     flex          bison     dwarves     elfutils-libelf-devel perl"
-	    ToolsList="$ToolsList openssl openssl-devel rpm-build zstd        ncurses-devel"
+	    ToolsList="$ToolsList gcc  flex    bison         dwarves        libdw-devel   elfutils-libelf-devel"
+	    ToolsList="$ToolsList perl openssl openssl-devel rpm-build      zstd          ncurses-devel"
 	    ;&
 	SIGN)
 	    ToolsList="$ToolsList sbsigntools"

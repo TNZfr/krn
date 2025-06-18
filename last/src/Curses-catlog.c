@@ -44,10 +44,6 @@ void DSP_TailLog (int Row, int Col, int TailSize, int ForceRefresh)
   char    DateTime [ 64]; 
   char    LogFile  [256];
 
-  char *ErrorLog;
-  FILE *ErrorDesc;
-
-  
   // Header
   if (ForceRefresh)
     printf ("%c[%d;%dH------------------------------------------------------------------------------\n",
@@ -60,17 +56,6 @@ void DSP_TailLog (int Row, int Col, int TailSize, int ForceRefresh)
   printf ("%c[%d;%dH%c[30;46m %s %c[m  \n",
 	  27,Row,Col,
 	  27,CurrentDateTime (DateTime),27);
-
-  // Error file manangement
-  ErrorDesc = NULL;
-  ErrorLog  = getenv("KRNC_ErrorLog");
-  if (ErrorLog) ErrorDesc = fopen(ErrorLog,"r");
-  if (ErrorDesc)
-    {
-      fclose (ErrorDesc);
-      pclose (popen("cat $KRNC_ErrorLog","r"));
-      return;
-    }
 
   // Refresh management 
   if (ForceRefresh || LogRefreshed())

@@ -8,7 +8,7 @@ _VerifyTools ()
     case $1 in
 	COMPIL)
 	    ToolsList="$ToolsList debhelper build-essential fakeroot dpkg-dev libssl-dev bc gnupg dirmngr"
-	    ToolsList="$ToolsList libelf-dev flex bison libncurses-dev rsync git curl dwarves zstd"
+	    ToolsList="$ToolsList libelf-dev flex bison libncurses-dev rsync git curl dwarves libdw-dev zstd"
 	    ;&
 	SIGN)
 	    ToolsList="$ToolsList sbsigntool"

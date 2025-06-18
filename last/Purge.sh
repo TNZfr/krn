@@ -11,20 +11,42 @@ PurgeWorkspace ()
     # --------------------------
     if [ "$Version" = all ]
     then	
-	NbCKC=$(ls -1d $KRN_WORKSPACE/ckc-*-* 2>/dev/null|wc -l)
-	[ $NbCKC -gt 0 ] && for Version in $(ls -1d $KRN_WORKSPACE/ckc-*-*)
+	NbCKC=$(grep ",ckc," $WorkspaceList|wc -l)
+	[ $NbCKC -gt 0 ] && for Object in $(grep ",ckc," $WorkspaceList|cut -d',' -f4)
 	do
-	    PurgeWorkspace $Version
+	    PurgeWorkspace $(basename $Object)
 	done
 	
-	for Version in $(cat $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version-sort)
+	for Object in $(grep -v ",ckc," $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version-sort)
 	do
-	    PurgeWorkspace $Version
+	    PurgeWorkspace $Object
 	done
 
 	return
     fi
+ 
+    # Traitement des wilcards
+    # -----------------------
+    if [ ! -z "$(echo $Version|grep -e '*' -e '?')" ]
+    then
+	TmpDir=$KRN_TMP/krn-purge-$$
+	mkdir $TmpDir
 
+	for Object in $(cat $WorkspaceList|grep ",ckc,"|cut -d',' -f4)
+	do touch $TmpDir/$Object;  done
+
+	for Object in $(cat $WorkspaceList|cut -d',' -f1|sort|uniq|linux-version-sort)
+	do touch $TmpDir/$Object;  done
+
+	NbObject=$(ls -1 $TmpDir/$Version 2>/dev/null|wc -l)
+	[ $NbObject -gt 0 ] && for Object in $(ls -1 $TmpDir/$Version)
+	do PurgeWorkspace $(basename $Object); done
+	
+	_RemoveTempDirectory $TmpDir
+
+	return
+    fi
+    
     ParseLinuxVersion $Version
 
     # Gestion des ckc
